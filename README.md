@@ -68,7 +68,7 @@ Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then
 `wrangler.toml` that has no `[ai]` section.)
 
 ## Daily cards
-Based on the UTC date. Everyone gets the same 7. The deck is shuffled in cycles, so 35 cards give 5 days with
+Based on the UTC date. Everyone gets the same 7. The deck is shuffled in cycles, so 135 cards give 19 days with
 no repeats. To add a card, append to `public/lib/cards.js` with the next id (`a36`, ...): the answer plus about five
 questions using the weight ladder 100, 55, 30, 14, 6 (obvious down to deep cut), so every card has a question in
 each scoring band. Game #1 is `LAUNCH_DAY` in `public/game.js`.
