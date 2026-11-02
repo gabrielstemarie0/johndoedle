@@ -34,14 +34,19 @@ figures matter). A perfect run is 700 and nothing goes negative. Blank, symbol-o
 submitted; the field shakes and the timer keeps running.
 
 ## How a question is judged (`/api/judge`)
+0. A question that contains the answer ("What is a thing that is Gold?") is rejected straight away, with no AI call.
+   The page shakes it off before submitting, and the server enforces it too.
 1. The question is embedded with Workers AI (`@cf/baai/bge-base-en-v1.5`) and compared with the card's known
    questions. If it is close to one, it is treated as the same question and scored by that question's rarity.
-2. If it is not close to a seed question, a chat model (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, falling back to `llama-3.1-8b-instruct-fast`) is asked whether
-   the answer is a correct response. NO means Imposter; YES means a new question, so Alien.
+2. If it is not close to a seed question, a chat model (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, falling back to
+   `llama-3.1-8b-instruct-fast`) returns one word: YES (a new question, so Alien), WRONG (the answer doesn't fit), or
+   VAGUE (the answer fits but so do many others, or it's a yes/no or letter-game question). The prompt and examples
+   are `JUDGE_RULES` in `src/judge-server.js`.
 3. Valid questions are counted once per player per card per day (`plays` table).
 
-The similarity thresholds in `public/lib/judge.js` (`DENSE`) are starting points; adjust them after you've seen real
-questions. Without an AI binding the server uses plain word overlap, and the browser falls back to word
+The similarity cutoff in `public/lib/judge.js` (`DENSE`, 0.80) was measured on the live judge: paraphrases of a
+question scored 0.83-0.99 and different valid questions 0.58-0.70. Re-check it if you change the embedding model.
+Without an AI binding the server uses plain word overlap, and the browser falls back to word
 overlap against the seed questions when the API is unreachable. That works for local testing, but it
 will mark many genuinely new questions as Imposter.
 
