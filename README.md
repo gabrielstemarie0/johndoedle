@@ -36,7 +36,7 @@ submitted; the field shakes and the timer keeps running.
 ## How a question is judged (`/api/judge`)
 1. The question is embedded with Workers AI (`@cf/baai/bge-base-en-v1.5`) and compared with the card's known
    questions. If it is close to one, it is treated as the same question and scored by that question's rarity.
-2. If it is not close to a seed question, a small model (`@cf/meta/llama-3.1-8b-instruct`) is asked whether
+2. If it is not close to a seed question, a chat model (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, falling back to `llama-3.1-8b-instruct-fast`) is asked whether
    the answer is a correct response. NO means Imposter; YES means a new question, so Alien.
 3. Valid questions are counted once per player per card per day (`plays` table).
 

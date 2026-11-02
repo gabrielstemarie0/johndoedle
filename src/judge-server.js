@@ -3,7 +3,8 @@ import { normalize, isValidQuestion } from "../public/lib/text.js";
 import { decide, lexVec, LEXICAL, DENSE } from "../public/lib/judge.js";
 
 const EMBED_MODEL = "@cf/baai/bge-base-en-v1.5";
-const CHAT_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+// Tried in order. (llama-3.1-8b-instruct was retired 2026-05-30; the -fast variants stay active.)
+const CHAT_MODELS = ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/meta/llama-3.1-8b-instruct-fast"];
 
 // Wraps Workers AI. With no AI binding (local dev) it falls back to word overlap.
 export function makeAI(binding) {
@@ -21,28 +22,32 @@ export function makeAI(binding) {
     lastInfo: null, // what the last validate() call saw, for diagnosing the judge
     async validate(answer, question) {
       this.lastInfo = null;
-      try {
-        const out = await binding.run(CHAT_MODEL, {
-          max_tokens: 4,
-          temperature: 0,
-          messages: [
-            { role: "system", content: "You judge a trivia game. Reply with only YES or NO." },
-            {
-              role: "user",
-              content: `Question: ${question}\nProposed answer: ${answer}\nIs "${answer}" a correct and natural answer to this question? Reply YES or NO.`,
-            },
-          ],
-        });
-        const raw = typeof out === "string" ? out : out?.response ?? out?.result?.response ?? out?.choices?.[0]?.message?.content;
-        const text = String(raw ?? "").trim().toUpperCase();
-        this.lastInfo = { raw: String(raw ?? JSON.stringify(out)).slice(0, 80) };
-        if (text.startsWith("YES")) return true;
-        if (text.startsWith("NO")) return false;
-        return null;
-      } catch (e) {
-        this.lastInfo = { error: String((e && e.message) || e).slice(0, 160) };
-        return null;
+      const errors = [];
+      for (const model of CHAT_MODELS) {
+        try {
+          const out = await binding.run(model, {
+            max_tokens: 4,
+            temperature: 0,
+            messages: [
+              { role: "system", content: "You judge a trivia game. Reply with only YES or NO." },
+              {
+                role: "user",
+                content: `Question: ${question}\nProposed answer: ${answer}\nIs "${answer}" a correct and natural answer to this question? Reply YES or NO.`,
+              },
+            ],
+          });
+          const raw = typeof out === "string" ? out : out?.response ?? out?.result?.response ?? out?.choices?.[0]?.message?.content;
+          const text = String(raw ?? "").trim().toUpperCase();
+          this.lastInfo = { model, raw: String(raw ?? JSON.stringify(out)).slice(0, 80) };
+          if (text.startsWith("YES")) return true;
+          if (text.startsWith("NO")) return false;
+          errors.push(`${model}: unexpected reply`);
+        } catch (e) {
+          errors.push(`${model}: ${String((e && e.message) || e).slice(0, 120)}`);
+        }
       }
+      this.lastInfo = { error: errors.join(" | ") };
+      return null;
     },
   };
 }
