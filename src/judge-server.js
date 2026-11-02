@@ -6,21 +6,33 @@ const EMBED_MODEL = "@cf/baai/bge-base-en-v1.5";
 // Tried in order. (llama-3.1-8b-instruct was retired 2026-05-30; the -fast variants stay active.)
 const CHAT_MODELS = ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/meta/llama-3.1-8b-instruct-fast"];
 
-// The yes/no judge. Few-shot examples use answers that aren't in the deck.
-const JUDGE_RULES = `You judge a trivia game. The player is shown an ANSWER and writes a QUESTION they think has that answer. Reply with exactly one word:
-YES - the answer is correct for the question, and the question is specific enough that this answer is the clear, expected one.
-WRONG - the answer is not correct for the question.
-VAGUE - the answer would be technically true, but the question is too broad, generic or open-ended (many different answers fit), or it is a yes/no question, or it only plays with letters, spelling or length.
+// The judge. It states the correct answer first, then gives a verdict; answering in one word
+// with no thinking made it reject some correct questions. Few-shot answers aren't in the deck.
+const JUDGE_RULES = `You judge a trivia game. The player is shown an ANSWER and writes a QUESTION they think has that answer.
+First write one short sentence saying what the correct answer to the question is. Then end with a final line, exactly one of:
+VERDICT: YES - the answer is correct for the question, and the question is specific enough that this answer is the clear, expected one.
+VERDICT: WRONG - the answer is not correct for the question.
+VERDICT: VAGUE - the answer would be technically true, but the question is too broad, generic or open-ended (many different answers fit), or it is a yes/no question, or it only plays with letters, spelling or length.
 
 Examples with the answer "Paris":
-Question: What is the capital of France? -> YES
-Question: Which city has a lattice iron tower built for the 1889 World's Fair? -> YES
-Question: What is the capital of Italy? -> WRONG
-Question: What is a place in Europe? -> VAGUE
-Question: What is a city? -> VAGUE
-Question: Is Paris in France? -> VAGUE
-Question: What is a five-letter word? -> VAGUE
-Question: What is something people visit? -> VAGUE`;
+Question: What is the capital of France?
+The capital of France is Paris, which matches.
+VERDICT: YES
+Question: Which city has a lattice iron tower built for the 1889 World's Fair?
+That is the Eiffel Tower, in Paris, which matches.
+VERDICT: YES
+Question: What is the capital of Italy?
+The capital of Italy is Rome, not Paris.
+VERDICT: WRONG
+Question: What is a place in Europe?
+Many places fit, Paris is only one.
+VERDICT: VAGUE
+Question: Is Paris in France?
+That is a yes/no question.
+VERDICT: VAGUE
+Question: What is a five-letter word?
+Many words fit.
+VERDICT: VAGUE`;
 
 // Wraps Workers AI. With no AI binding (local dev) it falls back to word overlap.
 export function makeAI(binding) {
@@ -41,17 +53,18 @@ export function makeAI(binding) {
       for (const model of CHAT_MODELS) {
         try {
           const out = await binding.run(model, {
-            max_tokens: 6,
+            max_tokens: 90,
             temperature: 0,
             messages: [
               { role: "system", content: JUDGE_RULES },
-              { role: "user", content: `Answer: ${answer}\nQuestion: ${question}\nVerdict (one word):` },
+              { role: "user", content: `Answer: ${answer}\nQuestion: ${question}` },
             ],
           });
           const raw = typeof out === "string" ? out : out?.response ?? out?.result?.response ?? out?.choices?.[0]?.message?.content;
           const text = String(raw ?? "").trim().toUpperCase();
+          const m = text.match(/VERDICT:?\s*(YES|WRONG|VAGUE)/);
+          if (m) return m[1];
           for (const verdict of ["YES", "WRONG", "VAGUE"]) if (text.startsWith(verdict)) return verdict;
-          if (text.startsWith("NO")) return "WRONG";
           errors.push(`${model}: unexpected reply`);
         } catch (e) {
           errors.push(`${model}: ${String((e && e.message) || e).slice(0, 120)}`);
