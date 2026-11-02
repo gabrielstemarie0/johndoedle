@@ -569,7 +569,7 @@ export default [
     14
    ],
    [
-    "What desert includes the Eye of the Sahara, the Richat Structure?",
+    "What desert contains the Richat Structure, a huge circular formation seen from space?",
     6
    ]
   ]

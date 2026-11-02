@@ -1,5 +1,5 @@
 import cards from "./lib/cards.js";
-import { isValidQuestion } from "./lib/text.js";
+import { isValidQuestion, givesAway } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, judgeLocal } from "./lib/judge.js";
 
 // ---------- settings ----------
@@ -125,8 +125,13 @@ function frame() {
 // Manual submit: a non-question is rejected (shake) and the timer keeps running.
 function trySubmit() {
   if (locked) return;
-  if (isValidQuestion($("answer").value)) return lockIn();
+  const typed = $("answer").value;
+  const giveaway = isValidQuestion(typed) && givesAway(typed, todaysCards[cur].answer);
+  if (isValidQuestion(typed) && !giveaway) return lockIn();
   const input = $("answer");
+  $("answer-hint").textContent = giveaway
+    ? "Your question can't contain the answer. Try again before time runs out."
+    : "That's not a question. Try again before time runs out.";
   $("answer-hint").hidden = false;
   input.setAttribute("aria-invalid", "true");
   input.classList.remove("shake");
@@ -165,7 +170,11 @@ async function lockIn() {
   $("fb-text").textContent = !raw
     ? "Time's up, nothing entered."
     : result.level === "imposter"
-      ? `That question doesn't lead to "${card.answer}".`
+      ? result.reason === "gives_away"
+        ? "Your question contained the answer."
+        : result.reason === "vague"
+          ? `Too vague: lots of answers fit that question, not just "${card.answer}".`
+          : `That question doesn't lead to "${card.answer}".`
       : result.matched
         ? `Same as a known question: "${result.text}"`
         : "Nobody has asked that one before.";

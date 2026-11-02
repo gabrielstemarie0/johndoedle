@@ -1,6 +1,6 @@
 // Scoring logic for John Doedle. Used by the Cloudflare Function (real judging)
 // and by the browser as an offline fallback (word-overlap only, seed questions only).
-import { normalize } from "./text.js";
+import { normalize, givesAway } from "./text.js";
 
 // ---------- levels ----------
 // Krillion's points, with John Doe names: the rarer the question, the more points.
@@ -42,6 +42,11 @@ export function computeShares(rows) {
   return { share, top };
 }
 
+export function topQuestions(rows, n = 3) {
+  const { share } = computeShares(rows);
+  return [...rows].sort((a, b) => share.get(b.key) - share.get(a.key)).slice(0, n).map((r) => r.text);
+}
+
 // ---------- similarity ----------
 const STOP = new Set(
   "what which who whom whose where when why how is are was were be been do does did the a an of in on at to for from by with and or that this these those it its you your name tell thing something one popular common famous most".split(" ")
@@ -75,7 +80,7 @@ export const DENSE = { same: 0.8, validNear: 0.8 };
 // ---------- the decision ----------
 // th: thresholds. aiValid: async () => true | false | null, only called when the
 // question isn't already close to a known good question.
-export async function decide(rows, vec, th, aiValid) {
+export async function decide(rows, vec, th, aiValid, reason) {
   let best = null, bestSim = -1, seedBest = -1;
   for (const r of rows) {
     const s = cosine(vec, r.vec);
@@ -84,8 +89,8 @@ export async function decide(rows, vec, th, aiValid) {
   }
   const valid = seedBest >= th.validNear || (await aiValid?.()) === true;
   const { share, top } = computeShares(rows);
-  const topTexts = [...rows].sort((a, b) => share.get(b.key) - share.get(a.key)).slice(0, 3).map((r) => r.text);
-  if (!valid) return { valid: false, level: IMPOSTER, matched: null, topTexts };
+  const topTexts = topQuestions(rows);
+  if (!valid) return { valid: false, level: IMPOSTER, matched: null, topTexts, reason: reason?.() ?? "wrong" };
   const matched = bestSim >= th.same ? best : null;
   const ratio = matched ? (share.get(matched.key) || 0) / top : 0;
   return { valid: true, level: levelForRatio(ratio), matched, topTexts };
@@ -96,6 +101,10 @@ export function seedRows(card) {
   return card.questions.map(([text, seedw]) => ({ key: normalize(text, 80), text, seedw, count: 0, vec: lexVec(text) }));
 }
 export async function judgeLocal(card, question) {
-  const d = await decide(seedRows(card), lexVec(question), LEXICAL, null);
-  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question, top: d.topTexts };
+  const rows = seedRows(card);
+  if (givesAway(question, card.answer)) {
+    return { valid: false, level: IMPOSTER.id, pts: IMPOSTER.pts, matched: false, text: question, top: topQuestions(rows), reason: "gives_away" };
+  }
+  const d = await decide(rows, lexVec(question), LEXICAL, null);
+  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question, top: d.topTexts, ...(d.valid ? {} : { reason: d.reason }) };
 }

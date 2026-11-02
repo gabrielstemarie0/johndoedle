@@ -18,6 +18,14 @@ export function normalize(input, max = 40) {
   return s.slice(0, max);
 }
 
+// True if the question names its own answer ("What is a thing that is Gold?"), which makes it trivial.
+export function givesAway(question, answer) {
+  const a = normalize(answer, 100);
+  const q = ` ${normalize(question, 300)} `;
+  // normalize() only strips a trailing "s", so "tomatoes" becomes "tomatoe"; accept that too.
+  return a.length > 0 && (q.includes(` ${a} `) || q.includes(` ${a}e `));
+}
+
 // A "non-question" is too short to be a question, symbols only, or one repeated
 // character. Needs at least two words and six letters/digits.
 export function isValidQuestion(input) {

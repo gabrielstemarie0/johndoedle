@@ -1,10 +1,26 @@
 // Server-side judging: D1 for counts, Workers AI for meaning.
-import { normalize, isValidQuestion } from "../public/lib/text.js";
-import { decide, lexVec, LEXICAL, DENSE } from "../public/lib/judge.js";
+import { normalize, isValidQuestion, givesAway } from "../public/lib/text.js";
+import { decide, lexVec, topQuestions, IMPOSTER, LEXICAL, DENSE } from "../public/lib/judge.js";
 
 const EMBED_MODEL = "@cf/baai/bge-base-en-v1.5";
 // Tried in order. (llama-3.1-8b-instruct was retired 2026-05-30; the -fast variants stay active.)
 const CHAT_MODELS = ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/meta/llama-3.1-8b-instruct-fast"];
+
+// The yes/no judge. Few-shot examples use answers that aren't in the deck.
+const JUDGE_RULES = `You judge a trivia game. The player is shown an ANSWER and writes a QUESTION they think has that answer. Reply with exactly one word:
+YES - the answer is correct for the question, and the question is specific enough that this answer is the clear, expected one.
+WRONG - the answer is not correct for the question.
+VAGUE - the answer would be technically true, but the question is too broad, generic or open-ended (many different answers fit), or it is a yes/no question, or it only plays with letters, spelling or length.
+
+Examples with the answer "Paris":
+Question: What is the capital of France? -> YES
+Question: Which city has a lattice iron tower built for the 1889 World's Fair? -> YES
+Question: What is the capital of Italy? -> WRONG
+Question: What is a place in Europe? -> VAGUE
+Question: What is a city? -> VAGUE
+Question: Is Paris in France? -> VAGUE
+Question: What is a five-letter word? -> VAGUE
+Question: What is something people visit? -> VAGUE`;
 
 // Wraps Workers AI. With no AI binding (local dev) it falls back to word overlap.
 export function makeAI(binding) {
@@ -18,26 +34,24 @@ export function makeAI(binding) {
       const out = await binding.run(EMBED_MODEL, { text: texts });
       return out.data;
     },
-    // Does this question really lead to this answer? true / false, or null if the AI is unavailable.
+    // Does this question really lead to this answer? Resolves to "YES", "WRONG" (answer not correct),
+    // "VAGUE" (answer fits but so do many others), or null if the AI is unavailable.
     async validate(answer, question) {
       const errors = [];
       for (const model of CHAT_MODELS) {
         try {
           const out = await binding.run(model, {
-            max_tokens: 4,
+            max_tokens: 6,
             temperature: 0,
             messages: [
-              { role: "system", content: "You judge a trivia game. Reply with only YES or NO." },
-              {
-                role: "user",
-                content: `Question: ${question}\nProposed answer: ${answer}\nIs "${answer}" a correct and natural answer to this question? Reply YES or NO.`,
-              },
+              { role: "system", content: JUDGE_RULES },
+              { role: "user", content: `Answer: ${answer}\nQuestion: ${question}\nVerdict (one word):` },
             ],
           });
           const raw = typeof out === "string" ? out : out?.response ?? out?.result?.response ?? out?.choices?.[0]?.message?.content;
           const text = String(raw ?? "").trim().toUpperCase();
-          if (text.startsWith("YES")) return true;
-          if (text.startsWith("NO")) return false;
+          for (const verdict of ["YES", "WRONG", "VAGUE"]) if (text.startsWith(verdict)) return verdict;
+          if (text.startsWith("NO")) return "WRONG";
           errors.push(`${model}: unexpected reply`);
         } catch (e) {
           errors.push(`${model}: ${String((e && e.message) || e).slice(0, 120)}`);
@@ -70,8 +84,23 @@ export async function judgeQuestion({ db, ai, card, question, player, day }) {
     .all();
   const rows = results.map((r) => ({ ...r, vec: JSON.parse(r.vec) }));
 
+  // A question that names its own answer is trivial; no need to ask the AI.
+  if (givesAway(question, card.answer)) {
+    return { valid: false, level: IMPOSTER.id, pts: IMPOSTER.pts, matched: false, text: question.trim(), top: topQuestions(rows), reason: "gives_away" };
+  }
+
   const [vec] = await ai.embed([question]);
-  const d = await decide(rows, vec, ai.th, () => ai.validate(card.answer, question));
+  let verdict = null;
+  const d = await decide(
+    rows,
+    vec,
+    ai.th,
+    async () => {
+      verdict = await ai.validate(card.answer, question);
+      return verdict === "YES";
+    },
+    () => (verdict === "VAGUE" ? "vague" : "wrong")
+  );
 
   if (d.valid) {
     // Count each player's question once per card per day.
@@ -93,7 +122,7 @@ export async function judgeQuestion({ db, ai, card, question, player, day }) {
       }
     }
   }
-  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts };
+  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts, ...(d.valid ? {} : { reason: d.reason }) };
 }
 
 export { isValidQuestion };
