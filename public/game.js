@@ -1,18 +1,19 @@
 import questions from "./lib/questions.js";
 import { isValidAnswer } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, MAX_SPACES, levelById, judgeLocal } from "./lib/scoring.js";
+import { CARS, carById, carSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
-const SECONDS = 25; // a short answer, so a short clock
+const SECONDS = 25; // the obstacle on the road reaches your bumper when this runs out
 const PER_DAY = 7;
 const STORE_KEY = "jd:v3";
 
 const $ = (id) => document.getElementById(id);
 const views = { intro: $("intro"), play: $("play"), results: $("results") };
 
-// ---------- date + card selection ----------
+// ---------- date + question selection ----------
 const todayUTC = () => new Date().toISOString().slice(0, 10);
 const dayIndex = (day) =>
   Math.max(0, Math.round((Date.parse(day + "T00:00:00Z") - Date.parse(LAUNCH_DAY + "T00:00:00Z")) / 86400000));
@@ -45,12 +46,18 @@ function uid() {
   crypto.getRandomValues(a);
   return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
 }
+const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty" });
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
-    if (s && s.player) return s;
+    if (s && s.player) {
+      s.wallet = { ...newWallet(), ...(s.wallet || {}) };
+      if (!s.wallet.owned.includes("rusty")) s.wallet.owned.unshift("rusty");
+      if (!s.wallet.owned.includes(s.wallet.car)) s.wallet.car = "rusty";
+      return s;
+    }
   } catch {}
-  return { player: uid(), days: {}, streak: { count: 0, best: 0, last: null } };
+  return { player: uid(), days: {}, streak: { count: 0, best: 0, last: null }, wallet: newWallet() };
 }
 const state = loadState();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {} };
@@ -60,6 +67,16 @@ const gameNo = dayIndex(day) + 1;
 const today = (state.days[day] ||= { answers: [], startedAt: null });
 const todaysQs = pickCards(questions, day);
 const scene = createScene($("scene"), $("fuel")); // the driving scene and gas gauge (purely visual)
+
+// Cash: every dollar you've ever earned, minus what you've spent in the shop.
+const earnedIn = (d) => (d.answers || []).reduce((n, a) => n + (a.pts || 0), 0);
+const lifetimeEarned = () => Object.values(state.days).reduce((n, d) => n + earnedIn(d), 0);
+const balance = () => lifetimeEarned() - state.wallet.spent;
+const renderWallet = () => { $("wallet").textContent = money(balance()); };
+
+scene.setCar(state.wallet.car);
+scene.setDamage(today.crashes || 0);
+window.__jd = { scene, state }; // handy for tests and for poking around in the console
 
 // ---------- scoring ----------
 async function judge(question, answer) {
@@ -84,7 +101,7 @@ async function judge(question, answer) {
 
 // ---------- UI helpers ----------
 const show = (name) => { for (const [k, el] of Object.entries(views)) el.hidden = k !== name; };
-const fmt = (p) => (p > 0 ? `+${p}` : p < 0 ? `−${-p}` : "0");
+const fmt = (p) => (p > 0 ? `+${money(p)}` : "$0");
 function updateStreak() {
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const { count, last } = state.streak;
@@ -109,15 +126,25 @@ function showCard() {
   $("answer").removeAttribute("aria-invalid");
   $("answer-hint").hidden = true;
   $("qnum").textContent = `Question ${cur + 1} of ${PER_DAY}`;
-  $("running").textContent = `${running} pts`;
+  $("running").textContent = `${money(running)} today`;
   $("prompt").textContent = todaysQs[cur].prompt;
   if (!today.startedAt) { today.startedAt = Date.now(); save(); }
+  // An obstacle appears on the horizon. It reaches your bumper when the time runs out.
+  scene.beginQuestion({ startedAt: today.startedAt, durationMs: SECONDS * 1000, index: cur });
   $("answer").focus();
   clearInterval(tick);
   tick = setInterval(frame, 100);
   frame();
   syncHeaderButtons();
+  layoutScene();
 }
+
+// Start the road just below the question panel so the obstacle is visible for the whole countdown.
+function layoutScene() {
+  if (views.play.hidden || !$("feedback").hidden) return; // measure with the question showing; keep that layout during the result
+  requestAnimationFrame(() => scene.setHorizon($("play").getBoundingClientRect().bottom + 22));
+}
+window.addEventListener("resize", layoutScene);
 
 function frame() {
   const left = SECONDS * 1000 - (Date.now() - today.startedAt);
@@ -125,8 +152,8 @@ function frame() {
   $("timer-text").textContent = secs;
   const bar = $("timer-bar");
   bar.style.transform = `scaleX(${Math.max(0, left) / (SECONDS * 1000)})`;
-  bar.classList.toggle("low", secs <= 20 && secs > 10);
-  bar.classList.toggle("critical", secs <= 10);
+  bar.classList.toggle("low", secs <= 12 && secs > 6);
+  bar.classList.toggle("critical", secs <= 6);
   if (left <= 0) lockIn(true);
 }
 
@@ -135,7 +162,7 @@ function trySubmit() {
   if (locked) return;
   if (isValidAnswer($("answer").value)) return lockIn();
   const input = $("answer");
-  $("answer-hint").textContent = "That's not an answer. Try again before time runs out.";
+  $("answer-hint").textContent = "That's not an answer. Try again before the obstacle reaches you.";
   $("answer-hint").hidden = false;
   input.setAttribute("aria-invalid", "true");
   input.classList.remove("shake");
@@ -149,10 +176,11 @@ async function lockIn(timedOut = false) {
   locked = true;
   clearInterval(tick);
   const typed = $("answer").value.trim();
-  const raw = isValidAnswer(typed) ? typed : ""; // on timeout, a non-answer counts as blank
+  const raw = !timedOut && isValidAnswer(typed) ? typed : ""; // out of time = you hit the obstacle, whatever you'd typed
   const q = todaysQs[cur];
   $("answer").disabled = true;
   $("submit").disabled = true;
+  if (!timedOut) scene.hold(); // the obstacle waits while the answer is being checked
 
   let result = { level: NOTHING.id, pts: NOTHING.pts, label: "", top: [] };
   if (raw) {
@@ -166,6 +194,7 @@ async function lockIn(timedOut = false) {
     if (!timedOut && timeLeft > 0) {
       // Too many requests: let them try again while the clock is still running.
       locked = false;
+      scene.resume();
       $("answer").disabled = false;
       $("submit").disabled = false;
       const daily = result.which.endsWith("-day");
@@ -181,30 +210,43 @@ async function lockIn(timedOut = false) {
     }
     result = { level: NOTHING.id, pts: NOTHING.pts, label: "", top: [], limited: true };
   }
-  today.answers.push({ raw, level: result.level, pts: result.pts, label: result.label, top: result.top || [] });
+
+  // Any points at all: you swerve clear. No points (wrong answer or out of time): you hit the obstacle.
+  const lvl = levelById(result.level);
+  const crashed = result.pts <= 0;
+  today.answers.push({ raw, level: result.level, pts: result.pts, label: result.label, top: result.top || [], crash: crashed });
+  if (crashed) today.crashes = (today.crashes || 0) + 1;
   today.startedAt = null;
   running += result.pts;
   save();
-  scene.setFuel(Math.max(0, running) / 7, { gained: result.pts }); // a perfect 700 fills the tank
-  scene.setDistance(spacesDriven()); // the car drives 5 spaces for a John Doe, down to 1 for an Alien
-  scene.react(result.level);
+  scene.setFuel(Math.max(0, running) / 7, { gained: result.pts }); // a perfect $700 fills the tank
+  scene.setDistance(spacesDriven());
+  if (crashed) {
+    scene.resolve(false, { damage: today.crashes });
+    scene.say(timedOut ? "TOO SLOW! CRASH!" : "WRONG TURN! CRASH!", true);
+  } else {
+    scene.resolve(true, { spaces: lvl.spaces });
+    scene.say(`SWERVED! +${money(result.pts)}`);
+  }
+  renderWallet();
 
-  const lvl = levelById(result.level);
   const best = (result.top || [])[0];
   $("answer-form").hidden = true;
-  $("running").textContent = `${running} pts`;
+  $("running").textContent = `${money(running)} today`;
   $("fb-pts").textContent = fmt(result.pts);
   $("fb-pts").className = `pts lvl-${lvl.id}`;
-  $("fb-level").textContent = `${lvl.emoji} ${lvl.name} · ${lvl.spaces ? `+${lvl.spaces} space${lvl.spaces > 1 ? "s" : ""}` : "no movement"}`;
-  $("fb-text").textContent = !raw
-    ? `Time's up, nothing entered.${best ? ` The popular answer was "${best}".` : ""}`
+  $("fb-level").textContent = crashed
+    ? `💥 Crash · ${timedOut ? "out of time" : "no cash"}`
+    : `${lvl.emoji} ${lvl.name} · +${lvl.spaces} space${lvl.spaces > 1 ? "s" : ""}`;
+  $("fb-text").textContent = timedOut
+    ? `You ran out of time and hit the obstacle.${best ? ` The popular answer was "${best}".` : ""}`
     : result.limited
-      ? "Too many requests, so this answer couldn't be scored."
+      ? "Too many requests, so this answer couldn't be scored. You hit the obstacle."
       : result.level === "imposter"
-        ? `That doesn't answer "${q.prompt}".`
+        ? `That doesn't answer "${q.prompt}". You hit the obstacle.`
         : result.level === "johndoe"
-          ? `"${result.label}" is the most popular answer!`
-          : `"${result.label}" is ${lvl.note}.${best ? ` The most popular was "${best}".` : ""}`;
+          ? `"${result.label}" is the most popular answer. You swerved clear!`
+          : `"${result.label}" is ${lvl.note}. You swerved clear.${best ? ` The most popular was "${best}".` : ""}`;
   $("next").textContent = today.answers.length >= PER_DAY ? "See results" : "Next question";
   $("feedback").hidden = false;
   syncHeaderButtons();
@@ -213,6 +255,8 @@ async function lockIn(timedOut = false) {
 
 function finish() {
   clearInterval(tick);
+  scene.clearObstacle();
+  scene.setHorizon(null);
   if (!today.done) {
     today.done = true;
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
@@ -229,21 +273,23 @@ function finish() {
 }
 
 // ---------- results ----------
-const total = () => today.answers.reduce((n, a) => n + a.pts, 0);
+const total = () => earnedIn(today);
 const spacesDriven = () => Math.min(MAX_SPACES, today.answers.reduce((n, a) => n + (levelById(a.level).spaces || 0), 0));
+const emojiOf = (a) => (a.pts > 0 ? levelById(a.level).emoji : "💥");
 
 function renderResults() {
   show("results");
   const t = total();
   scene.setPhase(7);
   scene.setFuel(Math.max(0, t) / 7, { animate: false });
-  scene.setDistance(spacesDriven(), { animate: false });
+  scene.setDistance(spacesDriven());
   const tank = Math.round(Math.max(0, t) / 7);
-  $("fuel-note").textContent = `Drove ${spacesDriven()} of ${MAX_SPACES} spaces and filled ${tank}% of the tank. ${
+  const crashes = today.crashes || 0;
+  $("fuel-note").textContent = `Wallet: ${money(balance())}. Drove ${spacesDriven()} of ${MAX_SPACES} spaces, filled ${tank}% of the tank, ${crashes ? `crashed ${crashes} time${crashes > 1 ? "s" : ""}` : "no crashes"}. ${
     tank >= 80 ? "You could drive forever." : tank >= 50 ? "Plenty left for the ride home." : tank >= 25 ? "Enough to limp to the next station." : "Running on fumes."
   }`;
   $("res-day").textContent = `John Doedle #${gameNo}`;
-  $("total").textContent = t;
+  $("total").textContent = money(t);
   $("verdict").textContent =
     t >= 650 ? "Peak John Doe. Perfectly ordinary."
     : t >= 500 ? "Very relatable. You'd blend into any crowd."
@@ -262,7 +308,7 @@ function renderResults() {
     q.textContent = todaysQs[i].prompt;
     const p = document.createElement("span");
     p.className = `row-pts lvl-${lvl.id}`;
-    p.textContent = `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}`;
+    p.textContent = a.pts > 0 ? `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}` : `💥 Crash $0`;
     top.append(q, p);
     const you = document.createElement("div");
     you.className = "row-you";
@@ -279,7 +325,7 @@ function renderResults() {
 }
 
 const shareText = () =>
-  `John Doedle #${gameNo} ${total()}/700\n${today.answers.map((a) => levelById(a.level).emoji).join("")}\n${location.origin}${location.pathname}`;
+  `John Doedle #${gameNo} ${money(total())} of $700\n${today.answers.map(emojiOf).join("")}\n${location.origin}${location.pathname}`;
 
 async function copyShare() {
   const text = shareText();
@@ -310,7 +356,7 @@ function countdown() {
   $("countdown").textContent = `${p(Math.floor(left / 3600))}:${p(Math.floor((left % 3600) / 60))}:${p(left % 60)}`;
 }
 
-// ---------- help + stats dialogs ----------
+// ---------- dialogs: how to play, stats, shop ----------
 const helpSeen = () => { try { return localStorage.getItem("jd:help") === "1"; } catch { return true; } };
 function openDialog(d) { if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", ""); }
 let afterHelp = null;
@@ -324,10 +370,10 @@ $("help-dialog").addEventListener("close", () => {
   const next = afterHelp; afterHelp = null;
   if (next) next();
 });
-// Don't let the stats/help buttons be used to stall the clock during a timed question.
+// Don't let the stats/help/shop buttons be used to stall the clock during a timed question.
 function syncHeaderButtons() {
   const timing = !views.play.hidden && !locked && $("feedback").hidden;
-  $("help-btn").disabled = $("stats-btn").disabled = timing;
+  $("help-btn").disabled = $("stats-btn").disabled = $("wallet-btn").disabled = timing;
 }
 $("help-btn").addEventListener("click", () => openHelp());
 
@@ -335,7 +381,7 @@ function computeStats() {
   const games = Object.entries(state.days)
     .filter(([, d]) => d.done && d.answers.length)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([d, v]) => ({ day: d, total: v.answers.reduce((n, a) => n + a.pts, 0), answers: v.answers }));
+    .map(([d, v]) => ({ day: d, total: earnedIn(v), answers: v.answers, crashes: v.crashes || 0 }));
   const scores = games.map((g) => g.total);
   const byLevel = Object.fromEntries([...LEVELS, IMPOSTER, NOTHING].map((l) => [l.id, 0]));
   let answered = 0;
@@ -345,6 +391,7 @@ function computeStats() {
     played: games.length,
     average: scores.length ? Math.round(scores.reduce((n, s) => n + s, 0) / scores.length) : 0,
     best: scores.length ? Math.max(...scores) : 0,
+    crashes: games.reduce((n, g) => n + g.crashes, 0),
     byLevel,
     answered,
   };
@@ -357,13 +404,13 @@ function renderStats() {
   if (!st.played) {
     const p = document.createElement("p");
     p.className = "stats-empty";
-    p.textContent = "No finished games yet. Play today's questions to start filling the tank.";
+    p.textContent = "No finished games yet. Play today's questions to start earning.";
     box.append(p);
     return;
   }
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const cur = state.streak.last === day || state.streak.last === yesterday ? state.streak.count : 0;
-  const tiles = [["Games", st.played], ["Average", st.average], ["Best", st.best], ["Streak", `${cur} (best ${Math.max(state.streak.best, cur)})`]];
+  const tiles = [["Games", st.played], ["Average", money(st.average)], ["Best", money(st.best)], ["Streak", `${cur} (best ${Math.max(state.streak.best, cur)})`]];
   const grid = document.createElement("div");
   grid.className = "stat-tiles";
   for (const [label, value] of tiles) {
@@ -375,18 +422,22 @@ function renderStats() {
     grid.append(t);
   }
   box.append(grid);
+  const sum = document.createElement("p");
+  sum.className = "modal-note";
+  sum.textContent = `Earned ${money(lifetimeEarned())} in total · ${st.crashes} crash${st.crashes === 1 ? "" : "es"} · wallet ${money(balance())}`;
+  box.append(sum);
 
-  // last 14 games as bars (full height = a 700 point perfect run)
+  // last 14 games as bars (full height = a $700 perfect day)
   const recent = st.games.slice(-14);
   const h = document.createElement("h3"); h.textContent = `Last ${recent.length} game${recent.length > 1 ? "s" : ""}`; box.append(h);
   const chart = document.createElement("div");
   chart.className = "stat-bars";
   chart.setAttribute("role", "img");
-  chart.setAttribute("aria-label", `Scores of your last ${recent.length} games: ${recent.map((g) => g.total).join(", ")}`);
+  chart.setAttribute("aria-label", `Earnings of your last ${recent.length} games: ${recent.map((g) => "$" + g.total).join(", ")}`);
   for (const g of recent) {
     const col = document.createElement("div"); col.className = "stat-bar";
     const bar = document.createElement("i"); bar.style.height = `${Math.max(3, Math.round((Math.max(0, g.total) / 700) * 100))}%`;
-    bar.title = `${g.day}: ${g.total}`;
+    bar.title = `${g.day}: ${money(g.total)}`;
     const val = document.createElement("small"); val.textContent = g.total;
     col.append(bar, val);
     chart.append(col);
@@ -410,6 +461,57 @@ function renderStats() {
 }
 $("stats-btn").addEventListener("click", () => { renderStats(); openDialog($("stats-dialog")); });
 
+// The shop: spend your cash on cars. Starter cars are cheap, the exotic ones are absurdly expensive.
+function renderShop(message = "") {
+  $("shop-balance").textContent = money(balance());
+  $("shop-msg").textContent = message;
+  const list = $("shop-list");
+  list.replaceChildren();
+  for (const car of CARS) {
+    const owned = state.wallet.owned.includes(car.id);
+    const equipped = state.wallet.car === car.id;
+    const li = document.createElement("li");
+    li.className = "shop-item" + (equipped ? " equipped" : "") + (owned ? "" : " locked");
+    const pic = document.createElement("div");
+    pic.className = "shop-pic";
+    pic.innerHTML = carSVG(car).replace('width="200" height="128"', 'width="100%"');
+    const info = document.createElement("div");
+    info.className = "shop-info";
+    const name = document.createElement("div"); name.className = "shop-name"; name.textContent = car.name;
+    const tier = document.createElement("span"); tier.className = `shop-tier tier-${car.tier.toLowerCase()}`; tier.textContent = car.tier;
+    name.append(tier);
+    const blurb = document.createElement("div"); blurb.className = "shop-blurb"; blurb.textContent = car.blurb;
+    const price = document.createElement("div"); price.className = "shop-price"; price.textContent = car.price ? money(car.price) : "Free";
+    info.append(name, blurb, price);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn shop-btn";
+    if (equipped) { btn.textContent = "Equipped"; btn.disabled = true; }
+    else if (owned) { btn.textContent = "Equip"; btn.addEventListener("click", () => equip(car)); }
+    else if (balance() >= car.price) { btn.textContent = "Buy"; btn.classList.add("primary"); btn.addEventListener("click", () => buy(car)); }
+    else { btn.textContent = `Need ${money(car.price - balance())}`; btn.disabled = true; }
+    li.append(pic, info, btn);
+    list.append(li);
+  }
+}
+function equip(car) {
+  state.wallet.car = car.id;
+  save();
+  scene.setCar(car.id);
+  renderShop(`${car.name} is now your ride.`);
+}
+function buy(car) {
+  if (state.wallet.owned.includes(car.id) || balance() < car.price) return;
+  state.wallet.spent += car.price;
+  state.wallet.owned.push(car.id);
+  state.wallet.car = car.id;
+  save();
+  scene.setCar(car.id);
+  renderWallet();
+  renderShop(`Bought the ${car.name} for ${money(car.price)}. Nice ride!`);
+}
+$("wallet-btn").addEventListener("click", () => { renderShop(); openDialog($("shop-dialog")); });
+
 // ---------- wire up ----------
 $("answer-form").addEventListener("submit", (e) => { e.preventDefault(); trySubmit(); });
 $("answer").addEventListener("input", () => {
@@ -425,7 +527,7 @@ $("share").addEventListener("click", copyShare);
 
 // intro level list comes from the same table the scoring uses
 $("levels").replaceChildren(
-  ...[...LEVELS, IMPOSTER, NOTHING].map((l) => {
+  ...[...LEVELS, { ...IMPOSTER, note: "that doesn't answer the question: you crash" }, { ...NOTHING, note: "out of time: you crash" }].map((l) => {
     const li = document.createElement("li");
     li.className = `lvl-${l.id}`;
     const name = document.createElement("span");
@@ -434,22 +536,22 @@ $("levels").replaceChildren(
     note.textContent = `(${l.note})`;
     name.append(note);
     const pts = document.createElement("b");
-    pts.textContent = fmt(l.pts);
+    pts.textContent = l.pts ? money(l.pts) : "$0";
     li.append(name, pts);
     return li;
   })
 );
 
 updateStreak();
+renderWallet();
 $("intro-day").textContent = `Game #${gameNo} · ${new Date(day + "T00:00:00Z").toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })}`;
 setInterval(countdown, 1000);
 countdown();
 
-running = today.answers.reduce((n, a) => n + a.pts, 0);
+running = earnedIn(today);
 scene.setFuel(Math.max(0, running) / 7, { animate: false });
-scene.setDistance(spacesDriven(), { animate: false });
+scene.setDistance(spacesDriven());
 scene.setPhase(today.done ? 7 : Math.min(today.answers.length, 6));
-if (today.answers.length) scene.react(today.answers.at(-1).level, { quiet: true });
 if (today.done || today.answers.length >= PER_DAY) finish();
 else if (today.answers.length > 0 || today.startedAt) showCard();
 else show("intro");

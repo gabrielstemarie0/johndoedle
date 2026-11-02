@@ -1,0 +1,189 @@
+// The garage: every car you can buy, drawn from behind (third person, like you're the driver looking ahead).
+// Prices run from a free starter to an absurd UFO. Art is inline SVG, no image files.
+
+export const CARS = [
+  { id: "rusty", name: "Rusty Hatchback", price: 0, tier: "Starter", blurb: "Gets you there. Mostly.", shape: "hatch", color: "#a9733c", rust: true },
+  { id: "commuter", name: "Commuter", price: 350, tier: "Starter", blurb: "Sensible. Dull. Reliable.", shape: "sedan", color: "#4f8fd9" },
+  { id: "zippy", name: "Little Zippy", price: 800, tier: "Starter", blurb: "Tiny, but it has attitude.", shape: "hatch", color: "#7ccf3a", light: "round" },
+  { id: "wagon", name: "Family Wagon", price: 1500, tier: "Starter", blurb: "Room for the kids and the dog.", shape: "wagon", color: "#2a9d8f" },
+  { id: "pickup", name: "Work Pickup", price: 3000, tier: "Everyday", blurb: "Hauls anything. Judges nothing.", shape: "pickup", color: "#c0392b" },
+  { id: "coupe", name: "Street Coupe", price: 6500, tier: "Everyday", blurb: "Two doors, zero regrets.", shape: "coupe", color: "#f08a24", spoiler: "lip" },
+  { id: "muscle", name: "Muscle Machine", price: 14000, tier: "Performance", blurb: "You can hear it from three blocks away.", shape: "muscle", color: "#1f3b73", stripes: "#f4f4f4", exhaust: 2 },
+  { id: "rally", name: "Rally Beast", price: 28000, tier: "Performance", blurb: "Mud is just a suggestion.", shape: "rally", color: "#f1f1f1", accent: "#2e6fe0", spoiler: "wing" },
+  { id: "luxe", name: "Luxe Sedan", price: 55000, tier: "Luxury", blurb: "Leather seats. Quiet confidence.", shape: "lux", color: "#1c1d23", light: "bar" },
+  { id: "sports", name: "Sports Car", price: 110000, tier: "Luxury", blurb: "Low, loud and a little smug.", shape: "sports", color: "#d7263d", spoiler: "wing", exhaust: 2 },
+  { id: "super", name: "Supercar", price: 280000, tier: "Exotic", blurb: "Doors that open upward. Obviously.", shape: "super", color: "#ffd23f", spoiler: "wing", exhaust: 2, light: "led" },
+  { id: "hyper", name: "Hypercar", price: 1200000, tier: "Exotic", blurb: "More horsepower than a stable of horses.", shape: "hyper", color: "#7a3cff", spoiler: "bigwing", exhaust: 4, light: "led", neon: "#7df9ff" },
+  { id: "rocket", name: "Rocket Car", price: 6500000, tier: "Insane", blurb: "Technically a missile with seats.", shape: "rocket", color: "#c9d1dc", accent: "#e8453c" },
+  { id: "gold", name: "Golden Phantom", price: 30000000, tier: "Insane", blurb: "Solid gold. Do not park in the rain.", shape: "super", color: "#ffcf40", gold: true, spoiler: "wing", exhaust: 4, light: "led" },
+  { id: "hover", name: "Hover Car", price: 150000000, tier: "Insane", blurb: "Roads are for people who can't float.", shape: "hover", color: "#e9fbff", neon: "#38f0ff" },
+  { id: "ufo", name: "UFO", price: 1000000000, tier: "Insane", blurb: "Not from around here. Costs a billion.", shape: "ufo", color: "#aab4c4", neon: "#7dff9b" },
+];
+export const carById = (id) => CARS.find((c) => c.id === id) || CARS[0];
+
+// "$1,240", "$6.5M", "$1B"
+export function money(n) {
+  const v = Math.round(n);
+  if (v >= 999.95e6) return `$${+(v / 1e9).toFixed(1)}B`;
+  if (v >= 1e7) return `$${+(v / 1e6).toFixed(1)}M`;
+  if (v >= 1e6) return `$${+(v / 1e6).toFixed(2)}M`;
+  return "$" + v.toLocaleString("en-US");
+}
+
+// ---- drawing ----
+function mix(hex, to, t) {
+  const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const a = p(hex), b = p(to);
+  return "#" + a.map((v, i) => Math.round(v + (b[i] - v) * t).toString(16).padStart(2, "0")).join("");
+}
+const dark = (c, t = 0.35) => mix(c, "#000000", t);
+const light = (c, t = 0.3) => mix(c, "#ffffff", t);
+
+// Per-shape proportions for the "normal" cars: bx = body half-width, bt/bb = body top/bottom, ct = cabin top,
+// cw/cwt = cabin half-width at the bottom/top, lamp = tail light style, ex = exhaust pipes.
+const SHAPES = {
+  hatch: { bx: 72, bt: 60, bb: 98, ct: 26, cw: 52, cwt: 44, lamp: "round", ex: 1 },
+  sedan: { bx: 74, bt: 62, bb: 98, ct: 34, cw: 50, cwt: 38, lamp: "twin", ex: 1 },
+  wagon: { bx: 74, bt: 58, bb: 98, ct: 20, cw: 62, cwt: 60, lamp: "tall", ex: 1 },
+  coupe: { bx: 78, bt: 66, bb: 98, ct: 42, cw: 50, cwt: 36, lamp: "twin", ex: 2 },
+  muscle: { bx: 82, bt: 64, bb: 98, ct: 40, cw: 52, cwt: 36, lamp: "round4", ex: 2 },
+  rally: { bx: 76, bt: 58, bb: 96, ct: 28, cw: 52, cwt: 44, lamp: "twin", ex: 1 },
+  lux: { bx: 80, bt: 62, bb: 98, ct: 34, cw: 54, cwt: 42, lamp: "bar", ex: 2 },
+  sports: { bx: 84, bt: 68, bb: 100, ct: 46, cw: 50, cwt: 34, lamp: "twin", ex: 2 },
+  super: { bx: 88, bt: 72, bb: 102, ct: 50, cw: 48, cwt: 32, lamp: "led", ex: 2 },
+  hyper: { bx: 90, bt: 74, bb: 103, ct: 54, cw: 44, cwt: 28, lamp: "led", ex: 4 },
+};
+
+function wheels(s, dim = false) {
+  const wh = 22, ww = 24, y = 110 - wh, lx = 100 - s.bx - 2, rx = 100 + s.bx + 2 - ww;
+  const tire = (x) => `<rect x="${x}" y="${y}" width="${ww}" height="${wh}" rx="6" fill="#14161c"/><rect x="${x + 4}" y="${y + 4}" width="${ww - 8}" height="5" rx="2" fill="#2b2f3a"/>`;
+  return dim ? "" : tire(lx) + tire(rx);
+}
+
+function lamps(s, c, broken) {
+  const red = "#ff3b3b", dead = "#4a1818";
+  const L = broken >= 1 ? dead : red; // left light dies at damage 2
+  const R = broken >= 2 ? dead : red;
+  const y = s.bt + 6, x1 = 100 - s.bx + 6, x2 = 100 + s.bx - 6;
+  switch (s.lamp) {
+    case "round": return `<circle cx="${x1 + 8}" cy="${y + 8}" r="8" fill="${L}"/><circle cx="${x2 - 8}" cy="${y + 8}" r="8" fill="${R}"/>`;
+    case "round4": return [0, 1].map((i) => `<circle cx="${x1 + 7 + i * 17}" cy="${y + 8}" r="7" fill="${L}"/><circle cx="${x2 - 7 - i * 17}" cy="${y + 8}" r="7" fill="${R}"/>`).join("");
+    case "tall": return `<rect x="${x1 - 2}" y="${y - 12}" width="12" height="38" rx="3" fill="${L}"/><rect x="${x2 - 10}" y="${y - 12}" width="12" height="38" rx="3" fill="${R}"/>`;
+    case "bar": return `<rect x="${x1}" y="${y + 2}" width="${100 - x1 - 3}" height="9" rx="3" fill="${L}"/><rect x="103" y="${y + 2}" width="${x2 - 103}" height="9" rx="3" fill="${R}"/>`;
+    case "led": return `<rect x="${x1}" y="${y + 3}" width="34" height="5" rx="2" fill="${L}"/><rect x="${x2 - 34}" y="${y + 3}" width="34" height="5" rx="2" fill="${R}"/><rect x="${x1 + 8}" y="${y + 10}" width="22" height="3" rx="1.5" fill="${L}"/><rect x="${x2 - 30}" y="${y + 10}" width="22" height="3" rx="1.5" fill="${R}"/>`;
+    default: return `<rect x="${x1}" y="${y}" width="28" height="12" rx="4" fill="${L}"/><rect x="${x2 - 28}" y="${y}" width="28" height="12" rx="4" fill="${R}"/>`;
+  }
+}
+
+function exhaust(s) {
+  const y = s.bb - 3, pipe = (x) => `<ellipse cx="${x}" cy="${y}" rx="5" ry="3.5" fill="#0b0c10"/><ellipse cx="${x}" cy="${y}" rx="3.2" ry="2" fill="#3a3d48"/>`;
+  if (s.ex >= 4) return [-34, -20, 20, 34].map((d) => pipe(100 + d)).join("");
+  if (s.ex === 2) return pipe(78) + pipe(122);
+  return pipe(122);
+}
+
+function spoiler(kind, s, c) {
+  const k = dark(c, 0.45);
+  if (kind === "lip") return `<rect x="${100 - s.bx + 4}" y="${s.bt - 4}" width="${2 * s.bx - 8}" height="6" rx="2" fill="${k}"/>`;
+  if (kind === "wing") return `<rect x="${100 - s.bx + 6}" y="${s.ct + 2}" width="${2 * s.bx - 12}" height="7" rx="2" fill="${k}"/><rect x="${100 - 28}" y="${s.ct + 8}" width="5" height="${s.bt - s.ct - 4}" fill="${k}"/><rect x="${100 + 23}" y="${s.ct + 8}" width="5" height="${s.bt - s.ct - 4}" fill="${k}"/>`;
+  if (kind === "bigwing") return `<rect x="${100 - s.bx - 4}" y="${s.ct - 4}" width="${2 * s.bx + 8}" height="9" rx="3" fill="${k}"/><rect x="${100 - s.bx - 6}" y="${s.ct - 14}" width="5" height="24" rx="2" fill="${k}"/><rect x="${100 + s.bx + 1}" y="${s.ct - 14}" width="5" height="24" rx="2" fill="${k}"/><rect x="${100 - 30}" y="${s.ct + 5}" width="5" height="${s.bt - s.ct - 2}" fill="${k}"/><rect x="${100 + 25}" y="${s.ct + 5}" width="5" height="${s.bt - s.ct - 2}" fill="${k}"/>`;
+  return "";
+}
+
+// Cracks, scorch marks and a dead tail light, getting worse with each crash (damage 1 to 4).
+function damageMarks(s, damage) {
+  if (damage < 1) return "";
+  const cx = 100, wy = s.ct + 6;
+  let out = `<g stroke="#ffffff" stroke-opacity=".85" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M${cx - 6} ${wy} L${cx + 2} ${wy + 12} L${cx - 3} ${wy + 20} M${cx + 2} ${wy + 12} L${cx + 16} ${wy + 8}"/></g>`;
+  if (damage >= 2) {
+    out += `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none" stroke-linecap="round"><path d="M${cx - 26} ${wy + 2} L${cx - 14} ${wy + 14} L${cx - 20} ${wy + 22} M${cx + 22} ${wy + 4} L${cx + 12} ${wy + 16}"/></g>`;
+    out += `<polygon points="${100 + s.bx - 26},${s.bt + 16} ${100 + s.bx - 4},${s.bt + 12} ${100 + s.bx - 8},${s.bb - 4} ${100 + s.bx - 30},${s.bb - 6}" fill="#000" fill-opacity=".35"/>`;
+    out += `<path d="M${100 - s.bx + 14} ${s.bt + 22} l14 6 M${100 - s.bx + 18} ${s.bt + 30} l16 4" stroke="#000" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>`;
+  }
+  if (damage >= 3) {
+    out += `<rect x="${100 - s.bx + 8}" y="${s.bb - 11}" width="${2 * s.bx - 16}" height="9" rx="2" fill="#2b2d33" transform="rotate(3 100 ${s.bb})"/>`;
+    out += `<ellipse cx="100" cy="${s.bt + 10}" rx="${s.bx - 18}" ry="9" fill="#000" fill-opacity=".38"/>`;
+  }
+  if (damage >= 4) out += `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none"><path d="M${cx - 34} ${wy + 8} L${cx - 20} ${wy + 24} M${cx + 30} ${wy + 6} L${cx + 18} ${wy + 24}"/></g><polygon points="${100 - s.bx},${s.bb - 20} ${100 - s.bx + 18},${s.bb - 26} ${100 - s.bx + 14},${s.bb - 2} ${100 - s.bx},${s.bb}" fill="#000" fill-opacity=".4"/>`;
+  return out;
+}
+
+function normalCar(car, damage) {
+  const s = SHAPES[car.shape] || SHAPES.sedan;
+  const c = car.color, cx = 100;
+  const body = `M${cx - s.bx} ${s.bb} V${s.bt + 8} Q${cx - s.bx} ${s.bt} ${cx - s.bx + 10} ${s.bt} H${cx + s.bx - 10} Q${cx + s.bx} ${s.bt} ${cx + s.bx} ${s.bt + 8} V${s.bb} Z`;
+  const cabin = `M${cx - s.cw} ${s.bt + 1} L${cx - s.cwt} ${s.ct + 5} Q${cx - s.cwt + 2} ${s.ct} ${cx - s.cwt + 8} ${s.ct} H${cx + s.cwt - 8} Q${cx + s.cwt - 2} ${s.ct} ${cx + s.cwt} ${s.ct + 5} L${cx + s.cw} ${s.bt + 1} Z`;
+  const win = `M${cx - s.cw + 9} ${s.bt - 3} L${cx - s.cwt + 6} ${s.ct + 9} H${cx + s.cwt - 6} L${cx + s.cw - 9} ${s.bt - 3} Z`;
+  const fill = car.gold ? "url(#gold)" : c;
+  const defs = car.gold ? `<defs><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".45" stop-color="#ffcf40"/><stop offset="1" stop-color="#b8860b"/></linearGradient></defs>` : "";
+  const stripes = car.stripes ? `<rect x="${cx - 16}" y="${s.ct + 2}" width="9" height="${s.bb - s.ct - 12}" fill="${car.stripes}" opacity=".95"/><rect x="${cx + 7}" y="${s.ct + 2}" width="9" height="${s.bb - s.ct - 12}" fill="${car.stripes}" opacity=".95"/>` : "";
+  const accent = car.accent ? `<rect x="${cx - s.bx}" y="${s.bb - 22}" width="${2 * s.bx}" height="6" fill="${car.accent}"/><rect x="${cx - 18}" y="${s.bt + 12}" width="36" height="16" rx="3" fill="${car.accent}"/>` : "";
+  const rust = car.rust ? `<g fill="#6b3f1a" opacity=".7"><circle cx="${cx - 44}" cy="${s.bt + 22}" r="6"/><circle cx="${cx + 38}" cy="${s.bt + 28}" r="4.5"/><circle cx="${cx + 52}" cy="${s.bb - 8}" r="5"/><circle cx="${cx - 30}" cy="${s.bb - 12}" r="3.5"/></g>` : "";
+  const neon = car.neon ? `<rect x="${cx - s.bx + 2}" y="${s.bb - 2}" width="${2 * s.bx - 4}" height="3" rx="1.5" fill="${car.neon}"/><ellipse cx="${cx}" cy="110" rx="${s.bx}" ry="5" fill="${car.neon}" opacity=".35"/>` : "";
+  const sparkle = car.gold ? `<path d="M${cx + 50} ${s.ct + 8} l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z" fill="#fff" opacity=".9"/>` : "";
+  return `${defs}<ellipse cx="${cx}" cy="110" rx="${s.bx + 8}" ry="6" fill="#000" opacity=".35"/>
+    ${wheels(s)}
+    <path d="${cabin}" fill="${dark(c, car.gold ? 0.15 : 0.12)}"/>
+    <path d="${win}" fill="#9fc9ff" opacity=".85"/>
+    ${spoiler(car.spoiler, s, c)}
+    <path d="${body}" fill="${fill}"/>
+    <path d="M${cx - s.bx + 3} ${s.bt + 4} H${cx + s.bx - 3}" stroke="${light(c, 0.5)}" stroke-opacity=".6" stroke-width="2" stroke-linecap="round"/>
+    ${stripes}${accent}${rust}
+    <rect x="${cx - s.bx + 4}" y="${s.bb - 10}" width="${2 * s.bx - 8}" height="10" rx="3" fill="${dark(c, 0.55)}"/>
+    ${lamps(s, c, damage >= 2 ? 2 : damage >= 1 ? 0 : -1)}
+    <rect x="${cx - 14}" y="${s.bt + 16}" width="28" height="12" rx="2" fill="#f4f4ee"/><rect x="${cx - 10}" y="${s.bt + 19}" width="20" height="2" fill="#9aa"/>
+    ${exhaust(s)}${neon}${sparkle}${damageMarks(s, damage)}`;
+}
+
+function pickup(car, damage) {
+  const c = car.color, s = { bx: 76, bt: 56, bb: 98, ct: 24, lamp: "tall", ex: 1 };
+  return `<ellipse cx="100" cy="110" rx="84" ry="6" fill="#000" opacity=".35"/>${wheels(s)}
+    <path d="M56 56 L64 28 Q66 24 72 24 H128 Q134 24 136 28 L144 56 Z" fill="${dark(c, 0.15)}"/><path d="M64 52 L70 30 H130 L136 52 Z" fill="#9fc9ff" opacity=".85"/>
+    <path d="M24 98 V64 Q24 56 32 56 H168 Q176 56 176 64 V98 Z" fill="${c}"/>
+    <rect x="30" y="60" width="140" height="5" rx="2" fill="${dark(c, 0.3)}"/><rect x="90" y="72" width="20" height="6" rx="3" fill="${dark(c, 0.5)}"/>
+    <rect x="26" y="64" width="12" height="30" rx="3" fill="#ff3b3b"/><rect x="162" y="64" width="12" height="30" rx="3" fill="#ff3b3b"/>
+    <rect x="28" y="88" width="144" height="10" rx="3" fill="#2b2d33"/><rect x="84" y="80" width="32" height="8" rx="1" fill="#f4f4ee"/>
+    ${exhaust(s)}${damageMarks({ bx: 76, bt: 56, bb: 98, ct: 28 }, damage)}`;
+}
+
+function rocket(car, damage) {
+  const c = car.color, a = car.accent;
+  const flame = (x) => `<path d="M${x - 9} 100 Q${x} 128 ${x + 9} 100 Z" fill="#ff9d2e" opacity=".9"/><path d="M${x - 5} 100 Q${x} 118 ${x + 5} 100 Z" fill="#fff3a8"/>`;
+  return `<ellipse cx="100" cy="112" rx="80" ry="6" fill="#000" opacity=".3"/>
+    <path d="M26 70 L6 100 H34 Z M174 70 L194 100 H166 Z" fill="${a}"/>
+    <path d="M62 98 V50 Q62 22 100 12 Q138 22 138 50 V98 Z" fill="${c}"/>
+    <path d="M78 52 Q100 26 122 52 Z" fill="#9fc9ff" opacity=".9"/>
+    <rect x="62" y="62" width="76" height="8" fill="${a}"/><rect x="62" y="78" width="76" height="4" fill="${a}" opacity=".7"/>
+    <path d="M58 100 H80 L74 112 H64 Z M120 100 H142 L136 112 H126 Z M89 100 H111 L106 114 H94 Z" fill="#2b2d33"/>
+    ${flame(69)}${flame(131)}${flame(100)}
+    ${damageMarks({ bx: 38, bt: 52, bb: 98, ct: 36 }, damage)}`;
+}
+
+function hover(car, damage) {
+  const n = car.neon, c = car.color;
+  return `<ellipse cx="100" cy="108" rx="84" ry="9" fill="${n}" opacity=".4"/><ellipse cx="100" cy="108" rx="60" ry="5" fill="${n}" opacity=".6"/>
+    <path d="M18 92 V74 Q18 62 32 60 L52 56 L66 34 Q70 28 78 28 H122 Q130 28 134 34 L148 56 L168 60 Q182 62 182 74 V92 Q182 98 174 98 H26 Q18 98 18 92 Z" fill="${c}"/>
+    <path d="M70 54 L80 36 H120 L130 54 Z" fill="#7be7ff" opacity=".85"/>
+    <circle cx="44" cy="86" r="13" fill="#10222a"/><circle cx="44" cy="86" r="8" fill="${n}"/><circle cx="156" cy="86" r="13" fill="#10222a"/><circle cx="156" cy="86" r="8" fill="${n}"/>
+    <rect x="62" y="68" width="76" height="6" rx="3" fill="${n}"/><rect x="26" y="96" width="148" height="4" rx="2" fill="${n}" opacity=".9"/>
+    ${damageMarks({ bx: 82, bt: 60, bb: 98, ct: 38 }, damage)}`;
+}
+
+function ufo(car, damage) {
+  const n = car.neon, c = car.color;
+  return `<defs><linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${n}" stop-opacity=".7"/><stop offset="1" stop-color="${n}" stop-opacity="0"/></linearGradient></defs>
+    <path d="M52 90 L26 118 H174 L148 90 Z" fill="url(#beam)"/>
+    <ellipse cx="100" cy="82" rx="88" ry="20" fill="${dark(c, 0.25)}"/><ellipse cx="100" cy="76" rx="88" ry="18" fill="${c}"/>
+    <path d="M62 70 Q100 8 138 70 Z" fill="#9ff0ff" opacity=".7"/><path d="M62 70 Q100 8 138 70" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/>
+    ${[22, 52, 82, 118, 148, 178].map((x, i) => `<circle cx="${x}" cy="${80 + (i % 2) * 2}" r="5" fill="${i % 2 ? n : "#ffe27a"}"/>`).join("")}
+    ${damage ? `<path d="M92 40 L100 54 L94 64 M100 54 L116 50" stroke="#fff" stroke-opacity=".8" stroke-width="1.6" fill="none"/>` : ""}`;
+}
+
+// The car as an SVG string. damage 0..4 adds cracks, scorch and a dead tail light.
+export function carSVG(car, { damage = 0 } = {}) {
+  const c = typeof car === "string" ? carById(car) : car;
+  const d = Math.max(0, Math.min(4, damage | 0));
+  const inner = c.shape === "pickup" ? pickup(c, d) : c.shape === "rocket" ? rocket(c, d) : c.shape === "hover" ? hover(c, d) : c.shape === "ufo" ? ufo(c, d) : normalCar(c, d);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 128" width="200" height="128">${inner}</svg>`;
+}
+export const carDataURI = (car, opts) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(carSVG(car, opts));

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>John Doedle</title>
-  <meta name="description" content="A daily game of 7 questions. Type the answer most people would give. The more popular your answer, the more gas you earn.">
+  <meta name="description" content="A daily game of 7 questions. Type the answer most people would give before the obstacle hits you. Earn cash and buy better cars.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#f2b632">
   <!-- Link previews (Open Graph / Twitter). Update the URLs below if you add a custom domain. -->
@@ -12,15 +12,15 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="John Doedle">
   <meta property="og:title" content="John Doedle: think like everyone else">
-  <meta property="og:description" content="A daily game. You get a question, you type the answer most people would give. The more popular your answer, the further you drive.">
+  <meta property="og:description" content="A daily game. You get a question, you type the answer most people would give. Answer before the obstacle hits you, earn cash, and buy better cars.">
   <meta property="og:url" content="https://johndoedle.gabrielstemarie0.workers.dev/">
   <meta property="og:image" content="https://johndoedle.gabrielstemarie0.workers.dev/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="John Doe driving down a busy road toward a finish line, with an exit sign reading Name a pizza topping">
+  <meta property="og:image:alt" content="A car driving down a road toward an obstacle, with an exit sign reading Name a pizza topping">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="John Doedle: think like everyone else">
-  <meta name="twitter:description" content="A daily game. You get a question, you type the answer most people would give. The more popular your answer, the further you drive.">
+  <meta name="twitter:description" content="A daily game. You get a question, you type the answer most people would give. Answer before the obstacle hits you, earn cash, and buy better cars.">
   <meta name="twitter:image" content="https://johndoedle.gabrielstemarie0.workers.dev/og-image.png">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -35,13 +35,14 @@
     </a>
     <div class="chips">
       <span class="chip" id="streak-chip" title="Days in a row you've finished">🔥 <b id="streak">0</b></span>
+      <button class="chip chip-btn wallet" id="wallet-btn" type="button" aria-label="Your cash and the car shop" title="Your cash and the car shop"><span aria-hidden="true">&#128663;</span><b id="wallet">$0</b></button>
       <button class="chip chip-btn" id="stats-btn" type="button" aria-label="Your stats" title="Your stats">&#128202;</button>
       <button class="chip chip-btn" id="help-btn" type="button" aria-label="How to play" title="How to play">?</button>
     </div>
   </header>
 
   <main>
-    <!-- Gas gauge (points) and distance driven (spaces) -->
+    <!-- Gas gauge (fills with the $ you earn today) and distance driven (spaces) -->
     <div class="fuel" id="fuel" role="meter" aria-label="Gas tank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-level="low">
       <span class="fuel-icon" aria-hidden="true">&#9981;</span>
       <span class="fuel-e" aria-hidden="true">E</span>
@@ -51,7 +52,7 @@
       </div>
       <span class="fuel-f" aria-hidden="true">F</span>
       <span class="fuel-pct" aria-hidden="true">0%</span>
-      <span class="dist" title="Spaces driven. A John Doe answer is 5, down to 1 for an Alien. 35 is the finish line."><span aria-hidden="true">&#127937;</span><b class="dist-n">0</b><span>/35</span></span>
+      <span class="dist" title="Spaces driven today. A John Doe answer is 5, down to 1 for an Alien. 35 is the finish line."><span aria-hidden="true">&#127937;</span><b class="dist-n">0</b><span>/35</span></span>
       <span class="fuel-pop" aria-hidden="true"></span>
     </div>
 
@@ -59,9 +60,9 @@
     <section id="intro" class="card" hidden>
       <p class="eyebrow" id="intro-day"></p>
       <h1>Think like<br>everyone else.</h1>
-      <p class="lead">You get a question. Type the answer most people would give, in 25 seconds. The more popular your answer, the more gas you earn and the further you drive. Seven questions a day.</p>
+      <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash. Seven questions a day.</p>
       <ul class="levels" id="levels" aria-label="Scoring levels"></ul>
-      <p class="rules-note">Only one answer per question is a John Doe. An answer that doesn't fit the question scores nothing. A perfect run is <b>700</b> points and <b>35</b> spaces.</p>
+      <p class="rules-note">Only one answer per question is a John Doe. A perfect day is <b>$700</b>. Your cash adds up from day to day: spend it in the shop.</p>
       <button class="btn primary" id="start">Start today's game</button>
     </section>
 
@@ -69,7 +70,7 @@
     <section id="play" class="card" hidden>
       <div class="meta">
         <span id="qnum">Question 1 of 7</span>
-        <span id="running">0 pts</span>
+        <span id="running">$0 today</span>
       </div>
       <div class="timer" aria-hidden="true"><div class="timer-bar" id="timer-bar"></div></div>
       <div class="timer-text" id="timer-text" aria-live="off">25</div>
@@ -93,7 +94,7 @@
     <!-- RESULTS -->
     <section id="results" class="card" hidden>
       <p class="eyebrow" id="res-day"></p>
-      <div class="score"><span id="total">0</span><small>/ 700</small></div>
+      <div class="score"><span id="total">$0</span><small>of $700 possible</small></div>
       <p class="verdict" id="verdict"></p>
       <p class="fuel-note" id="fuel-note"></p>
       <ol class="breakdown" id="breakdown"></ol>
@@ -112,12 +113,13 @@
     <div class="modal-body">
       <h2 id="help-title">How to play</h2>
       <ol class="steps">
-        <li><b>You get a question</b> on an exit sign, like <em>Name a popular pizza topping</em>.</li>
-        <li><b>Type the answer most people would give</b>, in 25 seconds. Typos are forgiven.</li>
-        <li><b>The more popular your answer, the more you earn.</b> Only the #1 answer (<em>pepperoni</em>) is a John Doe: 100 points and 5 spaces down the road. The next 5 are Average Joes, the next 10 Neighbors and the next 20 Strangers. Any other real answer is an Alien: 10 points and 1 space.</li>
-        <li><b>Think like everyone else.</b> Be average. An answer that doesn't fit the question scores 0.</li>
+        <li><b>You get a question</b> on an exit sign, like <em>Name a popular pizza topping</em>. An obstacle appears far down the road, and it gets closer as the clock runs down.</li>
+        <li><b>Type the answer most people would give</b> before it reaches you. Typos are forgiven.</li>
+        <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Crashes damage your car for the day.</li>
+        <li><b>The more popular your answer, the more cash you earn.</b> Only the #1 answer (<em>pepperoni</em>) is a John Doe: $100. The next 5 are Average Joes ($85), the next 10 Neighbors ($60), the next 20 Strangers ($30). Any other real answer is an Alien: $10.</li>
+        <li><b>Your cash adds up every day.</b> Spend it in the shop (the car button) on better cars, from a cheap starter to an absurdly expensive UFO.</li>
       </ol>
-      <p class="modal-note">Seven questions a day, with a new set at midnight UTC. A full tank is 700 points, and 35 spaces is the finish line.</p>
+      <p class="modal-note">Seven questions a day, with a new set at midnight UTC. A perfect day is $700.</p>
       <form method="dialog"><button class="btn primary" id="help-ok">Let's drive</button></form>
     </div>
   </dialog>
@@ -128,6 +130,18 @@
       <h2 id="stats-title">Your stats</h2>
       <div id="stats-content"></div>
       <p class="modal-note">Saved in this browser only.</p>
+      <form method="dialog"><button class="btn">Close</button></form>
+    </div>
+  </dialog>
+
+  <!-- Shop: spend your cash on cars -->
+  <dialog id="shop-dialog" class="modal" aria-labelledby="shop-title">
+    <div class="modal-body">
+      <h2 id="shop-title">Car shop</h2>
+      <p class="shop-wallet">Your cash: <b id="shop-balance">$0</b></p>
+      <p class="shop-msg" id="shop-msg" role="status" aria-live="polite"></p>
+      <ul class="shop-list" id="shop-list"></ul>
+      <p class="modal-note">Cash is everything you've earned on every day you've played, saved in this browser.</p>
       <form method="dialog"><button class="btn">Close</button></form>
     </div>
   </dialog>

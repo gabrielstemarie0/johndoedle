@@ -14,8 +14,8 @@ export const LEVELS = [
   { id: "stranger", name: "Stranger", pts: 30, spaces: 2, emoji: "🟪", note: "a top 36 answer", ranks: 20 },
   { id: "alien", name: "Alien", pts: 10, spaces: 1, emoji: "👽", note: "any other real answer", ranks: Infinity },
 ];
-export const IMPOSTER = { id: "imposter", name: "Imposter", pts: 0, spaces: 0, emoji: "❌", note: "that doesn't answer the question" };
-export const NOTHING = { id: "nothing", name: "Nothing", pts: 0, spaces: 0, emoji: "⬛", note: "no answer entered" };
+export const IMPOSTER = { id: "imposter", name: "Imposter", pts: 0, spaces: 0, emoji: "💥", note: "that doesn't answer the question" };
+export const NOTHING = { id: "nothing", name: "Nothing", pts: 0, spaces: 0, emoji: "💥", note: "no answer entered" };
 export const MAX_SPACES = 35; // 7 questions x 5 spaces
 export const levelById = (id) => [...LEVELS, IMPOSTER, NOTHING].find((l) => l.id === id) || NOTHING;
 
