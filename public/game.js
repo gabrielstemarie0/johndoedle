@@ -46,7 +46,8 @@ function uid() {
   crypto.getRandomValues(a);
   return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
 }
-const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty" });
+const REPAIR_COST = 25; // dollars per hit
+const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty", hits: 0 }); // hits = unrepaired crashes
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
@@ -66,7 +67,7 @@ const day = todayUTC();
 const gameNo = dayIndex(day) + 1;
 const today = (state.days[day] ||= { answers: [], startedAt: null });
 const todaysQs = pickCards(questions, day);
-const scene = createScene($("scene"), $("fuel")); // the driving scene and gas gauge (purely visual)
+const scene = createScene($("scene"), $("fuel")); // the driving scene (purely visual)
 
 // Cash: every dollar you've ever earned, minus what you've spent in the shop.
 const earnedIn = (d) => (d.answers || []).reduce((n, a) => n + (a.pts || 0), 0);
@@ -75,7 +76,7 @@ const balance = () => lifetimeEarned() - state.wallet.spent;
 const renderWallet = () => { $("wallet").textContent = money(balance()); };
 
 scene.setCar(state.wallet.car);
-scene.setDamage(today.crashes || 0);
+scene.setDamage(state.wallet.hits || 0);
 window.__jd = { scene, state }; // handy for tests and for poking around in the console
 
 // ---------- scoring ----------
@@ -215,14 +216,13 @@ async function lockIn(timedOut = false) {
   const lvl = levelById(result.level);
   const crashed = result.pts <= 0;
   today.answers.push({ raw, level: result.level, pts: result.pts, label: result.label, top: result.top || [], crash: crashed });
-  if (crashed) today.crashes = (today.crashes || 0) + 1;
+  if (crashed) { today.crashes = (today.crashes || 0) + 1; state.wallet.hits = (state.wallet.hits || 0) + 1; }
   today.startedAt = null;
   running += result.pts;
   save();
-  scene.setFuel(Math.max(0, running) / 7, { gained: result.pts }); // a perfect $700 fills the tank
   scene.setDistance(spacesDriven());
   if (crashed) {
-    scene.resolve(false, { damage: today.crashes });
+    scene.resolve(false, { damage: state.wallet.hits });
     scene.say(timedOut ? "TOO SLOW! CRASH!" : "WRONG TURN! CRASH!", true);
   } else {
     scene.resolve(true, { spaces: lvl.spaces });
@@ -266,9 +266,15 @@ function finish() {
       s.best = Math.max(s.best, s.count);
       s.last = day;
     }
+    // The repair bill comes out of cash at the end of the run. If you can't cover it, the garage takes what you have.
+    const owed = (today.crashes || 0) * REPAIR_COST;
+    const paid = Math.min(owed, Math.max(0, balance()));
+    state.wallet.spent += paid;
+    today.bill = { owed, paid };
     save();
   }
   updateStreak();
+  renderWallet();
   renderResults();
 }
 
@@ -281,13 +287,13 @@ function renderResults() {
   show("results");
   const t = total();
   scene.setPhase(7);
-  scene.setFuel(Math.max(0, t) / 7, { animate: false });
   scene.setDistance(spacesDriven());
-  const tank = Math.round(Math.max(0, t) / 7);
   const crashes = today.crashes || 0;
-  $("fuel-note").textContent = `Wallet: ${money(balance())}. Drove ${spacesDriven()} of ${MAX_SPACES} spaces, filled ${tank}% of the tank, ${crashes ? `crashed ${crashes} time${crashes > 1 ? "s" : ""}` : "no crashes"}. ${
-    tank >= 80 ? "You could drive forever." : tank >= 50 ? "Plenty left for the ride home." : tank >= 25 ? "Enough to limp to the next station." : "Running on fumes."
-  }`;
+  const bill = today.bill;
+  $("fuel-note").textContent = `Wallet: ${money(balance())}. Drove ${spacesDriven()} of ${MAX_SPACES} spaces, ${crashes ? `crashed ${crashes} time${crashes > 1 ? "s" : ""}` : "no crashes"}.`;
+  $("repair-note").textContent = bill && bill.owed
+    ? `Repair bill: ${crashes} × ${money(REPAIR_COST)} = ${money(bill.owed)}, taken from your cash.${bill.paid < bill.owed ? ` You only had ${money(bill.paid)}, so the garage wrote off the rest.` : ""} Your car must be repaired before you can drive again.`
+    : crashes ? "" : "No damage, no repair bill.";
   $("res-day").textContent = `John Doedle #${gameNo}`;
   $("total").textContent = money(t);
   $("verdict").textContent =
@@ -519,7 +525,14 @@ $("answer").addEventListener("input", () => {
   $("answer").removeAttribute("aria-invalid");
 });
 $("next").addEventListener("click", showCard);
+function syncRepair() {
+  const hits = state.wallet.hits || 0;
+  $("repair-tag").hidden = !hits;
+  $("start").textContent = hits ? "Repair car and start" : "Start today's game";
+  scene.setDamage(hits);
+}
 $("start").addEventListener("click", () => {
+  if (state.wallet.hits) { state.wallet.hits = 0; save(); syncRepair(); } // already paid at the end of last run
   if (!helpSeen()) openHelp(showCard); // first visit: explain the game, then start
   else showCard();
 });
@@ -544,12 +557,12 @@ $("levels").replaceChildren(
 
 updateStreak();
 renderWallet();
+syncRepair();
 $("intro-day").textContent = `Game #${gameNo} · ${new Date(day + "T00:00:00Z").toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })}`;
 setInterval(countdown, 1000);
 countdown();
 
 running = earnedIn(today);
-scene.setFuel(Math.max(0, running) / 7, { animate: false });
 scene.setDistance(spacesDriven());
 scene.setPhase(today.done ? 7 : Math.min(today.answers.length, 6));
 if (today.done || today.answers.length >= PER_DAY) finish();

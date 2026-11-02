@@ -42,25 +42,17 @@
   </header>
 
   <main>
-    <!-- Gas gauge (fills with the $ you earn today) and distance driven (spaces) -->
-    <div class="fuel" id="fuel" role="meter" aria-label="Gas tank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-level="low">
-      <span class="fuel-icon" aria-hidden="true">&#9981;</span>
-      <span class="fuel-e" aria-hidden="true">E</span>
-      <div class="fuel-track" aria-hidden="true">
-        <div class="fuel-fill"></div>
-        <span class="fuel-tick" style="left:25%"></span><span class="fuel-tick" style="left:50%"></span><span class="fuel-tick" style="left:75%"></span>
-      </div>
-      <span class="fuel-f" aria-hidden="true">F</span>
-      <span class="fuel-pct" aria-hidden="true">0%</span>
-      <span class="dist" title="Spaces driven today. A John Doe answer is 5, down to 1 for an Alien. 35 is the finish line."><span aria-hidden="true">&#127937;</span><b class="dist-n">0</b><span>/35</span></span>
-      <span class="fuel-pop" aria-hidden="true"></span>
+    <!-- Distance driven today (spaces) -->
+    <div class="fuel" id="fuel" aria-label="Distance driven today">
+      <span class="dist" title="Spaces driven today. A John Doe answer is 5, down to 1 for an Alien. 35 is the finish line."><span aria-hidden="true">&#127937;</span><b class="dist-n">0</b><span>/35</span> spaces</span>
+      <span class="repair-tag" id="repair-tag" hidden>&#128295; Car needs repairs</span>
     </div>
 
     <!-- INTRO -->
     <section id="intro" class="card" hidden>
       <p class="eyebrow" id="intro-day"></p>
       <h1>Think like<br>everyone else.</h1>
-      <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash. Seven questions a day.</p>
+      <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash, and each crash is a $25 repair bill. Seven questions a day.</p>
       <ul class="levels" id="levels" aria-label="Scoring levels"></ul>
       <p class="rules-note">Only one answer per question is a John Doe. A perfect day is <b>$700</b>. Your cash adds up from day to day: spend it in the shop.</p>
       <button class="btn primary" id="start">Start today's game</button>
@@ -97,6 +89,7 @@
       <div class="score"><span id="total">$0</span><small>of $700 possible</small></div>
       <p class="verdict" id="verdict"></p>
       <p class="fuel-note" id="fuel-note"></p>
+      <p class="repair-note" id="repair-note"></p>
       <ol class="breakdown" id="breakdown"></ol>
       <div class="actions">
         <button class="btn primary" id="share">Copy result</button>
@@ -115,7 +108,7 @@
       <ol class="steps">
         <li><b>You get a question</b> on an exit sign, like <em>Name a popular pizza topping</em>. An obstacle appears far down the road, and it gets closer as the clock runs down.</li>
         <li><b>Type the answer most people would give</b> before it reaches you. Typos are forgiven.</li>
-        <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Crashes damage your car for the day.</li>
+        <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Every crash costs $25 in repairs, billed to your cash when the run ends, and you have to repair the car before you can drive again.</li>
         <li><b>The more popular your answer, the more cash you earn.</b> Only the #1 answer (<em>pepperoni</em>) is a John Doe: $100. The next 5 are Average Joes ($85), the next 10 Neighbors ($60), the next 20 Strangers ($30). Any other real answer is an Alien: $10.</li>
         <li><b>Your cash adds up every day.</b> Spend it in the shop (the car button) on better cars, from a cheap starter to an absurdly expensive UFO.</li>
       </ol>

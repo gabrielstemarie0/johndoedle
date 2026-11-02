@@ -159,23 +159,11 @@ body { background: transparent; }
 .brand { padding: 5px 12px 5px 5px; border-radius: 14px; background: color-mix(in srgb, var(--card) 90%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 main { padding-bottom: 24px; }
 
-/* ===== gas gauge ===== */
+/* ===== trip bar ===== */
 .fuel { --fuelc: #e0503f; position: relative; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 10px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
-.fuel[data-level="mid"] { --fuelc: #f2b632; }
-.fuel[data-level="high"] { --fuelc: #3cb878; }
-.fuel-icon { font-size: 20px; line-height: 1; }
-.fuel-e, .fuel-f { font: 700 12px system-ui, sans-serif; color: var(--muted); }
-.fuel-track { position: relative; flex: 1; height: 16px; border-radius: 99px; background: var(--line); overflow: hidden; }
-.fuel-fill { height: 100%; width: 0; border-radius: 99px; background: var(--fuelc); transition: width 1s cubic-bezier(.2, .8, .2, 1), background-color .6s; }
-.fuel-tick { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(255, 255, 255, .55); }
-.dist { display: inline-flex; align-items: baseline; gap: 3px; padding-left: 8px; border-left: 1px solid var(--line); font: 700 13px system-ui, sans-serif; white-space: nowrap; color: var(--muted); }
+.dist { display: inline-flex; align-items: baseline; gap: 3px; font: 700 13px system-ui, sans-serif; white-space: nowrap; color: var(--muted); }
 .dist b { color: var(--ink); font-variant-numeric: tabular-nums; }
-.fuel-pct { min-width: 42px; text-align: right; font: 700 14px system-ui, sans-serif; font-variant-numeric: tabular-nums; }
-.fuel.low .fuel-icon { animation: blink 1s steps(2) infinite; }
 @keyframes blink { 50% { opacity: .25; } }
-.fuel-pop { position: absolute; right: 62px; top: -2px; font: 800 17px system-ui, sans-serif; color: #2f9e63; opacity: 0; pointer-events: none; }
-.fuel-pop::after { content: " \26FD"; }
-.fuel-pop.go { animation: pop 1.3s ease-out; }
 @keyframes pop { 0% { opacity: 0; transform: translateY(10px) scale(.8); } 20% { opacity: 1; transform: translateY(0) scale(1.15); } 100% { opacity: 0; transform: translateY(-22px); } }
 .fuel-note { margin: -8px 0 18px; color: var(--muted); }
 
@@ -188,7 +176,6 @@ main { padding-bottom: 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .scene *, .scene *::before, .scene *::after { animation: none !important; transition: none !important; }
-  .fuel-fill { transition: none; }
 }
 
 /* ===== header buttons, dialogs, stats ===== */
@@ -238,10 +225,8 @@ main { padding-bottom: 24px; }
   .chips { gap: 5px; }
   .chip { padding: 4px 9px; }
   .chip-btn { min-width: 34px; }
-  .fuel-e, .fuel-f { display: none; }
   .fuel { gap: 6px; padding: 9px 10px; }
   .dist { padding-left: 6px; }
-  .fuel-pop { right: auto; left: 50%; top: -24px; }
   main { padding: 0 12px 24px; }
 }
 /* short screens: tighten the card so the road and car stay visible underneath */
@@ -300,3 +285,6 @@ main { padding-bottom: 24px; }
 .feedback .fb-level { grid-column: 2; margin: 0; font-size: 14px; }
 .feedback .fb-text { grid-column: 2; margin: 0; font-size: 13px; line-height: 1.35; }
 .feedback #next { grid-column: 1 / -1; margin-top: 10px; }
+
+.repair-tag { margin-left: auto; font: 700 13px system-ui, sans-serif; color: #c0392b; }
+.repair-note { margin: -6px 0 16px; color: var(--muted); }

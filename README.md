@@ -1,14 +1,14 @@
 # John Doedle
 
 A daily game of 7 questions. Each question asks for something ("Name a popular pizza topping") and you type the
-answer **most people would give**. The more popular your answer, the more points you earn, the more gas you get
+answer **most people would give**. The more popular your answer, the more points you earn
 and the further your car drives. Plain HTML/JS front end plus one Cloudflare Worker, with D1 for answer counts and
 Workers AI for checking unfamiliar answers. No build step.
 
 ```
 public/                           the static game (served as Workers assets)
   index.html, styles.css, game.js   the page and game flow
-  scene.js                        the third-person driving scene (canvas), the obstacle timer and the gas gauge
+  scene.js                        the third-person driving scene (canvas), the obstacle timer
   cars.js                         the car catalog and shop prices, and each car drawn from behind as SVG
   lib/questions.js                the question bank: ranked answers with popularity weights
   lib/scoring.js                  levels, ranking, answer matching (shared by browser and server)
@@ -28,8 +28,9 @@ and a hazard sign plus a red strip along your lane make that easy to read.
 - **Score nothing** (an answer that doesn't fit) or **run out of time** and you **crash**: the car takes damage that
   stays for the rest of the day (cracked rear window, a dead tail light, smoke, a hanging bumper) and you earn $0. An
   unsubmitted answer doesn't count when time runs out.
-- Each day starts with a repaired car. The gas gauge fills with the dollars you earn today ($700 is a full tank) and the
-  flag counter shows spaces driven (5 for a John Doe down to 1 for an Alien; 35 would be the finish line).
+- Repairs: each crash is a $25 repair. When the run ends, crashes × $25 comes out of your cash (if you have less, the
+  garage takes what you have and writes off the rest, so you can never get stuck). The damage stays on the car until you
+  press "Repair car and start" on the next game, so you must repair before you can drive again. The flag counter shows spaces driven (5 for a John Doe down to 1 for an Alien; 35 would be the finish line).
 
 ## Scoring
 Each question's known answers are ranked by popularity (the weights in `questions.js` blended with real players'
@@ -48,7 +49,7 @@ answers; live data takes over as more people play, weight `n / (n + 100)`). An a
 The amounts are Krillion's points (10/30/60/85/100, as listed by fan sites; check krillion.io if exact figures matter),
 flipped so the most common answer is best, and counted in **dollars**. A perfect day is $700. **Spaces** are how far the car drives after each answer,
 like Krillion's dive depth: 5 for a John Doe down to 1 for an Alien, so seven John Does reach the 35-space finish
-line. Gas is dollars earned today: $700 fills the tank.
+line.
 
 Because tiers are by rank, a question needs at least 37 ranked answers for every level to be reachable (each of the
 35 questions has 38 to 55). A player-made answer is ranked only once 3 players have given it, so friends can't make
@@ -115,7 +116,7 @@ real economy to protect. Prices live in `public/cars.js`.
   often the player got each level, plus lifetime earnings and crashes. Computed from this browser's saved games only.
 - **Link previews**: Open Graph and Twitter tags in `public/index.html` plus `public/og-image.png` (1200x630, a staged
   screenshot of the game). The tag URLs are absolute, so update them if you add a custom domain.
-- The scene is hidden from screen readers (the numeric countdown, the gas gauge and the result text carry the same
+- The scene is hidden from screen readers (the numeric countdown and the result text carry the same
   information). With reduced motion the road stops scrolling and there is no shake, smoke or boost; the obstacle
   still approaches, because it is the timer.
 

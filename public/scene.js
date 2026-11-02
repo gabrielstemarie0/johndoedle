@@ -461,8 +461,8 @@ export function createScene(root, fuelEl) {
     if (S.flash > 0.02) { ctx.fillStyle = `rgba(255,70,50,${S.flash * 0.45})`; ctx.fillRect(0, 0, W, H); }
   }
 
-  // ---------- gas gauge ----------
-  const gauge = fuelEl && { fill: fuelEl.querySelector(".fuel-fill"), pct: fuelEl.querySelector(".fuel-pct"), pop: fuelEl.querySelector(".fuel-pop"), dist: fuelEl.querySelector(".dist-n") };
+  // ---------- distance counter ----------
+  const gauge = fuelEl && { dist: fuelEl.querySelector(".dist-n") };
 
   function say(text, bad = false) { S.cap = text ? { text, bad, t0: S.t } : null; }
 
@@ -499,21 +499,7 @@ export function createScene(root, fuelEl) {
     say,
     // Move the horizon down so the road starts below the game panel (px from the top; null = default).
     setHorizon(y) { hyWanted = y; resize(); },
-    // gas gauge: pct 0..100 of a full tank; gained is the $ just earned
-    setFuel(pct, { animate = true, gained = 0 } = {}) {
-      if (!gauge) return;
-      const p = clamp(Math.round(pct), 0, 100);
-      if (!animate) gauge.fill.style.transition = "none";
-      gauge.fill.style.width = `${p}%`;
-      if (!animate) { void gauge.fill.offsetWidth; gauge.fill.style.transition = ""; }
-      gauge.pct.textContent = `${p}%`;
-      fuelEl.setAttribute("aria-valuenow", String(p));
-      fuelEl.setAttribute("aria-valuetext", `${p} percent full`);
-      fuelEl.classList.toggle("low", p < 15);
-      fuelEl.dataset.level = p < 15 ? "low" : p < 50 ? "mid" : "high";
-      if (gained > 0 && animate) { gauge.pop.textContent = `+$${gained}`; gauge.pop.classList.remove("go"); void gauge.pop.offsetWidth; gauge.pop.classList.add("go"); }
-    },
-    // spaces driven today (0..35), shown next to the gas gauge
+    // spaces driven today (0..35)
     setDistance(spaces) { if (gauge && gauge.dist) gauge.dist.textContent = String(clamp(spaces, 0, MAX_SPACES)); },
     // for tests
     state: () => ({ horizon: hy, obstacleY: S.obs ? Y(S.obs.z) : null, obstacleZ: S.obs ? S.obs.z : null, obstacleMode: S.obs ? S.obs.mode : null, obstacleKind: S.obs ? S.obs.kind : null, carX: S.px, targetX: S.targetX, damage: S.damage, boost: S.boost, phase: S.phase, car: S.car.id, particles: S.particles.length }),
