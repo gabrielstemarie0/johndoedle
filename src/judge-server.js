@@ -19,9 +19,7 @@ export function makeAI(binding) {
       return out.data;
     },
     // Does this question really lead to this answer? true / false, or null if the AI is unavailable.
-    lastInfo: null, // what the last validate() call saw, for diagnosing the judge
     async validate(answer, question) {
-      this.lastInfo = null;
       const errors = [];
       for (const model of CHAT_MODELS) {
         try {
@@ -38,7 +36,6 @@ export function makeAI(binding) {
           });
           const raw = typeof out === "string" ? out : out?.response ?? out?.result?.response ?? out?.choices?.[0]?.message?.content;
           const text = String(raw ?? "").trim().toUpperCase();
-          this.lastInfo = { model, raw: String(raw ?? JSON.stringify(out)).slice(0, 80) };
           if (text.startsWith("YES")) return true;
           if (text.startsWith("NO")) return false;
           errors.push(`${model}: unexpected reply`);
@@ -46,7 +43,7 @@ export function makeAI(binding) {
           errors.push(`${model}: ${String((e && e.message) || e).slice(0, 120)}`);
         }
       }
-      this.lastInfo = { error: errors.join(" | ") };
+      console.error("validate failed:", errors.join(" | "));
       return null;
     },
   };
@@ -74,12 +71,7 @@ export async function judgeQuestion({ db, ai, card, question, player, day }) {
   const rows = results.map((r) => ({ ...r, vec: JSON.parse(r.vec) }));
 
   const [vec] = await ai.embed([question]);
-  let aiInfo = null;
-  const d = await decide(rows, vec, ai.th, async () => {
-    const verdict = await ai.validate(card.answer, question);
-    aiInfo = ai.lastInfo ?? null;
-    return verdict;
-  });
+  const d = await decide(rows, vec, ai.th, () => ai.validate(card.answer, question));
 
   if (d.valid) {
     // Count each player's question once per card per day.
@@ -101,7 +93,7 @@ export async function judgeQuestion({ db, ai, card, question, player, day }) {
       }
     }
   }
-  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts, sim: d.sim, ...(aiInfo ? { ai: aiInfo } : {}) };
+  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts };
 }
 
 export { isValidQuestion };

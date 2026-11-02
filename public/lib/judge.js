@@ -68,7 +68,9 @@ export function cosine(a, b) {
 }
 
 export const LEXICAL = { same: 0.6, validNear: 0.3 };
-export const DENSE = { same: 0.88, validNear: 0.78 }; // starting points, tune with real data
+// Measured on the live judge with bge-base: real paraphrases scored 0.83-0.99, different-but-valid
+// questions 0.58-0.70. 0.80 sits in the gap.
+export const DENSE = { same: 0.8, validNear: 0.8 };
 
 // ---------- the decision ----------
 // th: thresholds. aiValid: async () => true | false | null, only called when the
@@ -83,11 +85,10 @@ export async function decide(rows, vec, th, aiValid) {
   const valid = seedBest >= th.validNear || (await aiValid?.()) === true;
   const { share, top } = computeShares(rows);
   const topTexts = [...rows].sort((a, b) => share.get(b.key) - share.get(a.key)).slice(0, 3).map((r) => r.text);
-  const sim = { best: Math.round(bestSim * 1000) / 1000, seed: Math.round(seedBest * 1000) / 1000, near: best ? best.text : null };
-  if (!valid) return { valid: false, level: IMPOSTER, matched: null, topTexts, sim };
+  if (!valid) return { valid: false, level: IMPOSTER, matched: null, topTexts };
   const matched = bestSim >= th.same ? best : null;
   const ratio = matched ? (share.get(matched.key) || 0) / top : 0;
-  return { valid: true, level: levelForRatio(ratio), matched, topTexts, sim };
+  return { valid: true, level: levelForRatio(ratio), matched, topTexts };
 }
 
 // ---------- offline fallback (browser) ----------
