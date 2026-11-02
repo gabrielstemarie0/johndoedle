@@ -1,6 +1,6 @@
 // Server-side judging: D1 for counts, Workers AI for meaning.
 import { normalize, isValidQuestion, givesAway } from "../public/lib/text.js";
-import { decide, lexVec, topQuestions, IMPOSTER, LEXICAL, DENSE, RARITY_WEIGHT } from "../public/lib/judge.js";
+import { decide, lexVec, topQuestions, IMPOSTER, LEXICAL, DENSE, RARITY_WEIGHT, rarityTier } from "../public/lib/judge.js";
 
 const EMBED_MODEL = "@cf/baai/bge-base-en-v1.5";
 // Tried in order. (llama-3.1-8b-instruct was retired 2026-05-30; the -fast variants stay active.)
@@ -13,13 +13,13 @@ First write one short sentence saying what the correct answer to the question is
 VERDICT: YES - the answer is correct for the question, and the question is specific enough that this answer is the clear, expected one.
 VERDICT: WRONG - the answer is not correct for the question.
 VERDICT: VAGUE - the answer would be technically true, but the question is too broad, generic or open-ended (many different answers fit), or it is a yes/no question, or it only plays with letters, spelling or length.
-If (and only if) the verdict is YES, add a final line RARITY: n, where n says how likely a typical player, shown only this answer, would be to write this question:
-1 = the textbook question that a large share of players would write first
-2 = a common question that many players would write
-3 = a sensible question that some players would think of
-4 = an unusual angle that few players would think of
-5 = an obscure angle that almost nobody would think of
-Be strict: most good questions are 2 or 3. Use 5 only for truly obscure angles.
+If (and only if) the verdict is YES, add a final line RARITY: n. This says how many players would think of this question, judged by how famous the fact it uses is:
+1 = the answer's main claim to fame, asked in the textbook way
+2 = another very well-known fact about it
+3 = a fairly well-known secondary fact
+4 = a specific, lesser-known detail (a name, date, event or number most people do not know)
+5 = a very obscure detail
+Be strict: most sensible questions are 2 to 4. Do not give a question a low number just because its answer is true.
 
 Examples with the answer "Paris":
 Question: What is the capital of France?
@@ -30,8 +30,12 @@ Question: Which city is home to the Louvre?
 The Louvre is in Paris, which matches.
 VERDICT: YES
 RARITY: 2
-Question: Which city's Metro has Chatelet-Les Halles, one of the world's largest underground stations?
-That station is in Paris, which matches.
+Question: Which city is divided into numbered districts called arrondissements?
+Paris has arrondissements, which matches.
+VERDICT: YES
+RARITY: 3
+Question: Which city's Pont Neuf is the oldest standing bridge over its river?
+The Pont Neuf is in Paris, which matches.
 VERDICT: YES
 RARITY: 4
 Question: Which city hosted the 1900 Summer Olympics, the first Games with women competing?
@@ -130,7 +134,7 @@ export async function judgeQuestion({ db, ai, card, question, player, day, debug
       return verdict === "YES";
     },
     () => (verdict === "VAGUE" ? "vague" : "wrong"),
-    () => RARITY_WEIGHT[rarity] ?? RARITY_WEIGHT[3] // no estimate: treat as a sensible, middling question
+    (seedSim) => RARITY_WEIGHT[rarityTier(rarity, seedSim)]
   );
 
   if (d.valid) {

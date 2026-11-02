@@ -33,7 +33,8 @@ real player counts; live data takes over as more people play, weight `n / (n + 1
 
 **New questions are rated by the AI, not given 100 automatically.** "Nobody has asked this yet" says little when
 only a few people have played, so for a question not in the database the AI rates how likely a typical player is to
-write it (1 = the textbook question, 5 = an obscure angle). That sets a starting weight on the seed scale
+write it (1 = the answer's main claim to fame, 5 = a very obscure detail), nudged one tier up or down by how close
+the question is to the card's seed questions (`rarityTier` in `public/lib/judge.js`). That sets a starting weight on the seed scale
 (55, 30, 14, 6, 1), which lands the question on John Doe, Regular Joe, Neighbor, Stranger or Alien. As real players
 ask it, their counts take over (stored in the `prior` column).
 

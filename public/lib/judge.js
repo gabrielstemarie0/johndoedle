@@ -32,6 +32,18 @@ export const LIVE_HALF = 100; // after ~100 live questions on a card, seed and l
 // and that sets a starting weight on the same scale as the seed questions (100, 55, 30, 14, 6).
 export const RARITY_WEIGHT = { 1: 55, 2: 30, 3: 14, 4: 6, 5: 1 };
 
+// Combine the AI's 1-5 rating (how famous the fact the question uses is) with how close the question is to the
+// card's seed questions. Close to the obvious seeds = more common; far from all of them = rarer. Measured on the
+// live judge: obvious questions score 0.73-0.79 against the nearest seed, obscure angles 0.60-0.63.
+export function rarityTier(llm, seedSim) {
+  let tier = Number.isInteger(llm) && llm >= 1 && llm <= 5 ? llm : 3;
+  if (typeof seedSim === "number") {
+    if (seedSim >= 0.78) tier -= 1;
+    else if (seedSim <= 0.625) tier += 1;
+  }
+  return Math.max(1, Math.min(5, tier));
+}
+
 // A question's starting weight: seed weight, or the AI's rarity estimate for questions players made.
 const weightOf = (r) => r.seedw || r.prior || 0;
 
@@ -105,7 +117,7 @@ export async function decide(rows, vec, th, aiValid, reason, getPrior) {
   const matched = bestSim >= th.same ? best : null;
   // Matched: rate by that question's popularity. New: rate by the AI's rarity estimate against the top weight.
   const topWeight = Math.max(1, ...rows.map(weightOf));
-  const prior = matched ? null : getPrior?.();
+  const prior = matched ? null : getPrior?.(seedBest);
   const ratio = matched ? (share.get(matched.key) || 0) / top : prior != null ? prior / topWeight : 0;
   return { valid: true, level: levelForRatio(ratio), matched, topTexts, prior, seedSim: seedBest };
 }
