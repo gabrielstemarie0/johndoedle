@@ -27,15 +27,23 @@ export function levelForRatio(r) {
 
 export const LIVE_HALF = 100; // after ~100 live questions on a card, seed and live data weigh equally
 
-// rows: [{ key, text, seedw, count, vec }]
+// A brand-new question has no history, so "nobody has asked it yet" says little about how rare it is.
+// The AI rates how likely a typical player is to write it (1 = the textbook question ... 5 = obscure),
+// and that sets a starting weight on the same scale as the seed questions (100, 55, 30, 14, 6).
+export const RARITY_WEIGHT = { 1: 55, 2: 30, 3: 14, 4: 6, 5: 1 };
+
+// A question's starting weight: seed weight, or the AI's rarity estimate for questions players made.
+const weightOf = (r) => r.seedw || r.prior || 0;
+
+// rows: [{ key, text, seedw, prior, count, vec }]
 export function computeShares(rows) {
-  const seedTotal = rows.reduce((n, r) => n + (r.seedw || 0), 0) || 1;
+  const seedTotal = rows.reduce((n, r) => n + weightOf(r), 0) || 1;
   const liveTotal = rows.reduce((n, r) => n + (r.count || 0), 0);
   const lambda = liveTotal / (liveTotal + LIVE_HALF);
   const share = new Map();
   let top = 1e-9;
   for (const r of rows) {
-    const s = (1 - lambda) * ((r.seedw || 0) / seedTotal) + lambda * (liveTotal ? (r.count || 0) / liveTotal : 0);
+    const s = (1 - lambda) * (weightOf(r) / seedTotal) + lambda * (liveTotal ? (r.count || 0) / liveTotal : 0);
     share.set(r.key, s);
     if (s > top) top = s;
   }
@@ -83,7 +91,7 @@ export const DENSE = { same: 0.8, validNear: 0.95 };
 // ---------- the decision ----------
 // th: thresholds. aiValid: async () => true | false | null, only called when the
 // question isn't already close to a known good question.
-export async function decide(rows, vec, th, aiValid, reason) {
+export async function decide(rows, vec, th, aiValid, reason, getPrior) {
   let best = null, bestSim = -1, seedBest = -1;
   for (const r of rows) {
     const s = cosine(vec, r.vec);
@@ -95,8 +103,11 @@ export async function decide(rows, vec, th, aiValid, reason) {
   const topTexts = topQuestions(rows);
   if (!valid) return { valid: false, level: IMPOSTER, matched: null, topTexts, reason: reason?.() ?? "wrong" };
   const matched = bestSim >= th.same ? best : null;
-  const ratio = matched ? (share.get(matched.key) || 0) / top : 0;
-  return { valid: true, level: levelForRatio(ratio), matched, topTexts };
+  // Matched: rate by that question's popularity. New: rate by the AI's rarity estimate against the top weight.
+  const topWeight = Math.max(1, ...rows.map(weightOf));
+  const prior = matched ? null : getPrior?.();
+  const ratio = matched ? (share.get(matched.key) || 0) / top : prior != null ? prior / topWeight : 0;
+  return { valid: true, level: levelForRatio(ratio), matched, topTexts, prior };
 }
 
 // ---------- offline fallback (browser) ----------

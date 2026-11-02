@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS qclusters (
   text  TEXT NOT NULL,
   vec   TEXT NOT NULL,           -- JSON: AI embedding (or word list in fallback mode)
   seedw REAL NOT NULL DEFAULT 0,
+  prior REAL NOT NULL DEFAULT 0,  -- AI's starting rarity weight for questions players made
   count INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (card, key)
 );
@@ -29,3 +30,7 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   count  INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (key, bucket)
 );
+
+-- Existing database (made before `prior` existed):
+--   ALTER TABLE qclusters ADD COLUMN prior REAL NOT NULL DEFAULT 0;
+--   UPDATE qclusters SET prior = 14 WHERE seedw = 0 AND prior = 0;

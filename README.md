@@ -23,13 +23,19 @@ real player counts; live data takes over as more people play, weight `n / (n + 1
 
 | Level | Points | Rule (share / top share) |
 |---|---|---|
-| 👽 Alien | 100 | under 2%, or a valid question nobody has asked yet |
+| 👽 Alien | 100 | under 2% of the top question's popularity: an obscure angle almost nobody would think of |
 | 🟪 Stranger | 85 | 2% to under 10% |
 | 🟧 Neighbor | 60 | 10% to under 25% |
 | 🟨 Regular Joe | 30 | 25% to under 50% |
 | 🟩 John Doe | 10 | 50% or more: the obvious question everyone asks |
 | ❌ Imposter | 0 | the question doesn't lead to the answer |
 | ⬛ Nothing | 0 | timed out with nothing real typed |
+
+**New questions are rated by the AI, not given 100 automatically.** "Nobody has asked this yet" says little when
+only a few people have played, so for a question not in the database the AI rates how likely a typical player is to
+write it (1 = the textbook question, 5 = an obscure angle). That sets a starting weight on the seed scale
+(55, 30, 14, 6, 1), which lands the question on John Doe, Regular Joe, Neighbor, Stranger or Alien. As real players
+ask it, their counts take over (stored in the `prior` column).
 
 Points and the number of tiers follow Krillion (values as listed by fan sites; check krillion.io if exact
 figures matter). A perfect run is 700 and nothing goes negative. Blank, symbol-only and one-word input can't be
@@ -42,7 +48,7 @@ submitted; the field shakes and the timer keeps running.
    questions. If it is close to one (0.80 similarity), it is treated as the same question and scored by that
    question's rarity.
 2. Unless it is a near-exact copy of a seed question (0.95), a chat model (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, falling back to
-   `llama-3.1-8b-instruct-fast`) returns one word: YES (a new question, so Alien), WRONG (the answer doesn't fit), or
+   `llama-3.1-8b-instruct-fast`) returns one word: YES (then a RARITY 1 to 5 rating, see above), WRONG (the answer doesn't fit), or
    VAGUE (the answer fits but so do many others, or it's a yes/no or letter-game question). The prompt and examples
    are `JUDGE_RULES` in `src/judge-server.js`.
 3. Valid questions are counted once per player per card per day (`plays` table).
