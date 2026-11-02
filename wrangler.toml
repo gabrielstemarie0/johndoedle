@@ -1,0 +1,13 @@
+name = "johndoedle"
+pages_build_output_dir = "."
+compatibility_date = "2024-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "johndoedle"
+database_id = "e5eedb67-193f-401f-82e4-f17ad0602d90"
+
+# Workers AI judges whether a question fits the answer and groups similar questions.
+# Without it the game falls back to simple word matching.
+[ai]
+binding = "AI"
