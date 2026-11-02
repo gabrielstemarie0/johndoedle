@@ -1,10 +1,11 @@
-// The driving scene: a decorative banner (John Doe in a car, in traffic) plus the gas gauge.
+// The driving scene: a full-screen backdrop (John Doe in a car, on a busy road) plus the gas gauge.
 // It only reacts to what the game tells it; it has no game logic of its own.
 // Everything is drawn with inline SVG and CSS, no image files.
 
 const REDUCED = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+const MAX_SPACES = 35; // the finish line: 7 questions x 5 spaces
 
-// Sky colours for the day's journey: sunrise on card 1 to dusk on card 7, night on the results screen.
+// Sky colours for the day's journey: sunrise on question 1 to dusk on question 7, night on the results screen.
 const SKY = [
   ["#ff9f80", "#ffe3b8"], // 0 sunrise
   ["#7cc2ff", "#e8f5ff"], // 1 morning
@@ -16,15 +17,15 @@ const SKY = [
   ["#060a22", "#28325f"], // 7 night
 ];
 // Where the sun (or moon) sits for each phase, as [left %, top %].
-const ORB = [[10, 62], [24, 40], [40, 22], [56, 14], [70, 24], [82, 44], [90, 66], [76, 20]];
+const ORB = [[10, 52], [24, 34], [40, 20], [56, 12], [70, 20], [82, 36], [90, 52], [76, 18]];
 
 // How the traffic and speed feel after an answer of each level: speed 0..1, density 0..1.
 const MOODS = {
-  alien: { speed: 1, density: 0.08, text: "Open road. Fill 'er up!" },
-  stranger: { speed: 0.8, density: 0.25, text: "Light traffic, good gas" },
+  johndoe: { speed: 1, density: 0.08, text: "Green lights all the way. Everyone agrees!" },
+  joe: { speed: 0.8, density: 0.25, text: "Cruising with the crowd" },
   neighbor: { speed: 0.55, density: 0.5, text: "Moving along" },
-  joe: { speed: 0.3, density: 0.75, text: "Slow going" },
-  johndoe: { speed: 0.08, density: 1, text: "Stuck in traffic. Everyone took this exit." },
+  stranger: { speed: 0.3, density: 0.75, text: "Taking the back roads" },
+  alien: { speed: 0.08, density: 1, text: "All alone out here. Slow going." },
   imposter: { speed: 0.05, density: 0.8, text: "Wrong exit. No gas." },
   nothing: { speed: 0.02, density: 0.6, text: "Stalled out" },
   idle: { speed: 0.3, density: 0.5, text: "" },
@@ -41,7 +42,7 @@ function rng(seed) {
   };
 }
 
-// A repeating city skyline as a data-URI SVG. `lights` draws only lit windows.
+// A repeating city skyline as a data-URI SVG (4:1, so the CSS can scale it). `lights` draws only lit windows.
 function skyline(seed, minH, maxH, fill, lights) {
   const rand = rng(seed), W = 480, H = 120;
   let x = 0, body = "";
@@ -89,18 +90,21 @@ export function createScene(root, fuelEl) {
     <div class="skyline far"></div>
     <div class="skyline near"></div>
     <div class="skyline lights"></div>
-    <div class="road"><div class="dash"></div><div class="dash two"></div></div>
+    <div class="road"><div class="dash"></div></div>
+    <div class="finish"></div>
     <div class="traffic"></div>
-    <div class="ahead"></div>
-    <div class="player">${carSVG("sedan", "#f2b632", true)}</div>
+    <div class="convoy">
+      <div class="ahead"></div>
+      <div class="player">${carSVG("sedan", "#f2b632", true)}</div>
+    </div>
     <div class="speedlines"></div>
     <div class="caption"></div>`;
   // set via the DOM (the data URIs contain quotes, which would break an HTML attribute)
   root.querySelector(".skyline.far").style.backgroundImage = skyline(3, 18, 52, "#9fb0c8", false);
   root.querySelector(".skyline.near").style.backgroundImage = skyline(11, 26, 78, "#5f6f8a", false);
   root.querySelector(".skyline.lights").style.backgroundImage = skyline(11, 26, 78, "", true);
-  // a handful of stars
-  const stars = Array.from({ length: 28 }, () => `${Math.round(rand() * 520)}px ${Math.round(rand() * 80)}px 0 ${rand() < 0.3 ? 1 : 0}px #fff`).join(",");
+  // a handful of stars, spread over the whole sky
+  const stars = Array.from({ length: 60 }, () => `${Math.round(rand() * 1600)}px ${Math.round(rand() * 420)}px 0 ${rand() < 0.3 ? 1 : 0}px #fff`).join(",");
   root.querySelector(".stars").style.cssText = `box-shadow:${stars}`;
 
   const $ = (s) => root.querySelector(s);
@@ -130,9 +134,10 @@ export function createScene(root, fuelEl) {
     root.classList.toggle("fast", s > 0.7);
     root.classList.toggle("jam", s < 0.35);
     const k = Math.round(state.density * 3 - 0.01);
+    const gap = state.density > 0.7 ? 1.02 : 1.3; // in car lengths
     aheadCars.forEach((el, i) => {
       el.classList.toggle("show", i < Math.max(0, k));
-      el.style.left = `${34 + i * (state.density > 0.7 ? 19 : 25)}%`;
+      el.style.left = `calc(var(--car-w) * ${(1.04 + i * gap).toFixed(2)})`;
     });
   }
 
@@ -143,7 +148,7 @@ export function createScene(root, fuelEl) {
       const el = document.createElement("div");
       el.className = "car pass-car";
       el.innerHTML = carSVG(Math.random() < 0.25 ? "van" : "sedan", CAR_COLORS[Math.floor(Math.random() * CAR_COLORS.length)]);
-      el.style.animationDuration = `${(5 / (0.25 + s * 1.2) * (0.85 + Math.random() * 0.4)).toFixed(2)}s`;
+      el.style.animationDuration = `${(6 / (0.25 + s * 1.2) * (0.85 + Math.random() * 0.4)).toFixed(2)}s`;
       el.addEventListener("animationend", () => el.remove());
       traffic.append(el);
     }
@@ -163,6 +168,7 @@ export function createScene(root, fuelEl) {
     fill: fuelEl.querySelector(".fuel-fill"),
     pct: fuelEl.querySelector(".fuel-pct"),
     pop: fuelEl.querySelector(".fuel-pop"),
+    dist: fuelEl.querySelector(".dist-n"),
   };
 
   const api = {
@@ -175,7 +181,16 @@ export function createScene(root, fuelEl) {
       root.classList.toggle("night", state.phase >= 7);
       root.classList.toggle("dusk", state.phase >= 5);
     },
-    // react to an answer: level id from the game ("alien", "johndoe", "imposter", "nothing", ...)
+    // How far the car has driven, in spaces (0..35). The car slides to its new spot along the road.
+    setDistance(spaces, { animate = true } = {}) {
+      const n = Math.max(0, Math.min(MAX_SPACES, spaces));
+      if (!animate) root.classList.add("no-slide");
+      root.style.setProperty("--p", String(n / MAX_SPACES));
+      if (!animate) { void root.offsetWidth; root.classList.remove("no-slide"); }
+      if (gauge && gauge.dist) gauge.dist.textContent = String(n);
+      root.classList.toggle("arrived", n >= MAX_SPACES);
+    },
+    // react to an answer: level id from the game ("johndoe", "alien", "imposter", "nothing", ...)
     react(level, { quiet = false } = {}) {
       const m = MOODS[level] || MOODS.idle;
       const rate = (0.25 + m.speed * 1.2) / (0.25 + state.speed * 1.2);
@@ -216,6 +231,7 @@ export function createScene(root, fuelEl) {
   };
 
   api.setPhase(0);
+  api.setDistance(0, { animate: false });
   api.idle();
   spawn();
   return api;

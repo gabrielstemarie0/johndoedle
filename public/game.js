@@ -1,13 +1,13 @@
-import cards from "./lib/cards.js";
-import { isValidQuestion, givesAway } from "./lib/text.js";
-import { LEVELS, IMPOSTER, NOTHING, levelById, judgeLocal } from "./lib/judge.js";
+import questions from "./lib/questions.js";
+import { isValidAnswer } from "./lib/text.js";
+import { LEVELS, IMPOSTER, NOTHING, MAX_SPACES, levelById, judgeLocal } from "./lib/scoring.js";
 import { createScene } from "./scene.js";
 
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
-const SECONDS = 60; // typing a question takes longer than a one-word answer
+const SECONDS = 25; // a short answer, so a short clock
 const PER_DAY = 7;
-const STORE_KEY = "jd:v2";
+const STORE_KEY = "jd:v3";
 
 const $ = (id) => document.getElementById(id);
 const views = { intro: $("intro"), play: $("play"), results: $("results") };
@@ -24,19 +24,19 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-// Everyone gets the same 7 cards on a given date. Each cycle walks the whole deck in a
-// fresh shuffled order, so cards don't repeat until the deck is used up.
-function pickCards(deck, day) {
+// Everyone gets the same 7 questions on a given date. Each cycle walks the whole bank in a
+// fresh shuffled order, so questions don't repeat until the bank is used up.
+function pickCards(bank, day) {
   const idx = dayIndex(day);
-  const daysPerCycle = Math.max(1, Math.floor(deck.length / PER_DAY));
+  const daysPerCycle = Math.max(1, Math.floor(bank.length / PER_DAY));
   const rand = mulberry32(Math.floor(idx / daysPerCycle) + 1);
-  const order = deck.map((_, i) => i);
+  const order = bank.map((_, i) => i);
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
     [order[i], order[j]] = [order[j], order[i]];
   }
   const pos = idx % daysPerCycle;
-  return order.slice(pos * PER_DAY, pos * PER_DAY + PER_DAY).map((i) => deck[i]);
+  return order.slice(pos * PER_DAY, pos * PER_DAY + PER_DAY).map((i) => bank[i]);
 }
 
 // ---------- saved state ----------
@@ -58,18 +58,18 @@ const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)
 const day = todayUTC();
 const gameNo = dayIndex(day) + 1;
 const today = (state.days[day] ||= { answers: [], startedAt: null });
-const todaysCards = pickCards(cards, day);
+const todaysQs = pickCards(questions, day);
 const scene = createScene($("scene"), $("fuel")); // the driving scene and gas gauge (purely visual)
 
-// ---------- judging ----------
-async function judge(card, question) {
+// ---------- scoring ----------
+async function judge(question, answer) {
   try {
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), 12000);
-    const res = await fetch("/api/judge", {
+    const res = await fetch("/api/answer", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ player: state.player, day, card: card.id, question }),
+      body: JSON.stringify({ player: state.player, day, q: question.id, answer }),
       signal: ctl.signal,
     });
     clearTimeout(t);
@@ -78,8 +78,8 @@ async function judge(card, question) {
       const body = await res.json().catch(() => ({}));
       return { rateLimited: true, which: body.which || "", retryAfter: Number(body.retryAfter) || 60 };
     }
-  } catch {} // no backend or it's down: judge offline against the seed questions
-  return judgeLocal(card, question);
+  } catch {} // no backend or it's down: score offline against the seed answers
+  return judgeLocal(question, answer);
 }
 
 // ---------- UI helpers ----------
@@ -108,9 +108,9 @@ function showCard() {
   $("submit").disabled = false;
   $("answer").removeAttribute("aria-invalid");
   $("answer-hint").hidden = true;
-  $("qnum").textContent = `Card ${cur + 1} of ${PER_DAY}`;
+  $("qnum").textContent = `Question ${cur + 1} of ${PER_DAY}`;
   $("running").textContent = `${running} pts`;
-  $("prompt").textContent = todaysCards[cur].answer;
+  $("prompt").textContent = todaysQs[cur].prompt;
   if (!today.startedAt) { today.startedAt = Date.now(); save(); }
   $("answer").focus();
   clearInterval(tick);
@@ -130,16 +130,12 @@ function frame() {
   if (left <= 0) lockIn(true);
 }
 
-// Manual submit: a non-question is rejected (shake) and the timer keeps running.
+// Manual submit: a non-answer is rejected (shake) and the timer keeps running.
 function trySubmit() {
   if (locked) return;
-  const typed = $("answer").value;
-  const giveaway = isValidQuestion(typed) && givesAway(typed, todaysCards[cur].answer);
-  if (isValidQuestion(typed) && !giveaway) return lockIn();
+  if (isValidAnswer($("answer").value)) return lockIn();
   const input = $("answer");
-  $("answer-hint").textContent = giveaway
-    ? "Your question can't contain the answer. Try again before time runs out."
-    : "That's not a question. Try again before time runs out.";
+  $("answer-hint").textContent = "That's not an answer. Try again before time runs out.";
   $("answer-hint").hidden = false;
   input.setAttribute("aria-invalid", "true");
   input.classList.remove("shake");
@@ -153,15 +149,15 @@ async function lockIn(timedOut = false) {
   locked = true;
   clearInterval(tick);
   const typed = $("answer").value.trim();
-  const raw = isValidQuestion(typed) ? typed : ""; // on timeout, a non-question counts as blank
-  const card = todaysCards[cur];
+  const raw = isValidAnswer(typed) ? typed : ""; // on timeout, a non-answer counts as blank
+  const q = todaysQs[cur];
   $("answer").disabled = true;
   $("submit").disabled = true;
 
-  let result = { level: NOTHING.id, pts: NOTHING.pts, matched: false, text: "", top: [] };
+  let result = { level: NOTHING.id, pts: NOTHING.pts, label: "", top: [] };
   if (raw) {
     $("judging").hidden = false;
-    result = await judge(card, raw);
+    result = await judge(q, raw);
     $("judging").hidden = true;
   }
 
@@ -175,43 +171,41 @@ async function lockIn(timedOut = false) {
       const daily = result.which.endsWith("-day");
       const wait = result.retryAfter >= 90 ? `${Math.ceil(result.retryAfter / 60)} minutes` : `${result.retryAfter} seconds`;
       $("answer-hint").textContent = daily
-        ? "You've reached today's limit for questions. Come back tomorrow."
-        : `Too many questions right now. Wait about ${wait} and try again.`;
+        ? "You've reached today's limit for answers. Come back tomorrow."
+        : `Too many answers right now. Wait about ${wait} and try again.`;
       $("answer-hint").hidden = false;
       $("answer").focus();
       tick = setInterval(frame, 100);
       syncHeaderButtons();
       return;
     }
-    result = { level: NOTHING.id, pts: NOTHING.pts, matched: false, text: "", top: [], limited: true };
+    result = { level: NOTHING.id, pts: NOTHING.pts, label: "", top: [], limited: true };
   }
-  today.answers.push({ raw, level: result.level, pts: result.pts, text: result.text, top: result.top || [] });
+  today.answers.push({ raw, level: result.level, pts: result.pts, label: result.label, top: result.top || [] });
   today.startedAt = null;
   running += result.pts;
   save();
   scene.setFuel(Math.max(0, running) / 7, { gained: result.pts }); // a perfect 700 fills the tank
+  scene.setDistance(spacesDriven()); // the car drives 5 spaces for a John Doe, down to 1 for an Alien
   scene.react(result.level);
 
   const lvl = levelById(result.level);
+  const best = (result.top || [])[0];
   $("answer-form").hidden = true;
   $("running").textContent = `${running} pts`;
   $("fb-pts").textContent = fmt(result.pts);
   $("fb-pts").className = `pts lvl-${lvl.id}`;
-  $("fb-level").textContent = `${lvl.emoji} ${lvl.name}`;
+  $("fb-level").textContent = `${lvl.emoji} ${lvl.name} · ${lvl.spaces ? `+${lvl.spaces} space${lvl.spaces > 1 ? "s" : ""}` : "no movement"}`;
   $("fb-text").textContent = !raw
-    ? "Time's up, nothing entered."
+    ? `Time's up, nothing entered.${best ? ` The popular answer was "${best}".` : ""}`
     : result.limited
-      ? "Too many requests, so this question couldn't be judged."
-    : result.level === "imposter"
-      ? result.reason === "gives_away"
-        ? "Your question contained the answer."
-        : result.reason === "vague"
-          ? `Too vague: lots of answers fit that question, not just "${card.answer}".`
-          : `That question doesn't lead to "${card.answer}".`
-      : result.matched
-        ? `Same as a known question: "${result.text}"`
-        : "Nobody has asked that one before.";
-  $("next").textContent = today.answers.length >= PER_DAY ? "See results" : "Next card";
+      ? "Too many requests, so this answer couldn't be scored."
+      : result.level === "imposter"
+        ? `That doesn't answer "${q.prompt}".`
+        : result.level === "johndoe"
+          ? `"${result.label}" is the most popular answer!`
+          : `"${result.label}" is ${lvl.note}.${best ? ` The most popular was "${best}".` : ""}`;
+  $("next").textContent = today.answers.length >= PER_DAY ? "See results" : "Next question";
   $("feedback").hidden = false;
   syncHeaderButtons();
   $("next").focus();
@@ -236,24 +230,26 @@ function finish() {
 
 // ---------- results ----------
 const total = () => today.answers.reduce((n, a) => n + a.pts, 0);
+const spacesDriven = () => Math.min(MAX_SPACES, today.answers.reduce((n, a) => n + (levelById(a.level).spaces || 0), 0));
 
 function renderResults() {
   show("results");
   const t = total();
   scene.setPhase(7);
   scene.setFuel(Math.max(0, t) / 7, { animate: false });
+  scene.setDistance(spacesDriven(), { animate: false });
   const tank = Math.round(Math.max(0, t) / 7);
-  $("fuel-note").textContent = `${tank}% of a tank. ${
+  $("fuel-note").textContent = `Drove ${spacesDriven()} of ${MAX_SPACES} spaces and filled ${tank}% of the tank. ${
     tank >= 80 ? "You could drive forever." : tank >= 50 ? "Plenty left for the ride home." : tank >= 25 ? "Enough to limp to the next station." : "Running on fumes."
   }`;
   $("res-day").textContent = `John Doedle #${gameNo}`;
   $("total").textContent = t;
   $("verdict").textContent =
-    t >= 550 ? "Absolutely out of this world."
-    : t >= 400 ? "Deep cuts all around."
-    : t >= 250 ? "A nicely off-beat mind."
-    : t >= 100 ? "Staying in the shallows."
-    : "Pure John Doe. Think weirder.";
+    t >= 650 ? "Peak John Doe. Perfectly ordinary."
+    : t >= 500 ? "Very relatable. You'd blend into any crowd."
+    : t >= 300 ? "Pretty average, which is the goal."
+    : t >= 150 ? "A bit quirky. Maybe too quirky."
+    : "You march to your own drum. Not great for this game.";
   const list = $("breakdown");
   list.replaceChildren();
   today.answers.forEach((a, i) => {
@@ -263,19 +259,19 @@ function renderResults() {
     top.className = "row-top";
     const q = document.createElement("span");
     q.className = "row-q";
-    q.textContent = todaysCards[i].answer;
+    q.textContent = todaysQs[i].prompt;
     const p = document.createElement("span");
     p.className = `row-pts lvl-${lvl.id}`;
     p.textContent = `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}`;
     top.append(q, p);
     const you = document.createElement("div");
     you.className = "row-you";
-    you.textContent = a.raw ? `You asked: ${a.raw}` : "No question";
+    you.textContent = a.raw ? `You said: ${a.raw}` : "No answer";
     li.append(top, you);
-    if (a.top && a.top[0]) {
+    if (a.top && a.top.length) {
       const common = document.createElement("div");
       common.className = "row-top3";
-      common.textContent = `Most asked: ${a.top[0]}`;
+      common.textContent = `Most popular: ${a.top.join(", ")}`;
       li.append(common);
     }
     list.append(li);
@@ -361,7 +357,7 @@ function renderStats() {
   if (!st.played) {
     const p = document.createElement("p");
     p.className = "stats-empty";
-    p.textContent = "No finished games yet. Play today's cards to start filling the tank.";
+    p.textContent = "No finished games yet. Play today's questions to start filling the tank.";
     box.append(p);
     return;
   }
@@ -397,7 +393,7 @@ function renderStats() {
   }
   box.append(chart);
 
-  const h2 = document.createElement("h3"); h2.textContent = "Your questions"; box.append(h2);
+  const h2 = document.createElement("h3"); h2.textContent = "Your answers"; box.append(h2);
   const dist = document.createElement("ul"); dist.className = "stat-dist";
   for (const l of [...LEVELS, IMPOSTER, NOTHING]) {
     const n = st.byLevel[l.id] || 0;
@@ -451,6 +447,7 @@ countdown();
 
 running = today.answers.reduce((n, a) => n + a.pts, 0);
 scene.setFuel(Math.max(0, running) / 7, { animate: false });
+scene.setDistance(spacesDriven(), { animate: false });
 scene.setPhase(today.done ? 7 : Math.min(today.answers.length, 6));
 if (today.answers.length) scene.react(today.answers.at(-1).level, { quiet: true });
 if (today.done || today.answers.length >= PER_DAY) finish();
