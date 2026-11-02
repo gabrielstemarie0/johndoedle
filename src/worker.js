@@ -48,7 +48,7 @@ async function handleJudge(request, env) {
   }
 
   try {
-    return reply(await judgeQuestion({ db: env.DB, ai: makeAI(env.AI), card, question, player, day }));
+    return reply(await judgeQuestion({ db: env.DB, ai: makeAI(env.AI), card, question, player, day, debug: body.debug === true }));
   } catch (e) {
     console.error("judge failed", e && e.message);
     return reply({ error: "judge failed" }, 502);

@@ -104,7 +104,7 @@ async function ensureSeeded(db, ai, card) {
   );
 }
 
-export async function judgeQuestion({ db, ai, card, question, player, day }) {
+export async function judgeQuestion({ db, ai, card, question, player, day, debug = false }) {
   await ensureSeeded(db, ai, card);
   const { results } = await db
     .prepare("SELECT key, text, vec, seedw, prior, count FROM qclusters WHERE card = ? ORDER BY seedw DESC, count DESC LIMIT 300")
@@ -153,7 +153,8 @@ export async function judgeQuestion({ db, ai, card, question, player, day }) {
       }
     }
   }
-  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts, ...(d.valid ? {} : { reason: d.reason }) };
+  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts, ...(d.valid ? {} : { reason: d.reason }),
+    ...(debug ? { debug: { seedSim: d.seedSim == null ? null : Math.round(d.seedSim * 1000) / 1000, llmRarity: rarity, prior: d.prior ?? null } } : {}) };
 }
 
 export { isValidQuestion };

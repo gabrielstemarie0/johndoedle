@@ -107,7 +107,7 @@ export async function decide(rows, vec, th, aiValid, reason, getPrior) {
   const topWeight = Math.max(1, ...rows.map(weightOf));
   const prior = matched ? null : getPrior?.();
   const ratio = matched ? (share.get(matched.key) || 0) / top : prior != null ? prior / topWeight : 0;
-  return { valid: true, level: levelForRatio(ratio), matched, topTexts, prior };
+  return { valid: true, level: levelForRatio(ratio), matched, topTexts, prior, seedSim: seedBest };
 }
 
 // ---------- offline fallback (browser) ----------
