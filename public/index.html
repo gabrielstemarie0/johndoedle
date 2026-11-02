@@ -6,6 +6,22 @@
   <title>John Doedle</title>
   <meta name="description" content="A daily game of 7 cards. Each shows an answer. Write the nichest question that has it.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#f2b632">
+  <!-- Link previews (Open Graph / Twitter). Update the URLs below if you add a custom domain. -->
+  <link rel="canonical" href="https://johndoedle.gabrielstemarie0.workers.dev/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="John Doedle">
+  <meta property="og:title" content="John Doedle: write the nichest question">
+  <meta property="og:description" content="A daily game. You get the answer, you write the question. The rarer your question, the more gas you earn.">
+  <meta property="og:url" content="https://johndoedle.gabrielstemarie0.workers.dev/">
+  <meta property="og:image" content="https://johndoedle.gabrielstemarie0.workers.dev/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="John Doe driving through traffic, with an exit sign reading Paris">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="John Doedle: write the nichest question">
+  <meta name="twitter:description" content="A daily game. You get the answer, you write the question. The rarer your question, the more gas you earn.">
+  <meta name="twitter:image" content="https://johndoedle.gabrielstemarie0.workers.dev/og-image.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,6 +32,8 @@
     </a>
     <div class="chips">
       <span class="chip" id="streak-chip" title="Days in a row you've finished">🔥 <b id="streak">0</b></span>
+      <button class="chip chip-btn" id="stats-btn" type="button" aria-label="Your stats" title="Your stats">&#128202;</button>
+      <button class="chip chip-btn" id="help-btn" type="button" aria-label="How to play" title="How to play">?</button>
     </div>
   </header>
 
@@ -85,6 +103,31 @@
 
     <noscript><p class="card">John Doedle needs JavaScript to run.</p></noscript>
   </main>
+
+  <!-- How to play -->
+  <dialog id="help-dialog" class="modal" aria-labelledby="help-title">
+    <div class="modal-body">
+      <h2 id="help-title">How to play</h2>
+      <ol class="steps">
+        <li><b>You get an answer</b> on an exit sign, like <em>Paris</em>.</li>
+        <li><b>Write a question that has that answer</b>, in 60 seconds. Don't put the answer in the question.</li>
+        <li><b>Rarer questions earn more gas.</b> Almost everyone asks "What is the capital of France?" (10 points). Hardly anyone asks "Which city has a lattice iron tower built for the 1889 World's Fair?" (100 points).</li>
+        <li><b>Be specific.</b> "What is a city?" is too vague, since lots of answers fit, so it scores 0. So does a question the answer doesn't fit.</li>
+      </ol>
+      <p class="modal-note">Seven cards a day, with a new set at midnight UTC. A full tank is 700 points.</p>
+      <form method="dialog"><button class="btn primary" id="help-ok">Let's drive</button></form>
+    </div>
+  </dialog>
+
+  <!-- Stats (built from this browser's saved games) -->
+  <dialog id="stats-dialog" class="modal" aria-labelledby="stats-title">
+    <div class="modal-body">
+      <h2 id="stats-title">Your stats</h2>
+      <div id="stats-content"></div>
+      <p class="modal-note">Saved in this browser only.</p>
+      <form method="dialog"><button class="btn">Close</button></form>
+    </div>
+  </dialog>
 
   <footer>John Doedle · a new set of questions every day (resets at midnight UTC)</footer>
   <script type="module" src="game.js"></script>

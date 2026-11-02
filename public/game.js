@@ -116,6 +116,7 @@ function showCard() {
   clearInterval(tick);
   tick = setInterval(frame, 100);
   frame();
+  syncHeaderButtons();
 }
 
 function frame() {
@@ -179,6 +180,7 @@ async function lockIn(timedOut = false) {
       $("answer-hint").hidden = false;
       $("answer").focus();
       tick = setInterval(frame, 100);
+      syncHeaderButtons();
       return;
     }
     result = { level: NOTHING.id, pts: NOTHING.pts, matched: false, text: "", top: [], limited: true };
@@ -211,6 +213,7 @@ async function lockIn(timedOut = false) {
         : "Nobody has asked that one before.";
   $("next").textContent = today.answers.length >= PER_DAY ? "See results" : "Next card";
   $("feedback").hidden = false;
+  syncHeaderButtons();
   $("next").focus();
 }
 
@@ -311,6 +314,106 @@ function countdown() {
   $("countdown").textContent = `${p(Math.floor(left / 3600))}:${p(Math.floor((left % 3600) / 60))}:${p(left % 60)}`;
 }
 
+// ---------- help + stats dialogs ----------
+const helpSeen = () => { try { return localStorage.getItem("jd:help") === "1"; } catch { return true; } };
+function openDialog(d) { if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", ""); }
+let afterHelp = null;
+function openHelp(then = null) {
+  afterHelp = then;
+  $("help-ok").textContent = then ? "Let's drive" : "Got it";
+  openDialog($("help-dialog"));
+}
+$("help-dialog").addEventListener("close", () => {
+  try { localStorage.setItem("jd:help", "1"); } catch {}
+  const next = afterHelp; afterHelp = null;
+  if (next) next();
+});
+// Don't let the stats/help buttons be used to stall the clock during a timed question.
+function syncHeaderButtons() {
+  const timing = !views.play.hidden && !locked && $("feedback").hidden;
+  $("help-btn").disabled = $("stats-btn").disabled = timing;
+}
+$("help-btn").addEventListener("click", () => openHelp());
+
+function computeStats() {
+  const games = Object.entries(state.days)
+    .filter(([, d]) => d.done && d.answers.length)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([d, v]) => ({ day: d, total: v.answers.reduce((n, a) => n + a.pts, 0), answers: v.answers }));
+  const scores = games.map((g) => g.total);
+  const byLevel = Object.fromEntries([...LEVELS, IMPOSTER, NOTHING].map((l) => [l.id, 0]));
+  let answered = 0;
+  for (const g of games) for (const a of g.answers) { byLevel[a.level] = (byLevel[a.level] || 0) + 1; answered++; }
+  return {
+    games,
+    played: games.length,
+    average: scores.length ? Math.round(scores.reduce((n, s) => n + s, 0) / scores.length) : 0,
+    best: scores.length ? Math.max(...scores) : 0,
+    byLevel,
+    answered,
+  };
+}
+
+function renderStats() {
+  const st = computeStats();
+  const box = $("stats-content");
+  box.replaceChildren();
+  if (!st.played) {
+    const p = document.createElement("p");
+    p.className = "stats-empty";
+    p.textContent = "No finished games yet. Play today's cards to start filling the tank.";
+    box.append(p);
+    return;
+  }
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const cur = state.streak.last === day || state.streak.last === yesterday ? state.streak.count : 0;
+  const tiles = [["Games", st.played], ["Average", st.average], ["Best", st.best], ["Streak", `${cur} (best ${Math.max(state.streak.best, cur)})`]];
+  const grid = document.createElement("div");
+  grid.className = "stat-tiles";
+  for (const [label, value] of tiles) {
+    const t = document.createElement("div");
+    t.className = "stat-tile";
+    const v = document.createElement("b"); v.textContent = value;
+    const l = document.createElement("span"); l.textContent = label;
+    t.append(v, l);
+    grid.append(t);
+  }
+  box.append(grid);
+
+  // last 14 games as bars (full height = a 700 point perfect run)
+  const recent = st.games.slice(-14);
+  const h = document.createElement("h3"); h.textContent = `Last ${recent.length} game${recent.length > 1 ? "s" : ""}`; box.append(h);
+  const chart = document.createElement("div");
+  chart.className = "stat-bars";
+  chart.setAttribute("role", "img");
+  chart.setAttribute("aria-label", `Scores of your last ${recent.length} games: ${recent.map((g) => g.total).join(", ")}`);
+  for (const g of recent) {
+    const col = document.createElement("div"); col.className = "stat-bar";
+    const bar = document.createElement("i"); bar.style.height = `${Math.max(3, Math.round((Math.max(0, g.total) / 700) * 100))}%`;
+    bar.title = `${g.day}: ${g.total}`;
+    const val = document.createElement("small"); val.textContent = g.total;
+    col.append(bar, val);
+    chart.append(col);
+  }
+  box.append(chart);
+
+  const h2 = document.createElement("h3"); h2.textContent = "Your questions"; box.append(h2);
+  const dist = document.createElement("ul"); dist.className = "stat-dist";
+  for (const l of [...LEVELS, IMPOSTER, NOTHING]) {
+    const n = st.byLevel[l.id] || 0;
+    const li = document.createElement("li");
+    const name = document.createElement("span"); name.textContent = `${l.emoji} ${l.name}`; name.className = `lvl-${l.id}`;
+    const track = document.createElement("div"); track.className = "stat-track";
+    const fill = document.createElement("i"); fill.style.width = `${st.answered ? Math.round((n / st.answered) * 100) : 0}%`; fill.className = `bg-${l.id}`;
+    track.append(fill);
+    const count = document.createElement("em"); count.textContent = n;
+    li.append(name, track, count);
+    dist.append(li);
+  }
+  box.append(dist);
+}
+$("stats-btn").addEventListener("click", () => { renderStats(); openDialog($("stats-dialog")); });
+
 // ---------- wire up ----------
 $("answer-form").addEventListener("submit", (e) => { e.preventDefault(); trySubmit(); });
 $("answer").addEventListener("input", () => {
@@ -318,7 +421,10 @@ $("answer").addEventListener("input", () => {
   $("answer").removeAttribute("aria-invalid");
 });
 $("next").addEventListener("click", showCard);
-$("start").addEventListener("click", showCard);
+$("start").addEventListener("click", () => {
+  if (!helpSeen()) openHelp(showCard); // first visit: explain the game, then start
+  else showCard();
+});
 $("share").addEventListener("click", copyShare);
 
 // intro level list comes from the same table the scoring uses
