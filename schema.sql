@@ -20,3 +20,12 @@ CREATE TABLE IF NOT EXISTS plays (
   card   TEXT NOT NULL,
   PRIMARY KEY (day, player, card)
 );
+
+-- Request counters for rate limiting (per IP, per player, global; per hour and per day).
+CREATE TABLE IF NOT EXISTS rate_limits (
+  key    TEXT NOT NULL,
+  bucket TEXT NOT NULL,
+  day    TEXT NOT NULL,
+  count  INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (key, bucket)
+);

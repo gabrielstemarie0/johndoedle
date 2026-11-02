@@ -4,6 +4,7 @@
 import cards from "../public/lib/cards.js";
 import { isValidQuestion } from "../public/lib/text.js";
 import { judgeQuestion, makeAI } from "./judge-server.js";
+import { checkLimits } from "./ratelimit.js";
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -33,6 +34,18 @@ async function handleJudge(request, env) {
   if (typeof day !== "string" || !DAY.test(day) || Math.abs(Date.parse(day + "T00:00:00Z") - Date.now()) / 86400000 >= 2)
     return reply({ error: "bad day" }, 400);
   if (typeof question !== "string" || !isValidQuestion(question)) return reply({ error: "not a question" }, 400);
+
+  // Cap AI usage per network address, per player id and globally.
+  try {
+    const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+    const limit = await checkLimits(env.DB, { ip, player });
+    if (!limit.ok) {
+      console.warn("rate limited:", limit.which);
+      return reply({ error: "rate limited", which: limit.which, retryAfter: limit.retryAfter }, 429, { "retry-after": String(limit.retryAfter) });
+    }
+  } catch (e) {
+    console.error("rate limit check failed", e && e.message); // fail open: a broken counter shouldn't stop the game
+  }
 
   try {
     return reply(await judgeQuestion({ db: env.DB, ai: makeAI(env.AI), card, question, player, day }));

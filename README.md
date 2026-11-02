@@ -12,6 +12,7 @@ public/                           the static game (served as Workers assets)
   lib/text.js                     text helpers and the "is this a real question" check
 src/worker.js                     routes POST /api/judge; everything else is served from public/
 src/judge-server.js               D1 + Workers AI judging
+src/ratelimit.js                  per-IP / per-player / global request limits
 schema.sql, wrangler.toml         D1 tables, bindings (DB, AI, ASSETS) and Worker config
 ```
 
@@ -72,10 +73,25 @@ no repeats. To add a card, append to `public/lib/cards.js` with the next id (`a3
 questions using the weight ladder 100, 55, 30, 14, 6 (obvious down to deep cut), so every card has a question in
 each scoring band. Game #1 is `LAUNCH_DAY` in `public/game.js`.
 
+## Rate limits (`src/ratelimit.js`)
+Every `/api/judge` call that costs AI usage is counted in the `rate_limits` D1 table:
+
+| Limit | Default |
+|---|---|
+| per network address, per hour | 60 |
+| per network address, per day | 300 |
+| per player id, per day | 30 |
+| everyone, per day | 3000 |
+
+A real player makes about 7 calls a day. When a limit is hit the API returns `429` with `Retry-After`, and the page
+shows a message and lets the player try again while time remains (it does not fall back to the offline judge).
+Counters reset each UTC hour/day. Change the numbers in `LIMITS`. If the counter itself fails the game keeps
+working (it "fails open"). The player id is chosen by the browser, so the per-address and global limits are the
+real protection. Add Cloudflare Turnstile if you ever see scripted abuse.
+
 ## Known limits
 - The AI judge can be fooled or be wrong. Expect to tune the thresholds and prompt.
-- Counts trust the server's judge, but players can still be spammed by scripted requests. Add Turnstile or
-  rate limiting if it takes off.
+- Rate limits slow scripted abuse but don't stop a determined attacker with many IP addresses; add Turnstile then.
 - Question vectors are stored as JSON in D1 and the 300 most relevant are loaded per judgement. That's fine for
   a hobby-scale game; move to Vectorize if it grows.
 - Streaks and progress live in the player's browser (`localStorage`).

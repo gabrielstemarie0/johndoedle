@@ -72,6 +72,10 @@ async function judge(card, question) {
     });
     clearTimeout(t);
     if (res.ok) return await res.json();
+    if (res.status === 429) {
+      const body = await res.json().catch(() => ({}));
+      return { rateLimited: true, which: body.which || "", retryAfter: Number(body.retryAfter) || 60 };
+    }
   } catch {} // no backend or it's down: judge offline against the seed questions
   return judgeLocal(card, question);
 }
@@ -119,7 +123,7 @@ function frame() {
   bar.style.transform = `scaleX(${Math.max(0, left) / (SECONDS * 1000)})`;
   bar.classList.toggle("low", secs <= 20 && secs > 10);
   bar.classList.toggle("critical", secs <= 10);
-  if (left <= 0) lockIn();
+  if (left <= 0) lockIn(true);
 }
 
 // Manual submit: a non-question is rejected (shake) and the timer keeps running.
@@ -140,7 +144,7 @@ function trySubmit() {
   input.focus();
 }
 
-async function lockIn() {
+async function lockIn(timedOut = false) {
   if (locked) return;
   locked = true;
   clearInterval(tick);
@@ -156,6 +160,26 @@ async function lockIn() {
     result = await judge(card, raw);
     $("judging").hidden = true;
   }
+
+  if (result.rateLimited) {
+    const timeLeft = SECONDS * 1000 - (Date.now() - today.startedAt);
+    if (!timedOut && timeLeft > 0) {
+      // Too many requests: let them try again while the clock is still running.
+      locked = false;
+      $("answer").disabled = false;
+      $("submit").disabled = false;
+      const daily = result.which.endsWith("-day");
+      const wait = result.retryAfter >= 90 ? `${Math.ceil(result.retryAfter / 60)} minutes` : `${result.retryAfter} seconds`;
+      $("answer-hint").textContent = daily
+        ? "You've reached today's limit for questions. Come back tomorrow."
+        : `Too many questions right now. Wait about ${wait} and try again.`;
+      $("answer-hint").hidden = false;
+      $("answer").focus();
+      tick = setInterval(frame, 100);
+      return;
+    }
+    result = { level: NOTHING.id, pts: NOTHING.pts, matched: false, text: "", top: [], limited: true };
+  }
   today.answers.push({ raw, level: result.level, pts: result.pts, text: result.text, top: result.top || [] });
   today.startedAt = null;
   running += result.pts;
@@ -169,6 +193,8 @@ async function lockIn() {
   $("fb-level").textContent = `${lvl.emoji} ${lvl.name}`;
   $("fb-text").textContent = !raw
     ? "Time's up, nothing entered."
+    : result.limited
+      ? "Too many requests, so this question couldn't be judged."
     : result.level === "imposter"
       ? result.reason === "gives_away"
         ? "Your question contained the answer."
