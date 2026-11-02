@@ -75,7 +75,10 @@ export function cosine(a, b) {
 export const LEXICAL = { same: 0.6, validNear: 0.3 };
 // Measured on the live judge with bge-base: real paraphrases scored 0.83-0.99, different-but-valid
 // questions 0.58-0.70. 0.80 sits in the gap.
-export const DENSE = { same: 0.8, validNear: 0.8 };
+// `same`: close enough to count as the same question. `validNear`: so close to a seed question that we trust
+// it without asking the AI. Anything between the two is checked, because a near-copy with one key word
+// changed ("animals" for "plants") can score well above 0.80 yet have a different answer.
+export const DENSE = { same: 0.8, validNear: 0.95 };
 
 // ---------- the decision ----------
 // th: thresholds. aiValid: async () => true | false | null, only called when the

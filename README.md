@@ -38,8 +38,9 @@ submitted; the field shakes and the timer keeps running.
 0. A question that contains the answer ("What is a thing that is Gold?") is rejected straight away, with no AI call.
    The page shakes it off before submitting, and the server enforces it too.
 1. The question is embedded with Workers AI (`@cf/baai/bge-base-en-v1.5`) and compared with the card's known
-   questions. If it is close to one, it is treated as the same question and scored by that question's rarity.
-2. If it is not close to a seed question, a chat model (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, falling back to
+   questions. If it is close to one (0.80 similarity), it is treated as the same question and scored by that
+   question's rarity.
+2. Unless it is a near-exact copy of a seed question (0.95), a chat model (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, falling back to
    `llama-3.1-8b-instruct-fast`) returns one word: YES (a new question, so Alien), WRONG (the answer doesn't fit), or
    VAGUE (the answer fits but so do many others, or it's a yes/no or letter-game question). The prompt and examples
    are `JUDGE_RULES` in `src/judge-server.js`.
@@ -69,7 +70,7 @@ Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then
 
 ## Daily cards
 Based on the UTC date. Everyone gets the same 7. The deck is shuffled in cycles, so 135 cards give 19 days with
-no repeats. To add a card, append to `public/lib/cards.js` with the next id (`a36`, ...): the answer plus about five
+no repeats. To add a card, append to `public/lib/cards.js` with the next id (`a136`, ...): the answer plus about five
 questions using the weight ladder 100, 55, 30, 14, 6 (obvious down to deep cut), so every card has a question in
 each scoring band. Game #1 is `LAUNCH_DAY` in `public/game.js`.
 
