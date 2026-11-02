@@ -1,6 +1,6 @@
 // Server-side judging: D1 for counts, Workers AI for meaning.
-import { normalize, isValidQuestion } from "./text.js";
-import { decide, lexVec, LEXICAL, DENSE } from "./judge.js";
+import { normalize, isValidQuestion } from "../public/lib/text.js";
+import { decide, lexVec, LEXICAL, DENSE } from "../public/lib/judge.js";
 
 const EMBED_MODEL = "@cf/baai/bge-base-en-v1.5";
 const CHAT_MODEL = "@cf/meta/llama-3.1-8b-instruct";

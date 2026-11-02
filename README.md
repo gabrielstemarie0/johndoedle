@@ -2,16 +2,17 @@
 
 A daily game of 7 cards. Each card shows an **answer** (say, "Pepperoni"). You write the **nichest question**
 that has that answer, in 40 seconds. The rarer your question, the more points. Plain HTML/JS front end plus one
-Cloudflare Pages Function, with D1 for counts and Workers AI for judging. No build step.
+Cloudflare Worker (static assets + `/api/judge`), with D1 for counts and Workers AI for judging. No build step.
 
 ```
-index.html, styles.css, game.js   the game
-lib/cards.js                      the deck: answer + seed questions with popularity weights
-lib/judge.js                      levels, popularity maths, similarity (shared by browser and server)
-lib/judge-server.js               D1 + Workers AI judging
-lib/text.js                       text helpers and the "is this a real question" check
-functions/api/judge.js            POST /api/judge
-schema.sql, wrangler.toml         D1 tables and the DB and AI bindings
+public/                           the static game (served as Workers assets)
+  index.html, styles.css, game.js   the page
+  lib/cards.js                    the deck: answer + seed questions with popularity weights
+  lib/judge.js                    levels, popularity maths, similarity (shared by browser and server)
+  lib/text.js                     text helpers and the "is this a real question" check
+src/worker.js                     routes POST /api/judge; everything else is served from public/
+src/judge-server.js               D1 + Workers AI judging
+schema.sql, wrangler.toml         D1 tables, bindings (DB, AI, ASSETS) and Worker config
 ```
 
 ## Scoring
@@ -39,31 +40,32 @@ submitted; the field shakes and the timer keeps running.
    the answer is a correct response. NO means Imposter; YES means a new question, so Alien.
 3. Valid questions are counted once per player per card per day (`plays` table).
 
-The similarity thresholds in `lib/judge.js` (`DENSE`) are starting points; adjust them after you've seen real
+The similarity thresholds in `public/lib/judge.js` (`DENSE`) are starting points; adjust them after you've seen real
 questions. Without an AI binding the server uses plain word overlap, and the browser falls back to word
 overlap against the seed questions when the API is unreachable. That works for local testing, but it
 will mark many genuinely new questions as Imposter.
 
-## Deploy (Cloudflare + GitHub)
-1. Move this folder into its own GitHub repo (it should be the repo root).
-2. Create the database and tables:
+## Deploy (Cloudflare Workers + GitHub)
+This is a **Workers** project (not Pages). `wrangler.toml` describes everything, including the bindings.
+1. Create the database and tables (already done for the `johndoedle` database in the config):
    ```
-   npx wrangler d1 create johndoedle          # copy the database_id it prints
+   npx wrangler d1 create johndoedle          # copy the database_id into wrangler.toml
    npx wrangler d1 execute johndoedle --remote --file=schema.sql
    ```
-3. Paste that `database_id` into `wrangler.toml` and commit it. The `DB` (D1) and `AI` (Workers AI) bindings
-   are declared in that file, so Pages reads them from there. There is nothing to add on the dashboard's
-   Bindings page, which is read-only when a `wrangler.toml` is present.
-4. Cloudflare dashboard -> Workers & Pages -> Create -> Pages -> connect the GitHub repo.
-   Framework preset: None, build command: empty, output directory: `/`.
-5. Optional: add a custom domain.
+2. Cloudflare dashboard -> Workers & Pages -> Create -> Workers -> Import a repository, pick this repo.
+   Leave the build command empty. The deploy command is `npx wrangler deploy`. The Worker name in
+   `wrangler.toml` (`johndoedle`) must match the project name.
+3. Every push to `main` redeploys. The site is at `https://johndoedle.<your-subdomain>.workers.dev`.
+
+Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then `npx wrangler dev --local`.
+(Workers AI always calls your real account even locally; to use word-matching only, run with a copy of
+`wrangler.toml` that has no `[ai]` section.)
 
 ## Daily cards
 Based on the UTC date. Everyone gets the same 7. The deck is shuffled in cycles, so 35 cards give 5 days with
-no repeats. To add a card, append to `lib/cards.js` with the next id (`a36`, ...): the answer plus about five
+no repeats. To add a card, append to `public/lib/cards.js` with the next id (`a36`, ...): the answer plus about five
 questions using the weight ladder 100, 55, 30, 14, 6 (obvious down to deep cut), so every card has a question in
-each scoring band. Game #1 is
-`LAUNCH_DAY` in `game.js`.
+each scoring band. Game #1 is `LAUNCH_DAY` in `public/game.js`.
 
 ## Known limits
 - The AI judge can be fooled or be wrong. Expect to tune the thresholds and prompt.

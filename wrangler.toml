@@ -1,6 +1,11 @@
 name = "johndoedle"
-pages_build_output_dir = "."
+main = "src/worker.js"
 compatibility_date = "2024-11-01"
+
+# The game itself. Requests that don't match a file here go to the Worker (/api/judge).
+[assets]
+directory = "./public"
+binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
