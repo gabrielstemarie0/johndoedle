@@ -60,13 +60,18 @@ export function makeAI(binding) {
   };
 }
 
+// Keep the seed rows in D1 in step with the question bank (new answers, changed weights). Cheap when nothing changed.
 async function ensureSeeded(db, question) {
-  const have = await db.prepare("SELECT COUNT(*) AS n FROM answer_counts WHERE qid = ? AND seedw > 0").bind(question.id).first();
-  if (have && have.n > 0) return;
+  const want = question.answers.length;
+  const wantSum = question.answers.reduce((n, a) => n + a[1], 0);
+  const have = await db.prepare("SELECT COUNT(*) AS n, COALESCE(SUM(seedw), 0) AS s FROM answer_counts WHERE qid = ? AND seedw > 0").bind(question.id).first();
+  if (have && have.n === want && Math.abs(have.s - wantSum) < 0.01) return;
   await db.batch(
     question.answers.map(([label, w]) =>
       db
-        .prepare("INSERT OR IGNORE INTO answer_counts (qid, key, label, seedw, count) VALUES (?, ?, ?, ?, 0)")
+        .prepare(
+          "INSERT INTO answer_counts (qid, key, label, seedw, count) VALUES (?, ?, ?, ?, 0) ON CONFLICT(qid, key) DO UPDATE SET label = excluded.label, seedw = excluded.seedw"
+        )
         .bind(question.id, normalize(label), label, w)
     )
   );
@@ -98,7 +103,7 @@ export async function scoreAnswer({ db, ai, question, answer, player, day }) {
 
   const known = rows.find((r) => r.key === key);
   const lvl = levelFor(rows, key);
-  label = known ? known.label : label;
+  label = known ? known.label : label || answer.trim();
 
   if (countIt) {
     // Count each player's answer once per question per day.
