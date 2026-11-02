@@ -1,7 +1,7 @@
 # John Doedle
 
 A daily game of 7 cards. Each card shows an **answer** (say, "Pepperoni"). You write the **nichest question**
-that has that answer, in 40 seconds. The rarer your question, the more points. Plain HTML/JS front end plus one
+that has that answer, in 60 seconds. The rarer your question, the more points. Plain HTML/JS front end plus one
 Cloudflare Worker (static assets + `/api/judge`), with D1 for counts and Workers AI for judging. No build step.
 
 ```

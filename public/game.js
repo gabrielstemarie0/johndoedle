@@ -4,7 +4,7 @@ import { LEVELS, IMPOSTER, NOTHING, levelById, judgeLocal } from "./lib/judge.js
 
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
-const SECONDS = 40; // typing a question takes longer than a one-word answer
+const SECONDS = 60; // typing a question takes longer than a one-word answer
 const PER_DAY = 7;
 const STORE_KEY = "jd:v2";
 
@@ -117,8 +117,8 @@ function frame() {
   $("timer-text").textContent = secs;
   const bar = $("timer-bar");
   bar.style.transform = `scaleX(${Math.max(0, left) / (SECONDS * 1000)})`;
-  bar.classList.toggle("low", secs <= 15 && secs > 7);
-  bar.classList.toggle("critical", secs <= 7);
+  bar.classList.toggle("low", secs <= 20 && secs > 10);
+  bar.classList.toggle("critical", secs <= 10);
   if (left <= 0) lockIn();
 }
 
