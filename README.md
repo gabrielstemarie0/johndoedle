@@ -69,6 +69,10 @@ Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then
 (Workers AI always calls your real account even locally; to use word-matching only, run with a copy of
 `wrangler.toml` that has no `[ai]` section.)
 
+## Deploy notes
+Pushes to `main` deploy automatically (Cloudflare Workers Builds). If one ever does not, check Settings -> Builds for a
+"disconnected from your Git account" banner and use Manage to re-grant the Cloudflare GitHub app access.
+
 ## Daily cards
 Based on the UTC date. Everyone gets the same 7. The deck is shuffled in cycles, so 135 cards give 19 days with
 no repeats. To add a card, append to `public/lib/cards.js` with the next id (`a136`, ...): the answer plus about five
