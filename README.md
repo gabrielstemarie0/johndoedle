@@ -7,6 +7,7 @@ Cloudflare Worker (static assets + `/api/judge`), with D1 for counts and Workers
 ```
 public/                           the static game (served as Workers assets)
   index.html, styles.css, game.js   the page
+  scene.js                        the driving scene (John Doe in traffic) and gas gauge, drawn with SVG/CSS
   lib/cards.js                    the deck: answer + seed questions with popularity weights
   lib/judge.js                    levels, popularity maths, similarity (shared by browser and server)
   lib/text.js                     text helpers and the "is this a real question" check

@@ -1,6 +1,7 @@
 import cards from "./lib/cards.js";
 import { isValidQuestion, givesAway } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, judgeLocal } from "./lib/judge.js";
+import { createScene } from "./scene.js";
 
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
@@ -58,6 +59,7 @@ const day = todayUTC();
 const gameNo = dayIndex(day) + 1;
 const today = (state.days[day] ||= { answers: [], startedAt: null });
 const todaysCards = pickCards(cards, day);
+const scene = createScene($("scene"), $("fuel")); // the driving scene and gas gauge (purely visual)
 
 // ---------- judging ----------
 async function judge(card, question) {
@@ -97,6 +99,7 @@ function showCard() {
   if (cur >= PER_DAY) return finish();
   locked = false;
   show("play");
+  scene.setPhase(Math.min(cur, 6));
   $("feedback").hidden = true;
   $("judging").hidden = true;
   $("answer-form").hidden = false;
@@ -184,6 +187,8 @@ async function lockIn(timedOut = false) {
   today.startedAt = null;
   running += result.pts;
   save();
+  scene.setFuel(Math.max(0, running) / 7, { gained: result.pts }); // a perfect 700 fills the tank
+  scene.react(result.level);
 
   const lvl = levelById(result.level);
   $("answer-form").hidden = true;
@@ -232,6 +237,12 @@ const total = () => today.answers.reduce((n, a) => n + a.pts, 0);
 function renderResults() {
   show("results");
   const t = total();
+  scene.setPhase(7);
+  scene.setFuel(Math.max(0, t) / 7, { animate: false });
+  const tank = Math.round(Math.max(0, t) / 7);
+  $("fuel-note").textContent = `${tank}% of a tank. ${
+    tank >= 80 ? "You could drive forever." : tank >= 50 ? "Plenty left for the ride home." : tank >= 25 ? "Enough to limp to the next station." : "Running on fumes."
+  }`;
   $("res-day").textContent = `John Doedle #${gameNo}`;
   $("total").textContent = t;
   $("verdict").textContent =
@@ -333,6 +344,9 @@ setInterval(countdown, 1000);
 countdown();
 
 running = today.answers.reduce((n, a) => n + a.pts, 0);
+scene.setFuel(Math.max(0, running) / 7, { animate: false });
+scene.setPhase(today.done ? 7 : Math.min(today.answers.length, 6));
+if (today.answers.length) scene.react(today.answers.at(-1).level, { quiet: true });
 if (today.done || today.answers.length >= PER_DAY) finish();
 else if (today.answers.length > 0 || today.startedAt) showCard();
 else show("intro");

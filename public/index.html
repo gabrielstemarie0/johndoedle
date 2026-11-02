@@ -20,11 +20,25 @@
   </header>
 
   <main>
+    <!-- Decorative driving scene (drawn by scene.js) and the gas gauge -->
+    <section class="scene" id="scene" aria-hidden="true"></section>
+    <div class="fuel" id="fuel" role="meter" aria-label="Gas tank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-level="low">
+      <span class="fuel-icon" aria-hidden="true">&#9981;</span>
+      <span class="fuel-e" aria-hidden="true">E</span>
+      <div class="fuel-track" aria-hidden="true">
+        <div class="fuel-fill"></div>
+        <span class="fuel-tick" style="left:25%"></span><span class="fuel-tick" style="left:50%"></span><span class="fuel-tick" style="left:75%"></span>
+      </div>
+      <span class="fuel-f" aria-hidden="true">F</span>
+      <span class="fuel-pct" aria-hidden="true">0%</span>
+      <span class="fuel-pop" aria-hidden="true"></span>
+    </div>
+
     <!-- INTRO -->
     <section id="intro" class="card" hidden>
       <p class="eyebrow" id="intro-day"></p>
       <h1>Ask the question<br>nobody else would.</h1>
-      <p class="lead">You get an answer. Write the nichest question that has it, in 60 seconds. Seven cards a day.</p>
+      <p class="lead">You get an answer. Write the nichest question that has it, in 60 seconds. Rare questions earn gas and clear the road; obvious ones leave you stuck in traffic. Seven cards a day.</p>
       <ul class="levels" id="levels" aria-label="Scoring levels"></ul>
       <p class="rules-note">A question that doesn't lead to the answer scores nothing. A perfect run is <b>700</b>.</p>
       <button class="btn primary" id="start">Start today's game</button>
@@ -38,7 +52,7 @@
       </div>
       <div class="timer" aria-hidden="true"><div class="timer-bar" id="timer-bar"></div></div>
       <div class="timer-text" id="timer-text" aria-live="off">60</div>
-      <p class="eyebrow card-eyebrow">The answer is</p>
+      <p class="eyebrow card-eyebrow">Next exit: the answer is</p>
       <h2 id="prompt" class="answer-card"></h2>
       <p class="ask">Write the nichest question this is the answer to. Don't use the answer in it.</p>
       <form id="answer-form" autocomplete="off">
@@ -60,6 +74,7 @@
       <p class="eyebrow" id="res-day"></p>
       <div class="score"><span id="total">0</span><small>/ 700</small></div>
       <p class="verdict" id="verdict"></p>
+      <p class="fuel-note" id="fuel-note"></p>
       <ol class="breakdown" id="breakdown"></ol>
       <div class="actions">
         <button class="btn primary" id="share">Copy result</button>
