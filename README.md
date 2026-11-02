@@ -19,16 +19,16 @@ schema.sql, wrangler.toml         D1 tables, bindings (DB, AI, ASSETS) and Worke
 ```
 
 ## Scoring
-Each answer's popularity is compared with the question's most popular answer (popularity = the weights in
-`questions.js` blended with real players' answers; live data takes over as more people play, weight `n / (n + 100)`).
+Each question's known answers are ranked by popularity (the weights in `questions.js` blended with real players'
+answers; live data takes over as more people play, weight `n / (n + 100)`). An answer's **rank** sets its level:
 
-| Level | Points | Spaces | Rule (share / top share) |
+| Level | Points | Spaces | Rank |
 |---|---|---|---|
-| 🟩 John Doe | 100 | 5 | 70% or more: the top answer |
-| 🟨 Average Joe | 85 | 4 | 40% to under 70% |
-| 🟧 Neighbor | 60 | 3 | over 20% to under 40% |
-| 🟪 Stranger | 30 | 2 | known, but 20% or less |
-| 👽 Alien | 10 | 1 | a valid answer nobody else gives |
+| 🟩 John Doe | 100 | 5 | #1 (only one answer) |
+| 🟨 Average Joe | 85 | 4 | #2 to #6 (5 answers) |
+| 🟧 Neighbor | 60 | 3 | #7 to #16 (10 answers) |
+| 🟪 Stranger | 30 | 2 | #17 to #36 (20 answers) |
+| 👽 Alien | 10 | 1 | any other real answer |
 | ❌ Imposter | 0 | 0 | the answer doesn't fit the question |
 | ⬛ Nothing | 0 | 0 | timed out with nothing real typed |
 
@@ -37,9 +37,10 @@ the most common answer is best. A perfect run is 700 points. **Spaces** are how 
 like Krillion's dive depth: 5 for a John Doe down to 1 for an Alien, so seven John Does reach the 35-space finish
 line. Gas is points: 700 fills the tank.
 
-An answer only counts as "known" if it is on the seed list or at least 3 players have given it, so friends can't
-make up a "popular" answer. Blank, symbol-only and one-character answers can't be submitted (the field shakes and the
-timer keeps running).
+Because tiers are by rank, a question needs at least 37 ranked answers for every level to be reachable (each of the
+35 questions has 38 to 55). A player-made answer is ranked only once 3 players have given it, so friends can't make
+up a "popular" answer; until then a real answer is an Alien. Blank, symbol-only and one-character answers can't be
+submitted (the field shakes and the timer keeps running).
 
 ## How an answer is scored (`/api/answer`)
 1. The answer is normalised (case, punctuation, plurals) and matched against the question's known answers and aliases.
@@ -94,8 +95,8 @@ Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then
 ## Daily questions
 Based on the UTC date. Everyone gets the same 7. The bank is shuffled in cycles, so 35 questions give 5 days with no
 repeats. To add a question, append to `public/lib/questions.js` with the next id (`q36`, ...): a prompt such as
-"Name a ..." and about 10-14 answers as `[answer, weight, [aliases]]`, where the most popular answer is 100. Give each
-question answers across the whole range (a few common, some middling, some rare) so every level is reachable.
+"Name a ..." and at least 40 answers as `[answer, weight, [aliases]]`, listed from most to least popular (the most
+popular is 100; the weights only set the order). Fewer than 37 answers means the Stranger tier can't be filled.
 Game #1 is `LAUNCH_DAY` in `public/game.js`.
 
 ## Known limits

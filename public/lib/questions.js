@@ -68,6 +68,146 @@ export default [
    [
     "chicken",
     8
+   ],
+   [
+    "tomato",
+    7.52
+   ],
+   [
+    "anchovies",
+    7.069
+   ],
+   [
+    "basil",
+    6.645
+   ],
+   [
+    "garlic",
+    6.246
+   ],
+   [
+    "meatball",
+    5.871
+   ],
+   [
+    "ground beef",
+    5.519
+   ],
+   [
+    "artichoke",
+    5.188
+   ],
+   [
+    "sun dried tomatoes",
+    4.877
+   ],
+   [
+    "banana peppers",
+    4.584
+   ],
+   [
+    "salami",
+    4.309
+   ],
+   [
+    "prosciutto",
+    4.05
+   ],
+   [
+    "arugula",
+    3.807
+   ],
+   [
+    "feta",
+    3.579
+   ],
+   [
+    "ricotta",
+    3.364
+   ],
+   [
+    "mozzarella",
+    3.162
+   ],
+   [
+    "parmesan",
+    2.973
+   ],
+   [
+    "oregano",
+    2.794
+   ],
+   [
+    "pesto",
+    2.627
+   ],
+   [
+    "eggplant",
+    2.469
+   ],
+   [
+    "zucchini",
+    2.321
+   ],
+   [
+    "broccoli",
+    2.182
+   ],
+   [
+    "corn",
+    2.051
+   ],
+   [
+    "egg",
+    1.928
+   ],
+   [
+    "shrimp",
+    1.812
+   ],
+   [
+    "red onion",
+    1.703
+   ],
+   [
+    "buffalo chicken",
+    1.601
+   ],
+   [
+    "barbecue chicken",
+    1.505
+   ],
+   [
+    "pepperoncini",
+    1.415
+   ],
+   [
+    "hot sauce",
+    1.33
+   ],
+   [
+    "ranch",
+    1.25
+   ],
+   [
+    "kale",
+    1.175
+   ],
+   [
+    "tuna",
+    1.105
+   ],
+   [
+    "steak",
+    1.038
+   ],
+   [
+    "goat cheese",
+    0.976
+   ],
+   [
+    "truffle",
+    0.917
    ]
   ]
  },
@@ -128,6 +268,130 @@ export default [
    [
     "fire",
     15
+   ],
+   [
+    "ketchup",
+    9.4
+   ],
+   [
+    "fire hydrant",
+    8.836
+   ],
+   [
+    "cranberry",
+    8.306
+   ],
+   [
+    "raspberry",
+    7.807
+   ],
+   [
+    "pomegranate",
+    7.339
+   ],
+   [
+    "beet",
+    6.899
+   ],
+   [
+    "radish",
+    6.485
+   ],
+   [
+    "red pepper",
+    6.096
+   ],
+   [
+    "lobster",
+    5.73
+   ],
+   [
+    "crab",
+    5.386
+   ],
+   [
+    "coca cola",
+    5.063
+   ],
+   [
+    "ruby",
+    4.759
+   ],
+   [
+    "wine",
+    4.474
+   ],
+   [
+    "lava",
+    4.205
+   ],
+   [
+    "mars",
+    3.953
+   ],
+   [
+    "devil",
+    3.716
+   ],
+   [
+    "valentine",
+    3.493
+   ],
+   [
+    "candy cane",
+    3.283
+   ],
+   [
+    "poppy",
+    3.086
+   ],
+   [
+    "tulip",
+    2.901
+   ],
+   [
+    "watermelon",
+    2.727
+   ],
+   [
+    "chili pepper",
+    2.563
+   ],
+   [
+    "red onion",
+    2.41
+   ],
+   [
+    "cardinal",
+    2.265
+   ],
+   [
+    "robin",
+    2.129
+   ],
+   [
+    "clown nose",
+    2.001
+   ],
+   [
+    "santa suit",
+    1.881
+   ],
+   [
+    "ferrari",
+    1.768
+   ],
+   [
+    "brick",
+    1.662
+   ],
+   [
+    "red panda",
+    1.563
+   ],
+   [
+    "flamingo",
+    1.469
    ]
   ]
  },
@@ -188,6 +452,142 @@ export default [
    [
     "salami",
     12
+   ],
+   [
+    "roast beef",
+    11.28
+   ],
+   [
+    "pastrami",
+    10.603
+   ],
+   [
+    "bologna",
+    9.967
+   ],
+   [
+    "chicken salad",
+    9.369
+   ],
+   [
+    "tuna salad",
+    8.807
+   ],
+   [
+    "avocado",
+    8.278
+   ],
+   [
+    "cucumber",
+    7.782
+   ],
+   [
+    "onion",
+    7.315
+   ],
+   [
+    "pickles",
+    6.876
+   ],
+   [
+    "mustard",
+    6.463
+   ],
+   [
+    "mayonnaise",
+    6.076
+   ],
+   [
+    "hummus",
+    5.711
+   ],
+   [
+    "falafel",
+    5.368
+   ],
+   [
+    "nutella",
+    5.046
+   ],
+   [
+    "honey",
+    4.744
+   ],
+   [
+    "banana",
+    4.459
+   ],
+   [
+    "brie",
+    4.191
+   ],
+   [
+    "swiss cheese",
+    3.94
+   ],
+   [
+    "cheddar",
+    3.703
+   ],
+   [
+    "provolone",
+    3.481
+   ],
+   [
+    "mozzarella",
+    3.272
+   ],
+   [
+    "pesto",
+    3.076
+   ],
+   [
+    "sprouts",
+    2.891
+   ],
+   [
+    "spinach",
+    2.718
+   ],
+   [
+    "sausage",
+    2.555
+   ],
+   [
+    "meatball",
+    2.402
+   ],
+   [
+    "steak",
+    2.258
+   ],
+   [
+    "pulled pork",
+    2.122
+   ],
+   [
+    "brisket",
+    1.995
+   ],
+   [
+    "corned beef",
+    1.875
+   ],
+   [
+    "prosciutto",
+    1.763
+   ],
+   [
+    "tofu",
+    1.657
+   ],
+   [
+    "cream cheese",
+    1.557
+   ],
+   [
+    "smoked salmon",
+    1.464
    ]
   ]
  },
@@ -247,6 +647,118 @@ export default [
    [
     "lizard",
     8
+   ],
+   [
+    "gerbil",
+    7.52
+   ],
+   [
+    "mouse",
+    7.069
+   ],
+   [
+    "rat",
+    6.645
+   ],
+   [
+    "ferret",
+    6.246
+   ],
+   [
+    "horse",
+    5.871
+   ],
+   [
+    "chinchilla",
+    5.519
+   ],
+   [
+    "hedgehog",
+    5.188
+   ],
+   [
+    "frog",
+    4.877
+   ],
+   [
+    "tarantula",
+    4.584
+   ],
+   [
+    "spider",
+    4.309
+   ],
+   [
+    "hermit crab",
+    4.05
+   ],
+   [
+    "parakeet",
+    3.807
+   ],
+   [
+    "canary",
+    3.579
+   ],
+   [
+    "pig",
+    3.364
+   ],
+   [
+    "goat",
+    3.162
+   ],
+   [
+    "chicken",
+    2.973
+   ],
+   [
+    "duck",
+    2.794
+   ],
+   [
+    "sugar glider",
+    2.627
+   ],
+   [
+    "iguana",
+    2.469
+   ],
+   [
+    "bearded dragon",
+    2.321
+   ],
+   [
+    "gecko",
+    2.182
+   ],
+   [
+    "cockatiel",
+    2.051
+   ],
+   [
+    "axolotl",
+    1.928
+   ],
+   [
+    "pony",
+    1.812
+   ],
+   [
+    "cow",
+    1.703
+   ],
+   [
+    "snail",
+    1.601
+   ],
+   [
+    "ant farm",
+    1.505
+   ],
+   [
+    "cockatoo",
+    1.415
    ]
   ]
  },
@@ -312,6 +824,142 @@ export default [
    [
     "dumbo",
     12
+   ],
+   [
+    "pinocchio",
+    11.28
+   ],
+   [
+    "peter pan",
+    10.603
+   ],
+   [
+    "alice in wonderland",
+    9.967
+   ],
+   [
+    "sleeping beauty",
+    9.369
+   ],
+   [
+    "101 dalmatians",
+    8.807
+   ],
+   [
+    "the jungle book",
+    8.278
+   ],
+   [
+    "the aristocats",
+    7.782
+   ],
+   [
+    "robin hood",
+    7.315
+   ],
+   [
+    "lady and the tramp",
+    6.876
+   ],
+   [
+    "pocahontas",
+    6.463
+   ],
+   [
+    "hercules",
+    6.076
+   ],
+   [
+    "tarzan",
+    5.711
+   ],
+   [
+    "lilo and stitch",
+    5.368
+   ],
+   [
+    "up",
+    5.046
+   ],
+   [
+    "inside out",
+    4.744
+   ],
+   [
+    "coco",
+    4.459
+   ],
+   [
+    "encanto",
+    4.191
+   ],
+   [
+    "zootopia",
+    3.94
+   ],
+   [
+    "big hero 6",
+    3.703
+   ],
+   [
+    "wreck it ralph",
+    3.481
+   ],
+   [
+    "brave",
+    3.272
+   ],
+   [
+    "monsters inc",
+    3.076
+   ],
+   [
+    "cars",
+    2.891
+   ],
+   [
+    "ratatouille",
+    2.718
+   ],
+   [
+    "wall e",
+    2.555
+   ],
+   [
+    "the incredibles",
+    2.402
+   ],
+   [
+    "bolt",
+    2.258
+   ],
+   [
+    "the princess and the frog",
+    2.122
+   ],
+   [
+    "fantasia",
+    1.995
+   ],
+   [
+    "the sword in the stone",
+    1.875
+   ],
+   [
+    "oliver and company",
+    1.763
+   ],
+   [
+    "atlantis",
+    1.657
+   ],
+   [
+    "treasure planet",
+    1.557
+   ],
+   [
+    "the emperors new groove",
+    1.464
    ]
   ]
  },
@@ -389,6 +1037,118 @@ export default [
    [
     "yawn",
     8
+   ],
+   [
+    "hit snooze",
+    7.52
+   ],
+   [
+    "turn off alarm",
+    7.069
+   ],
+   [
+    "get out of bed",
+    6.645
+   ],
+   [
+    "wash face",
+    6.246
+   ],
+   [
+    "drink water",
+    5.871
+   ],
+   [
+    "brush hair",
+    5.519
+   ],
+   [
+    "feed the dog",
+    5.188
+   ],
+   [
+    "walk the dog",
+    4.877
+   ],
+   [
+    "take vitamins",
+    4.584
+   ],
+   [
+    "exercise",
+    4.309
+   ],
+   [
+    "meditate",
+    4.05
+   ],
+   [
+    "read the news",
+    3.807
+   ],
+   [
+    "check email",
+    3.579
+   ],
+   [
+    "put on makeup",
+    3.364
+   ],
+   [
+    "shave",
+    3.162
+   ],
+   [
+    "make tea",
+    2.973
+   ],
+   [
+    "pack lunch",
+    2.794
+   ],
+   [
+    "open the curtains",
+    2.627
+   ],
+   [
+    "floss",
+    2.469
+   ],
+   [
+    "get the kids ready",
+    2.321
+   ],
+   [
+    "let the dog out",
+    2.182
+   ],
+   [
+    "make breakfast",
+    2.051
+   ],
+   [
+    "pray",
+    1.928
+   ],
+   [
+    "journal",
+    1.812
+   ],
+   [
+    "go to work",
+    1.703
+   ],
+   [
+    "scroll social media",
+    1.601
+   ],
+   [
+    "check the weather",
+    1.505
+   ],
+   [
+    "take medicine",
+    1.415
    ]
   ]
  },
@@ -460,6 +1220,134 @@ export default [
    [
     "belgium",
     14
+   ],
+   [
+    "austria",
+    13.16
+   ],
+   [
+    "denmark",
+    12.37
+   ],
+   [
+    "finland",
+    11.628
+   ],
+   [
+    "iceland",
+    10.93
+   ],
+   [
+    "russia",
+    10.275
+   ],
+   [
+    "ukraine",
+    9.658
+   ],
+   [
+    "hungary",
+    9.079
+   ],
+   [
+    "czech republic",
+    8.534
+   ],
+   [
+    "romania",
+    8.022
+   ],
+   [
+    "croatia",
+    7.541
+   ],
+   [
+    "bulgaria",
+    7.088
+   ],
+   [
+    "serbia",
+    6.663
+   ],
+   [
+    "slovakia",
+    6.263
+   ],
+   [
+    "slovenia",
+    5.887
+   ],
+   [
+    "estonia",
+    5.534
+   ],
+   [
+    "latvia",
+    5.202
+   ],
+   [
+    "lithuania",
+    4.89
+   ],
+   [
+    "luxembourg",
+    4.597
+   ],
+   [
+    "malta",
+    4.321
+   ],
+   [
+    "albania",
+    4.061
+   ],
+   [
+    "bosnia and herzegovina",
+    3.818
+   ],
+   [
+    "montenegro",
+    3.589
+   ],
+   [
+    "north macedonia",
+    3.373
+   ],
+   [
+    "moldova",
+    3.171
+   ],
+   [
+    "belarus",
+    2.981
+   ],
+   [
+    "monaco",
+    2.802
+   ],
+   [
+    "liechtenstein",
+    2.634
+   ],
+   [
+    "andorra",
+    2.476
+   ],
+   [
+    "san marino",
+    2.327
+   ],
+   [
+    "cyprus",
+    2.188
+   ],
+   [
+    "kosovo",
+    2.056
+   ],
+   [
+    "vatican city",
+    1.933
    ]
   ]
  },
@@ -541,6 +1429,138 @@ export default [
     [
      "arby's"
     ]
+   ],
+   [
+    "panda express",
+    9.4
+   ],
+   [
+    "chipotle",
+    8.836
+   ],
+   [
+    "sonic",
+    8.306
+   ],
+   [
+    "jack in the box",
+    7.807
+   ],
+   [
+    "whataburger",
+    7.339
+   ],
+   [
+    "dairy queen",
+    6.899
+   ],
+   [
+    "carls jr",
+    6.485
+   ],
+   [
+    "hardees",
+    6.096
+   ],
+   [
+    "white castle",
+    5.73
+   ],
+   [
+    "culvers",
+    5.386
+   ],
+   [
+    "zaxbys",
+    5.063
+   ],
+   [
+    "raising canes",
+    4.759
+   ],
+   [
+    "wingstop",
+    4.474
+   ],
+   [
+    "jimmy johns",
+    4.205
+   ],
+   [
+    "jersey mikes",
+    3.953
+   ],
+   [
+    "little caesars",
+    3.716
+   ],
+   [
+    "papa johns",
+    3.493
+   ],
+   [
+    "panera",
+    3.283
+   ],
+   [
+    "dunkin",
+    3.086
+   ],
+   [
+    "starbucks",
+    2.901
+   ],
+   [
+    "tim hortons",
+    2.727
+   ],
+   [
+    "del taco",
+    2.563
+   ],
+   [
+    "el pollo loco",
+    2.41
+   ],
+   [
+    "qdoba",
+    2.265
+   ],
+   [
+    "shake shack",
+    2.129
+   ],
+   [
+    "krispy kreme",
+    2.001
+   ],
+   [
+    "long john silvers",
+    1.881
+   ],
+   [
+    "churchs chicken",
+    1.768
+   ],
+   [
+    "bojangles",
+    1.662
+   ],
+   [
+    "checkers",
+    1.563
+   ],
+   [
+    "wienerschnitzel",
+    1.469
+   ],
+   [
+    "nandos",
+    1.381
+   ],
+   [
+    "greggs",
+    1.298
    ]
   ]
  },
@@ -616,6 +1636,130 @@ export default [
    [
     "croissant",
     10
+   ],
+   [
+    "french toast",
+    9.4
+   ],
+   [
+    "hash browns",
+    8.836
+   ],
+   [
+    "grits",
+    8.306
+   ],
+   [
+    "omelette",
+    7.807
+   ],
+   [
+    "biscuits",
+    7.339
+   ],
+   [
+    "donuts",
+    6.899
+   ],
+   [
+    "pop tarts",
+    6.485
+   ],
+   [
+    "granola",
+    6.096
+   ],
+   [
+    "smoothie",
+    5.73
+   ],
+   [
+    "avocado toast",
+    5.386
+   ],
+   [
+    "breakfast burrito",
+    5.063
+   ],
+   [
+    "danish",
+    4.759
+   ],
+   [
+    "scones",
+    4.474
+   ],
+   [
+    "crepes",
+    4.205
+   ],
+   [
+    "english muffin",
+    3.953
+   ],
+   [
+    "cinnamon roll",
+    3.716
+   ],
+   [
+    "ham",
+    3.493
+   ],
+   [
+    "orange juice",
+    3.283
+   ],
+   [
+    "coffee",
+    3.086
+   ],
+   [
+    "muesli",
+    2.901
+   ],
+   [
+    "baked beans",
+    2.727
+   ],
+   [
+    "congee",
+    2.563
+   ],
+   [
+    "breakfast sandwich",
+    2.41
+   ],
+   [
+    "fried eggs",
+    2.265
+   ],
+   [
+    "bagel and cream cheese",
+    2.129
+   ],
+   [
+    "toast and jam",
+    2.001
+   ],
+   [
+    "quiche",
+    1.881
+   ],
+   [
+    "frittata",
+    1.768
+   ],
+   [
+    "breakfast pizza",
+    1.662
+   ],
+   [
+    "chilaquiles",
+    1.563
+   ],
+   [
+    "shakshuka",
+    1.469
    ]
   ]
  },
@@ -688,6 +1832,134 @@ export default [
    [
     "drizzle",
     8
+   ],
+   [
+    "thunder",
+    7.52
+   ],
+   [
+    "lightning",
+    7.069
+   ],
+   [
+    "blizzard",
+    6.645
+   ],
+   [
+    "heat wave",
+    6.246
+   ],
+   [
+    "humid",
+    5.871
+   ],
+   [
+    "overcast",
+    5.519
+   ],
+   [
+    "mist",
+    5.188
+   ],
+   [
+    "frost",
+    4.877
+   ],
+   [
+    "ice",
+    4.584
+   ],
+   [
+    "drought",
+    4.309
+   ],
+   [
+    "flood",
+    4.05
+   ],
+   [
+    "rainbow",
+    3.807
+   ],
+   [
+    "breezy",
+    3.579
+   ],
+   [
+    "cold",
+    3.364
+   ],
+   [
+    "hot",
+    3.162
+   ],
+   [
+    "warm",
+    2.973
+   ],
+   [
+    "cool",
+    2.794
+   ],
+   [
+    "freezing",
+    2.627
+   ],
+   [
+    "partly cloudy",
+    2.469
+   ],
+   [
+    "snowstorm",
+    2.321
+   ],
+   [
+    "monsoon",
+    2.182
+   ],
+   [
+    "typhoon",
+    2.051
+   ],
+   [
+    "cyclone",
+    1.928
+   ],
+   [
+    "dust storm",
+    1.812
+   ],
+   [
+    "smog",
+    1.703
+   ],
+   [
+    "haze",
+    1.601
+   ],
+   [
+    "gale",
+    1.505
+   ],
+   [
+    "heavy rain",
+    1.415
+   ],
+   [
+    "light rain",
+    1.33
+   ],
+   [
+    "showers",
+    1.25
+   ],
+   [
+    "freezing rain",
+    1.175
+   ],
+   [
+    "black ice",
+    1.105
    ]
   ]
  },
@@ -765,6 +2037,142 @@ export default [
     [
      "game of life"
     ]
+   ],
+   [
+    "candy land",
+    7.52
+   ],
+   [
+    "chutes and ladders",
+    7.069
+   ],
+   [
+    "scattergories",
+    6.645
+   ],
+   [
+    "trivial pursuit",
+    6.246
+   ],
+   [
+    "pictionary",
+    5.871
+   ],
+   [
+    "operation",
+    5.519
+   ],
+   [
+    "mouse trap",
+    5.188
+   ],
+   [
+    "yahtzee",
+    4.877
+   ],
+   [
+    "backgammon",
+    4.584
+   ],
+   [
+    "go",
+    4.309
+   ],
+   [
+    "mastermind",
+    4.05
+   ],
+   [
+    "cranium",
+    3.807
+   ],
+   [
+    "taboo",
+    3.579
+   ],
+   [
+    "twister",
+    3.364
+   ],
+   [
+    "apples to apples",
+    3.162
+   ],
+   [
+    "cards against humanity",
+    2.973
+   ],
+   [
+    "ticket to ride",
+    2.794
+   ],
+   [
+    "carcassonne",
+    2.627
+   ],
+   [
+    "pandemic",
+    2.469
+   ],
+   [
+    "dominion",
+    2.321
+   ],
+   [
+    "stratego",
+    2.182
+   ],
+   [
+    "othello",
+    2.051
+   ],
+   [
+    "guess who",
+    1.928
+   ],
+   [
+    "hungry hippos",
+    1.812
+   ],
+   [
+    "boggle",
+    1.703
+   ],
+   [
+    "rummikub",
+    1.601
+   ],
+   [
+    "dominoes",
+    1.505
+   ],
+   [
+    "bananagrams",
+    1.415
+   ],
+   [
+    "sequence",
+    1.33
+   ],
+   [
+    "payday",
+    1.25
+   ],
+   [
+    "mancala",
+    1.175
+   ],
+   [
+    "risk legacy",
+    1.105
+   ],
+   [
+    "codenames",
+    1.038
+   ],
+   [
+    "exploding kittens",
+    0.976
    ]
   ]
  },
@@ -836,6 +2244,142 @@ export default [
    [
     "deadpool",
     12
+   ],
+   [
+    "green lantern",
+    11.28
+   ],
+   [
+    "ant man",
+    10.603
+   ],
+   [
+    "doctor strange",
+    9.967
+   ],
+   [
+    "black widow",
+    9.369
+   ],
+   [
+    "hawkeye",
+    8.807
+   ],
+   [
+    "captain marvel",
+    8.278
+   ],
+   [
+    "robin",
+    7.782
+   ],
+   [
+    "supergirl",
+    7.315
+   ],
+   [
+    "batgirl",
+    6.876
+   ],
+   [
+    "cyclops",
+    6.463
+   ],
+   [
+    "storm",
+    6.076
+   ],
+   [
+    "professor x",
+    5.711
+   ],
+   [
+    "daredevil",
+    5.368
+   ],
+   [
+    "punisher",
+    5.046
+   ],
+   [
+    "shazam",
+    4.744
+   ],
+   [
+    "cyborg",
+    4.459
+   ],
+   [
+    "nightwing",
+    4.191
+   ],
+   [
+    "star lord",
+    3.94
+   ],
+   [
+    "groot",
+    3.703
+   ],
+   [
+    "scarlet witch",
+    3.481
+   ],
+   [
+    "vision",
+    3.272
+   ],
+   [
+    "falcon",
+    3.076
+   ],
+   [
+    "winter soldier",
+    2.891
+   ],
+   [
+    "invisible woman",
+    2.718
+   ],
+   [
+    "mr fantastic",
+    2.555
+   ],
+   [
+    "human torch",
+    2.402
+   ],
+   [
+    "the thing",
+    2.258
+   ],
+   [
+    "silver surfer",
+    2.122
+   ],
+   [
+    "blade",
+    1.995
+   ],
+   [
+    "ghost rider",
+    1.875
+   ],
+   [
+    "hellboy",
+    1.763
+   ],
+   [
+    "spawn",
+    1.657
+   ],
+   [
+    "wonder twins",
+    1.557
+   ],
+   [
+    "mighty mouse",
+    1.464
    ]
   ]
  },
@@ -894,6 +2438,154 @@ export default [
    [
     "colorado",
     18
+   ],
+   [
+    "pennsylvania",
+    14.1
+   ],
+   [
+    "illinois",
+    13.254
+   ],
+   [
+    "north carolina",
+    12.459
+   ],
+   [
+    "virginia",
+    11.711
+   ],
+   [
+    "new jersey",
+    11.009
+   ],
+   [
+    "massachusetts",
+    10.348
+   ],
+   [
+    "tennessee",
+    9.727
+   ],
+   [
+    "louisiana",
+    9.144
+   ],
+   [
+    "oregon",
+    8.595
+   ],
+   [
+    "utah",
+    8.079
+   ],
+   [
+    "montana",
+    7.594
+   ],
+   [
+    "wyoming",
+    7.139
+   ],
+   [
+    "idaho",
+    6.71
+   ],
+   [
+    "minnesota",
+    6.308
+   ],
+   [
+    "wisconsin",
+    5.929
+   ],
+   [
+    "iowa",
+    5.574
+   ],
+   [
+    "missouri",
+    5.239
+   ],
+   [
+    "kentucky",
+    4.925
+   ],
+   [
+    "indiana",
+    4.629
+   ],
+   [
+    "oklahoma",
+    4.352
+   ],
+   [
+    "kansas",
+    4.09
+   ],
+   [
+    "nebraska",
+    3.845
+   ],
+   [
+    "arkansas",
+    3.614
+   ],
+   [
+    "alabama",
+    3.398
+   ],
+   [
+    "mississippi",
+    3.194
+   ],
+   [
+    "south carolina",
+    3.002
+   ],
+   [
+    "maryland",
+    2.822
+   ],
+   [
+    "connecticut",
+    2.653
+   ],
+   [
+    "delaware",
+    2.493
+   ],
+   [
+    "maine",
+    2.344
+   ],
+   [
+    "vermont",
+    2.203
+   ],
+   [
+    "new hampshire",
+    2.071
+   ],
+   [
+    "rhode island",
+    1.947
+   ],
+   [
+    "new mexico",
+    1.83
+   ],
+   [
+    "west virginia",
+    1.72
+   ],
+   [
+    "north dakota",
+    1.617
+   ],
+   [
+    "south dakota",
+    1.52
    ]
   ]
  },
@@ -983,6 +2675,142 @@ export default [
     [
      "strainer"
     ]
+   ],
+   [
+    "counter",
+    7.52
+   ],
+   [
+    "cabinet",
+    7.069
+   ],
+   [
+    "cupboard",
+    6.645
+   ],
+   [
+    "freezer",
+    6.246
+   ],
+   [
+    "blender",
+    5.871
+   ],
+   [
+    "mixer",
+    5.519
+   ],
+   [
+    "coffee maker",
+    5.188
+   ],
+   [
+    "cutting board",
+    4.877
+   ],
+   [
+    "fork",
+    4.584
+   ],
+   [
+    "bowl",
+    4.309
+   ],
+   [
+    "cup",
+    4.05
+   ],
+   [
+    "mug",
+    3.807
+   ],
+   [
+    "pantry",
+    3.579
+   ],
+   [
+    "spatula",
+    3.364
+   ],
+   [
+    "ladle",
+    3.162
+   ],
+   [
+    "tongs",
+    2.973
+   ],
+   [
+    "peeler",
+    2.794
+   ],
+   [
+    "grater",
+    2.627
+   ],
+   [
+    "measuring cup",
+    2.469
+   ],
+   [
+    "rolling pin",
+    2.321
+   ],
+   [
+    "oven mitt",
+    2.182
+   ],
+   [
+    "apron",
+    2.051
+   ],
+   [
+    "trash can",
+    1.928
+   ],
+   [
+    "dish towel",
+    1.812
+   ],
+   [
+    "sponge",
+    1.703
+   ],
+   [
+    "faucet",
+    1.601
+   ],
+   [
+    "kitchen island",
+    1.505
+   ],
+   [
+    "stool",
+    1.415
+   ],
+   [
+    "timer",
+    1.33
+   ],
+   [
+    "wine rack",
+    1.25
+   ],
+   [
+    "rice cooker",
+    1.175
+   ],
+   [
+    "air fryer",
+    1.105
+   ],
+   [
+    "crock pot",
+    1.038
+   ],
+   [
+    "food processor",
+    0.976
    ]
   ]
  },
@@ -1051,6 +2879,146 @@ export default [
    [
     "harmonica",
     10
+   ],
+   [
+    "keyboard",
+    9.4
+   ],
+   [
+    "synthesizer",
+    8.836
+   ],
+   [
+    "banjo",
+    8.306
+   ],
+   [
+    "mandolin",
+    7.807
+   ],
+   [
+    "accordion",
+    7.339
+   ],
+   [
+    "oboe",
+    6.899
+   ],
+   [
+    "bassoon",
+    6.485
+   ],
+   [
+    "tuba",
+    6.096
+   ],
+   [
+    "french horn",
+    5.73
+   ],
+   [
+    "xylophone",
+    5.386
+   ],
+   [
+    "triangle",
+    5.063
+   ],
+   [
+    "tambourine",
+    4.759
+   ],
+   [
+    "cymbals",
+    4.474
+   ],
+   [
+    "bagpipes",
+    4.205
+   ],
+   [
+    "harmonium",
+    3.953
+   ],
+   [
+    "sitar",
+    3.716
+   ],
+   [
+    "didgeridoo",
+    3.493
+   ],
+   [
+    "kazoo",
+    3.283
+   ],
+   [
+    "recorder",
+    3.086
+   ],
+   [
+    "piccolo",
+    2.901
+   ],
+   [
+    "double bass",
+    2.727
+   ],
+   [
+    "viola",
+    2.563
+   ],
+   [
+    "organ",
+    2.41
+   ],
+   [
+    "bongos",
+    2.265
+   ],
+   [
+    "maracas",
+    2.129
+   ],
+   [
+    "steel drum",
+    2.001
+   ],
+   [
+    "marimba",
+    1.881
+   ],
+   [
+    "glockenspiel",
+    1.768
+   ],
+   [
+    "flugelhorn",
+    1.662
+   ],
+   [
+    "theremin",
+    1.563
+   ],
+   [
+    "lute",
+    1.469
+   ],
+   [
+    "bass guitar",
+    1.381
+   ],
+   [
+    "electric guitar",
+    1.298
+   ],
+   [
+    "cowbell",
+    1.22
+   ],
+   [
+    "castanets",
+    1.147
    ]
   ]
  },
@@ -1119,6 +3087,122 @@ export default [
     [
      "billiards"
     ]
+   ],
+   [
+    "lacrosse",
+    4.7
+   ],
+   [
+    "water polo",
+    4.418
+   ],
+   [
+    "field hockey",
+    4.153
+   ],
+   [
+    "polo",
+    3.904
+   ],
+   [
+    "squash",
+    3.67
+   ],
+   [
+    "racquetball",
+    3.449
+   ],
+   [
+    "table tennis",
+    3.242
+   ],
+   [
+    "ping pong",
+    3.048
+   ],
+   [
+    "bowling",
+    2.865
+   ],
+   [
+    "dodgeball",
+    2.693
+   ],
+   [
+    "kickball",
+    2.531
+   ],
+   [
+    "croquet",
+    2.38
+   ],
+   [
+    "bocce",
+    2.237
+   ],
+   [
+    "pickleball",
+    2.103
+   ],
+   [
+    "beach volleyball",
+    1.976
+   ],
+   [
+    "snooker",
+    1.858
+   ],
+   [
+    "gaelic football",
+    1.746
+   ],
+   [
+    "australian rules football",
+    1.642
+   ],
+   [
+    "hurling",
+    1.543
+   ],
+   [
+    "rounders",
+    1.451
+   ],
+   [
+    "takraw",
+    1.363
+   ],
+   [
+    "jai alai",
+    1.282
+   ],
+   [
+    "korfball",
+    1.205
+   ],
+   [
+    "ultimate frisbee",
+    1.133
+   ],
+   [
+    "skittles",
+    1.065
+   ],
+   [
+    "tetherball",
+    1.001
+   ],
+   [
+    "wiffle ball",
+    0.941
+   ],
+   [
+    "tee ball",
+    0.884
+   ],
+   [
+    "footvolley",
+    0.831
    ]
   ]
  },
@@ -1190,6 +3274,150 @@ export default [
    [
     "beech",
     10
+   ],
+   [
+    "walnut",
+    9.4
+   ],
+   [
+    "ash",
+    8.836
+   ],
+   [
+    "aspen",
+    8.306
+   ],
+   [
+    "poplar",
+    7.807
+   ],
+   [
+    "hickory",
+    7.339
+   ],
+   [
+    "sycamore",
+    6.899
+   ],
+   [
+    "cypress",
+    6.485
+   ],
+   [
+    "magnolia",
+    6.096
+   ],
+   [
+    "dogwood",
+    5.73
+   ],
+   [
+    "eucalyptus",
+    5.386
+   ],
+   [
+    "banyan",
+    5.063
+   ],
+   [
+    "baobab",
+    4.759
+   ],
+   [
+    "acacia",
+    4.474
+   ],
+   [
+    "mahogany",
+    4.205
+   ],
+   [
+    "teak",
+    3.953
+   ],
+   [
+    "bamboo",
+    3.716
+   ],
+   [
+    "juniper",
+    3.493
+   ],
+   [
+    "hemlock",
+    3.283
+   ],
+   [
+    "larch",
+    3.086
+   ],
+   [
+    "sequoia",
+    2.901
+   ],
+   [
+    "olive",
+    2.727
+   ],
+   [
+    "lemon",
+    2.563
+   ],
+   [
+    "orange",
+    2.41
+   ],
+   [
+    "pear",
+    2.265
+   ],
+   [
+    "peach",
+    2.129
+   ],
+   [
+    "fig",
+    2.001
+   ],
+   [
+    "coconut",
+    1.881
+   ],
+   [
+    "linden",
+    1.768
+   ],
+   [
+    "alder",
+    1.662
+   ],
+   [
+    "hazel",
+    1.563
+   ],
+   [
+    "chestnut",
+    1.469
+   ],
+   [
+    "plane",
+    1.381
+   ],
+   [
+    "rowan",
+    1.298
+   ],
+   [
+    "yew",
+    1.22
+   ],
+   [
+    "mulberry",
+    1.147
+   ],
+   [
+    "hawthorn",
+    1.078
    ]
   ]
  },
@@ -1270,6 +3498,134 @@ export default [
     [
      "mind"
     ]
+   ],
+   [
+    "gloves",
+    7.52
+   ],
+   [
+    "earring",
+    7.069
+   ],
+   [
+    "ring",
+    6.645
+   ],
+   [
+    "hat",
+    6.246
+   ],
+   [
+    "scarf",
+    5.871
+   ],
+   [
+    "passport",
+    5.519
+   ],
+   [
+    "credit card",
+    5.188
+   ],
+   [
+    "earbuds",
+    4.877
+   ],
+   [
+    "headphones",
+    4.584
+   ],
+   [
+    "ticket",
+    4.309
+   ],
+   [
+    "luggage",
+    4.05
+   ],
+   [
+    "job",
+    3.807
+   ],
+   [
+    "sleep",
+    3.579
+   ],
+   [
+    "patience",
+    3.364
+   ],
+   [
+    "hope",
+    3.162
+   ],
+   [
+    "faith",
+    2.973
+   ],
+   [
+    "direction",
+    2.794
+   ],
+   [
+    "track of time",
+    2.627
+   ],
+   [
+    "virginity",
+    2.469
+   ],
+   [
+    "election",
+    2.321
+   ],
+   [
+    "a bet",
+    2.182
+   ],
+   [
+    "a tooth",
+    2.051
+   ],
+   [
+    "voice",
+    1.928
+   ],
+   [
+    "balance",
+    1.812
+   ],
+   [
+    "signal",
+    1.703
+   ],
+   [
+    "contact lens",
+    1.601
+   ],
+   [
+    "charger",
+    1.505
+   ],
+   [
+    "pencil",
+    1.415
+   ],
+   [
+    "lighter",
+    1.33
+   ],
+   [
+    "house keys",
+    1.25
+   ],
+   [
+    "their way",
+    1.175
+   ],
+   [
+    "their luggage",
+    1.105
    ]
   ]
  },
@@ -1335,6 +3691,142 @@ export default [
    [
     "peony",
     12
+   ],
+   [
+    "iris",
+    11.28
+   ],
+   [
+    "hyacinth",
+    10.603
+   ],
+   [
+    "chrysanthemum",
+    9.967
+   ],
+   [
+    "hibiscus",
+    9.369
+   ],
+   [
+    "jasmine",
+    8.807
+   ],
+   [
+    "magnolia",
+    8.278
+   ],
+   [
+    "begonia",
+    7.782
+   ],
+   [
+    "petunia",
+    7.315
+   ],
+   [
+    "pansy",
+    6.876
+   ],
+   [
+    "geranium",
+    6.463
+   ],
+   [
+    "zinnia",
+    6.076
+   ],
+   [
+    "snapdragon",
+    5.711
+   ],
+   [
+    "dahlia",
+    5.368
+   ],
+   [
+    "freesia",
+    5.046
+   ],
+   [
+    "gardenia",
+    4.744
+   ],
+   [
+    "camellia",
+    4.459
+   ],
+   [
+    "azalea",
+    4.191
+   ],
+   [
+    "hydrangea",
+    3.94
+   ],
+   [
+    "gerbera",
+    3.703
+   ],
+   [
+    "forget me not",
+    3.481
+   ],
+   [
+    "buttercup",
+    3.272
+   ],
+   [
+    "dandelion",
+    3.076
+   ],
+   [
+    "bluebell",
+    2.891
+   ],
+   [
+    "crocus",
+    2.718
+   ],
+   [
+    "lilac",
+    2.555
+   ],
+   [
+    "cosmos",
+    2.402
+   ],
+   [
+    "aster",
+    2.258
+   ],
+   [
+    "anemone",
+    2.122
+   ],
+   [
+    "delphinium",
+    1.995
+   ],
+   [
+    "protea",
+    1.875
+   ],
+   [
+    "bird of paradise",
+    1.763
+   ],
+   [
+    "baby's breath",
+    1.657
+   ],
+   [
+    "cherry blossom",
+    1.557
+   ],
+   [
+    "wisteria",
+    1.464
    ]
   ]
  },
@@ -1415,6 +3907,162 @@ export default [
    [
     "volvo",
     14
+   ],
+   [
+    "mazda",
+    13.16
+   ],
+   [
+    "subaru",
+    12.37
+   ],
+   [
+    "lexus",
+    11.628
+   ],
+   [
+    "acura",
+    10.93
+   ],
+   [
+    "infiniti",
+    10.275
+   ],
+   [
+    "dodge",
+    9.658
+   ],
+   [
+    "ram",
+    9.079
+   ],
+   [
+    "gmc",
+    8.534
+   ],
+   [
+    "buick",
+    8.022
+   ],
+   [
+    "cadillac",
+    7.541
+   ],
+   [
+    "chrysler",
+    7.088
+   ],
+   [
+    "lincoln",
+    6.663
+   ],
+   [
+    "mitsubishi",
+    6.263
+   ],
+   [
+    "suzuki",
+    5.887
+   ],
+   [
+    "fiat",
+    5.534
+   ],
+   [
+    "alfa romeo",
+    5.202
+   ],
+   [
+    "maserati",
+    4.89
+   ],
+   [
+    "lamborghini",
+    4.597
+   ],
+   [
+    "bentley",
+    4.321
+   ],
+   [
+    "rolls royce",
+    4.061
+   ],
+   [
+    "aston martin",
+    3.818
+   ],
+   [
+    "mini",
+    3.589
+   ],
+   [
+    "land rover",
+    3.373
+   ],
+   [
+    "jaguar",
+    3.171
+   ],
+   [
+    "peugeot",
+    2.981
+   ],
+   [
+    "renault",
+    2.802
+   ],
+   [
+    "citroen",
+    2.634
+   ],
+   [
+    "skoda",
+    2.476
+   ],
+   [
+    "seat",
+    2.327
+   ],
+   [
+    "saab",
+    2.188
+   ],
+   [
+    "genesis",
+    2.056
+   ],
+   [
+    "rivian",
+    1.933
+   ],
+   [
+    "lucid",
+    1.817
+   ],
+   [
+    "bugatti",
+    1.708
+   ],
+   [
+    "mclaren",
+    1.605
+   ],
+   [
+    "pontiac",
+    1.509
+   ],
+   [
+    "oldsmobile",
+    1.419
+   ],
+   [
+    "hummer",
+    1.333
+   ],
+   [
+    "dacia",
+    1.253
    ]
   ]
  },
@@ -1480,6 +4128,138 @@ export default [
    [
     "bluesky",
     6
+   ],
+   [
+    "telegram",
+    5.64
+   ],
+   [
+    "wechat",
+    5.302
+   ],
+   [
+    "signal",
+    4.984
+   ],
+   [
+    "twitch",
+    4.684
+   ],
+   [
+    "quora",
+    4.403
+   ],
+   [
+    "vine",
+    4.139
+   ],
+   [
+    "myspace",
+    3.891
+   ],
+   [
+    "bereal",
+    3.657
+   ],
+   [
+    "clubhouse",
+    3.438
+   ],
+   [
+    "mastodon",
+    3.232
+   ],
+   [
+    "truth social",
+    3.038
+   ],
+   [
+    "parler",
+    2.856
+   ],
+   [
+    "flickr",
+    2.684
+   ],
+   [
+    "vimeo",
+    2.523
+   ],
+   [
+    "tinder",
+    2.372
+   ],
+   [
+    "bumble",
+    2.229
+   ],
+   [
+    "hinge",
+    2.096
+   ],
+   [
+    "strava",
+    1.97
+   ],
+   [
+    "weibo",
+    1.852
+   ],
+   [
+    "line",
+    1.741
+   ],
+   [
+    "kik",
+    1.636
+   ],
+   [
+    "viber",
+    1.538
+   ],
+   [
+    "skype",
+    1.446
+   ],
+   [
+    "google plus",
+    1.359
+   ],
+   [
+    "nextdoor",
+    1.277
+   ],
+   [
+    "goodreads",
+    1.201
+   ],
+   [
+    "medium",
+    1.129
+   ],
+   [
+    "substack",
+    1.061
+   ],
+   [
+    "onlyfans",
+    0.997
+   ],
+   [
+    "patreon",
+    0.938
+   ],
+   [
+    "imessage",
+    0.881
+   ],
+   [
+    "messenger",
+    0.828
+   ],
+   [
+    "slack",
+    0.779
    ]
   ]
  },
@@ -1562,6 +4342,146 @@ export default [
     [
      "fred"
     ]
+   ],
+   [
+    "tweety",
+    9.4
+   ],
+   [
+    "sylvester",
+    8.836
+   ],
+   [
+    "porky pig",
+    8.306
+   ],
+   [
+    "road runner",
+    7.807
+   ],
+   [
+    "wile e coyote",
+    7.339
+   ],
+   [
+    "elmer fudd",
+    6.899
+   ],
+   [
+    "jerry",
+    6.485
+   ],
+   [
+    "pluto",
+    6.096
+   ],
+   [
+    "minnie mouse",
+    5.73
+   ],
+   [
+    "bart simpson",
+    5.386
+   ],
+   [
+    "stewie griffin",
+    5.063
+   ],
+   [
+    "peter griffin",
+    4.759
+   ],
+   [
+    "cartman",
+    4.474
+   ],
+   [
+    "stan marsh",
+    4.205
+   ],
+   [
+    "rick sanchez",
+    3.953
+   ],
+   [
+    "morty",
+    3.716
+   ],
+   [
+    "barney rubble",
+    3.493
+   ],
+   [
+    "shaggy",
+    3.283
+   ],
+   [
+    "garfield",
+    3.086
+   ],
+   [
+    "charlie brown",
+    2.901
+   ],
+   [
+    "betty boop",
+    2.727
+   ],
+   [
+    "woody woodpecker",
+    2.563
+   ],
+   [
+    "tintin",
+    2.41
+   ],
+   [
+    "patrick star",
+    2.265
+   ],
+   [
+    "squidward",
+    2.129
+   ],
+   [
+    "mr krabs",
+    2.001
+   ],
+   [
+    "dora",
+    1.881
+   ],
+   [
+    "bluey",
+    1.768
+   ],
+   [
+    "peppa pig",
+    1.662
+   ],
+   [
+    "sonic",
+    1.563
+   ],
+   [
+    "lisa simpson",
+    1.469
+   ],
+   [
+    "marge simpson",
+    1.381
+   ],
+   [
+    "tigger",
+    1.298
+   ],
+   [
+    "eeyore",
+    1.22
+   ],
+   [
+    "simba",
+    1.147
    ]
   ]
  },
@@ -1637,6 +4557,142 @@ export default [
     [
      "courgette"
     ]
+   ],
+   [
+    "green beans",
+    14.1
+   ],
+   [
+    "asparagus",
+    13.254
+   ],
+   [
+    "kale",
+    12.459
+   ],
+   [
+    "eggplant",
+    11.711
+   ],
+   [
+    "squash",
+    11.009
+   ],
+   [
+    "pumpkin",
+    10.348
+   ],
+   [
+    "radish",
+    9.727
+   ],
+   [
+    "beet",
+    9.144
+   ],
+   [
+    "turnip",
+    8.595
+   ],
+   [
+    "parsnip",
+    8.079
+   ],
+   [
+    "brussels sprouts",
+    7.594
+   ],
+   [
+    "leek",
+    7.139
+   ],
+   [
+    "garlic",
+    6.71
+   ],
+   [
+    "artichoke",
+    6.308
+   ],
+   [
+    "sweet potato",
+    5.929
+   ],
+   [
+    "yam",
+    5.574
+   ],
+   [
+    "okra",
+    5.239
+   ],
+   [
+    "bok choy",
+    4.925
+   ],
+   [
+    "arugula",
+    4.629
+   ],
+   [
+    "kohlrabi",
+    4.352
+   ],
+   [
+    "fennel",
+    4.09
+   ],
+   [
+    "rutabaga",
+    3.845
+   ],
+   [
+    "shallot",
+    3.614
+   ],
+   [
+    "scallion",
+    3.398
+   ],
+   [
+    "collard greens",
+    3.194
+   ],
+   [
+    "chard",
+    3.002
+   ],
+   [
+    "watercress",
+    2.822
+   ],
+   [
+    "endive",
+    2.653
+   ],
+   [
+    "jicama",
+    2.493
+   ],
+   [
+    "mushroom",
+    2.344
+   ],
+   [
+    "bell pepper",
+    2.203
+   ],
+   [
+    "snow peas",
+    2.071
+   ],
+   [
+    "edamame",
+    1.947
+   ],
+   [
+    "radicchio",
+    1.83
    ]
   ]
  },
@@ -1731,6 +4787,130 @@ export default [
     [
      "sun lounger"
     ]
+   ],
+   [
+    "sun",
+    4.7
+   ],
+   [
+    "palm tree",
+    4.418
+   ],
+   [
+    "sunglasses",
+    4.153
+   ],
+   [
+    "flip flops",
+    3.904
+   ],
+   [
+    "beach ball",
+    3.67
+   ],
+   [
+    "volleyball",
+    3.449
+   ],
+   [
+    "sandcastle",
+    3.242
+   ],
+   [
+    "dunes",
+    3.048
+   ],
+   [
+    "rocks",
+    2.865
+   ],
+   [
+    "pebbles",
+    2.693
+   ],
+   [
+    "driftwood",
+    2.531
+   ],
+   [
+    "jellyfish",
+    2.38
+   ],
+   [
+    "starfish",
+    2.237
+   ],
+   [
+    "boats",
+    2.103
+   ],
+   [
+    "pier",
+    1.976
+   ],
+   [
+    "lighthouse",
+    1.858
+   ],
+   [
+    "surfers",
+    1.746
+   ],
+   [
+    "kite",
+    1.642
+   ],
+   [
+    "cooler",
+    1.543
+   ],
+   [
+    "beach chair",
+    1.451
+   ],
+   [
+    "hammock",
+    1.363
+   ],
+   [
+    "snorkel",
+    1.282
+   ],
+   [
+    "flag",
+    1.205
+   ],
+   [
+    "tide pools",
+    1.133
+   ],
+   [
+    "sea grass",
+    1.065
+   ],
+   [
+    "dolphins",
+    1.001
+   ],
+   [
+    "shipwreck",
+    0.941
+   ],
+   [
+    "fishing boat",
+    0.884
+   ],
+   [
+    "hermit crab",
+    0.831
+   ],
+   [
+    "beach hut",
+    0.781
+   ],
+   [
+    "tourists",
+    0.734
    ]
   ]
  },
@@ -1803,6 +4983,130 @@ export default [
     [
      "capellini"
     ]
+   ],
+   [
+    "rotini",
+    7.52
+   ],
+   [
+    "bucatini",
+    7.069
+   ],
+   [
+    "pappardelle",
+    6.645
+   ],
+   [
+    "tagliatelle",
+    6.246
+   ],
+   [
+    "cannelloni",
+    5.871
+   ],
+   [
+    "gnocchi",
+    5.519
+   ],
+   [
+    "ziti",
+    5.188
+   ],
+   [
+    "manicotti",
+    4.877
+   ],
+   [
+    "orecchiette",
+    4.584
+   ],
+   [
+    "cavatappi",
+    4.309
+   ],
+   [
+    "conchiglie",
+    4.05
+   ],
+   [
+    "elbow",
+    3.807
+   ],
+   [
+    "vermicelli",
+    3.579
+   ],
+   [
+    "ditalini",
+    3.364
+   ],
+   [
+    "tortelloni",
+    3.162
+   ],
+   [
+    "agnolotti",
+    2.973
+   ],
+   [
+    "rotelle",
+    2.794
+   ],
+   [
+    "radiatori",
+    2.627
+   ],
+   [
+    "campanelle",
+    2.469
+   ],
+   [
+    "paccheri",
+    2.321
+   ],
+   [
+    "spaghettini",
+    2.182
+   ],
+   [
+    "mafalda",
+    2.051
+   ],
+   [
+    "fregola",
+    1.928
+   ],
+   [
+    "trofie",
+    1.812
+   ],
+   [
+    "strozzapreti",
+    1.703
+   ],
+   [
+    "cavatelli",
+    1.601
+   ],
+   [
+    "mostaccioli",
+    1.505
+   ],
+   [
+    "shells",
+    1.415
+   ],
+   [
+    "spaghetti squash",
+    1.33
+   ],
+   [
+    "egg noodles",
+    1.25
+   ],
+   [
+    "udon",
+    1.175
    ]
   ]
  },
@@ -1880,6 +5184,134 @@ export default [
    [
     "hat",
     12
+   ],
+   [
+    "shoes",
+    11.28
+   ],
+   [
+    "sandals",
+    10.603
+   ],
+   [
+    "flip flops",
+    9.967
+   ],
+   [
+    "pajamas",
+    9.369
+   ],
+   [
+    "underwear",
+    8.807
+   ],
+   [
+    "jacket",
+    8.278
+   ],
+   [
+    "maps",
+    7.782
+   ],
+   [
+    "guidebook",
+    7.315
+   ],
+   [
+    "tickets",
+    6.876
+   ],
+   [
+    "wallet",
+    6.463
+   ],
+   [
+    "credit card",
+    6.076
+   ],
+   [
+    "laptop",
+    5.711
+   ],
+   [
+    "tablet",
+    5.368
+   ],
+   [
+    "headphones",
+    5.046
+   ],
+   [
+    "snacks",
+    4.744
+   ],
+   [
+    "water bottle",
+    4.459
+   ],
+   [
+    "medicine",
+    4.191
+   ],
+   [
+    "first aid kit",
+    3.94
+   ],
+   [
+    "toiletries",
+    3.703
+   ],
+   [
+    "makeup",
+    3.481
+   ],
+   [
+    "hairbrush",
+    3.272
+   ],
+   [
+    "deodorant",
+    3.076
+   ],
+   [
+    "phone charger",
+    2.891
+   ],
+   [
+    "adapter",
+    2.718
+   ],
+   [
+    "luggage tag",
+    2.555
+   ],
+   [
+    "neck pillow",
+    2.402
+   ],
+   [
+    "journal",
+    2.258
+   ],
+   [
+    "binoculars",
+    2.122
+   ],
+   [
+    "shorts",
+    1.995
+   ],
+   [
+    "jeans",
+    1.875
+   ],
+   [
+    "backpack",
+    1.763
+   ],
+   [
+    "umbrella",
+    1.657
    ]
   ]
  },
@@ -1958,6 +5390,138 @@ export default [
    [
     "machu picchu",
     18
+   ],
+   [
+    "london eye",
+    16.92
+   ],
+   [
+    "tower bridge",
+    15.905
+   ],
+   [
+    "buckingham palace",
+    14.951
+   ],
+   [
+    "louvre",
+    14.053
+   ],
+   [
+    "arc de triomphe",
+    13.21
+   ],
+   [
+    "notre dame",
+    12.418
+   ],
+   [
+    "sagrada familia",
+    11.673
+   ],
+   [
+    "acropolis",
+    10.972
+   ],
+   [
+    "parthenon",
+    10.314
+   ],
+   [
+    "brandenburg gate",
+    9.695
+   ],
+   [
+    "neuschwanstein castle",
+    9.113
+   ],
+   [
+    "burj khalifa",
+    8.567
+   ],
+   [
+    "christ the redeemer",
+    8.053
+   ],
+   [
+    "chichen itza",
+    7.569
+   ],
+   [
+    "angkor wat",
+    7.115
+   ],
+   [
+    "petra",
+    6.688
+   ],
+   [
+    "forbidden city",
+    6.287
+   ],
+   [
+    "tokyo tower",
+    5.91
+   ],
+   [
+    "space needle",
+    5.555
+   ],
+   [
+    "white house",
+    5.222
+   ],
+   [
+    "lincoln memorial",
+    4.909
+   ],
+   [
+    "washington monument",
+    4.614
+   ],
+   [
+    "niagara falls",
+    4.337
+   ],
+   [
+    "grand canyon",
+    4.077
+   ],
+   [
+    "hollywood sign",
+    3.832
+   ],
+   [
+    "times square",
+    3.602
+   ],
+   [
+    "brooklyn bridge",
+    3.386
+   ],
+   [
+    "cn tower",
+    3.183
+   ],
+   [
+    "alcatraz",
+    2.992
+   ],
+   [
+    "mount fuji",
+    2.813
+   ],
+   [
+    "great sphinx",
+    2.644
+   ],
+   [
+    "kremlin",
+    2.485
+   ],
+   [
+    "st basils cathedral",
+    2.336
    ]
   ]
  },
@@ -2024,6 +5588,134 @@ export default [
    [
     "rum raisin",
     5
+   ],
+   [
+    "chocolate chip",
+    4.7
+   ],
+   [
+    "peanut butter",
+    4.418
+   ],
+   [
+    "salted caramel",
+    4.153
+   ],
+   [
+    "cherry",
+    3.904
+   ],
+   [
+    "banana",
+    3.67
+   ],
+   [
+    "mango",
+    3.449
+   ],
+   [
+    "lemon",
+    3.242
+   ],
+   [
+    "raspberry",
+    3.048
+   ],
+   [
+    "birthday cake",
+    2.865
+   ],
+   [
+    "cotton candy",
+    2.693
+   ],
+   [
+    "bubblegum",
+    2.531
+   ],
+   [
+    "rainbow sherbet",
+    2.38
+   ],
+   [
+    "black cherry",
+    2.237
+   ],
+   [
+    "french vanilla",
+    2.103
+   ],
+   [
+    "praline",
+    1.976
+   ],
+   [
+    "cake batter",
+    1.858
+   ],
+   [
+    "red velvet",
+    1.746
+   ],
+   [
+    "dulce de leche",
+    1.642
+   ],
+   [
+    "green tea",
+    1.543
+   ],
+   [
+    "matcha",
+    1.451
+   ],
+   [
+    "lavender",
+    1.363
+   ],
+   [
+    "honey",
+    1.282
+   ],
+   [
+    "coconut",
+    1.205
+   ],
+   [
+    "peach",
+    1.133
+   ],
+   [
+    "blueberry",
+    1.065
+   ],
+   [
+    "tiramisu",
+    1.001
+   ],
+   [
+    "smores",
+    0.941
+   ],
+   [
+    "pecan",
+    0.884
+   ],
+   [
+    "maple walnut",
+    0.831
+   ],
+   [
+    "cheesecake",
+    0.781
+   ],
+   [
+    "fudge brownie",
+    0.734
+   ],
+   [
+    "moose tracks",
+    0.69
    ]
   ]
  },
@@ -2085,6 +5777,122 @@ export default [
    [
     "rabbit",
     8
+   ],
+   [
+    "alpaca",
+    7.52
+   ],
+   [
+    "ox",
+    7.069
+   ],
+   [
+    "bull",
+    6.645
+   ],
+   [
+    "lamb",
+    6.246
+   ],
+   [
+    "calf",
+    5.871
+   ],
+   [
+    "mule",
+    5.519
+   ],
+   [
+    "hen",
+    5.188
+   ],
+   [
+    "chick",
+    4.877
+   ],
+   [
+    "guinea fowl",
+    4.584
+   ],
+   [
+    "peacock",
+    4.309
+   ],
+   [
+    "buffalo",
+    4.05
+   ],
+   [
+    "water buffalo",
+    3.807
+   ],
+   [
+    "yak",
+    3.579
+   ],
+   [
+    "emu",
+    3.364
+   ],
+   [
+    "ostrich",
+    3.162
+   ],
+   [
+    "pigeon",
+    2.973
+   ],
+   [
+    "quail",
+    2.794
+   ],
+   [
+    "ram",
+    2.627
+   ],
+   [
+    "piglet",
+    2.469
+   ],
+   [
+    "foal",
+    2.321
+   ],
+   [
+    "sheepdog",
+    2.182
+   ],
+   [
+    "farm cat",
+    2.051
+   ],
+   [
+    "bee",
+    1.928
+   ],
+   [
+    "camel",
+    1.812
+   ],
+   [
+    "barn owl",
+    1.703
+   ],
+   [
+    "rooster crow",
+    1.601
+   ],
+   [
+    "sow",
+    1.505
+   ],
+   [
+    "hog",
+    1.415
+   ],
+   [
+    "stallion",
+    1.33
    ]
   ]
  },
@@ -2163,6 +5971,134 @@ export default [
    [
     "labor day",
     8
+   ],
+   [
+    "memorial day",
+    7.52
+   ],
+   [
+    "fathers day",
+    7.069
+   ],
+   [
+    "presidents day",
+    6.645
+   ],
+   [
+    "martin luther king day",
+    6.246
+   ],
+   [
+    "veterans day",
+    5.871
+   ],
+   [
+    "columbus day",
+    5.519
+   ],
+   [
+    "juneteenth",
+    5.188
+   ],
+   [
+    "cinco de mayo",
+    4.877
+   ],
+   [
+    "kwanzaa",
+    4.584
+   ],
+   [
+    "passover",
+    4.309
+   ],
+   [
+    "ramadan",
+    4.05
+   ],
+   [
+    "eid",
+    3.807
+   ],
+   [
+    "yom kippur",
+    3.579
+   ],
+   [
+    "rosh hashanah",
+    3.364
+   ],
+   [
+    "lunar new year",
+    3.162
+   ],
+   [
+    "holi",
+    2.973
+   ],
+   [
+    "oktoberfest",
+    2.794
+   ],
+   [
+    "boxing day",
+    2.627
+   ],
+   [
+    "groundhog day",
+    2.469
+   ],
+   [
+    "april fools day",
+    2.321
+   ],
+   [
+    "earth day",
+    2.182
+   ],
+   [
+    "black friday",
+    2.051
+   ],
+   [
+    "mardi gras",
+    1.928
+   ],
+   [
+    "good friday",
+    1.812
+   ],
+   [
+    "epiphany",
+    1.703
+   ],
+   [
+    "bonfire night",
+    1.601
+   ],
+   [
+    "canada day",
+    1.505
+   ],
+   [
+    "australia day",
+    1.415
+   ],
+   [
+    "anzac day",
+    1.33
+   ],
+   [
+    "bastille day",
+    1.25
+   ],
+   [
+    "saint nicholas day",
+    1.175
+   ],
+   [
+    "day of the dead",
+    1.105
    ]
   ]
  },
@@ -2237,6 +6173,138 @@ export default [
      "ict",
      "computing"
     ]
+   ],
+   [
+    "reading",
+    11.28
+   ],
+   [
+    "writing",
+    10.603
+   ],
+   [
+    "literature",
+    9.967
+   ],
+   [
+    "algebra",
+    9.369
+   ],
+   [
+    "geometry",
+    8.807
+   ],
+   [
+    "calculus",
+    8.278
+   ],
+   [
+    "social studies",
+    7.782
+   ],
+   [
+    "health",
+    7.315
+   ],
+   [
+    "home economics",
+    6.876
+   ],
+   [
+    "shop",
+    6.463
+   ],
+   [
+    "woodworking",
+    6.076
+   ],
+   [
+    "drama",
+    5.711
+   ],
+   [
+    "theater",
+    5.368
+   ],
+   [
+    "band",
+    5.046
+   ],
+   [
+    "choir",
+    4.744
+   ],
+   [
+    "economics",
+    4.459
+   ],
+   [
+    "psychology",
+    4.191
+   ],
+   [
+    "sociology",
+    3.94
+   ],
+   [
+    "philosophy",
+    3.703
+   ],
+   [
+    "latin",
+    3.481
+   ],
+   [
+    "german",
+    3.272
+   ],
+   [
+    "mandarin",
+    3.076
+   ],
+   [
+    "world history",
+    2.891
+   ],
+   [
+    "civics",
+    2.718
+   ],
+   [
+    "government",
+    2.555
+   ],
+   [
+    "computer class",
+    2.402
+   ],
+   [
+    "programming",
+    2.258
+   ],
+   [
+    "art history",
+    2.122
+   ],
+   [
+    "religious studies",
+    1.995
+   ],
+   [
+    "statistics",
+    1.875
+   ],
+   [
+    "trigonometry",
+    1.763
+   ],
+   [
+    "spelling",
+    1.657
+   ],
+   [
+    "handwriting",
+    1.557
    ]
   ]
  },
@@ -2319,6 +6387,126 @@ export default [
     [
      "tights"
     ]
+   ],
+   [
+    "loafers",
+    5.64
+   ],
+   [
+    "flats",
+    5.302
+   ],
+   [
+    "wellies",
+    4.984
+   ],
+   [
+    "rain boots",
+    4.684
+   ],
+   [
+    "hiking boots",
+    4.403
+   ],
+   [
+    "work boots",
+    4.139
+   ],
+   [
+    "cowboy boots",
+    3.891
+   ],
+   [
+    "ballet flats",
+    3.657
+   ],
+   [
+    "clogs",
+    3.438
+   ],
+   [
+    "moccasins",
+    3.232
+   ],
+   [
+    "espadrilles",
+    3.038
+   ],
+   [
+    "oxfords",
+    2.856
+   ],
+   [
+    "platforms",
+    2.684
+   ],
+   [
+    "wedges",
+    2.523
+   ],
+   [
+    "pumps",
+    2.372
+   ],
+   [
+    "stilettos",
+    2.229
+   ],
+   [
+    "uggs",
+    2.096
+   ],
+   [
+    "thongs",
+    1.97
+   ],
+   [
+    "pantyhose",
+    1.852
+   ],
+   [
+    "ankle socks",
+    1.741
+   ],
+   [
+    "knee socks",
+    1.636
+   ],
+   [
+    "slides",
+    1.538
+   ],
+   [
+    "jelly shoes",
+    1.446
+   ],
+   [
+    "ice skates",
+    1.359
+   ],
+   [
+    "roller skates",
+    1.277
+   ],
+   [
+    "snow boots",
+    1.201
+   ],
+   [
+    "water shoes",
+    1.129
+   ],
+   [
+    "bare feet",
+    1.061
+   ],
+   [
+    "orthotics",
+    0.997
+   ],
+   [
+    "spats",
+    0.938
    ]
   ]
  },
@@ -2403,6 +6591,154 @@ export default [
    [
     "peacock",
     10
+   ],
+   [
+    "finch",
+    7.52
+   ],
+   [
+    "wren",
+    7.069
+   ],
+   [
+    "swallow",
+    6.645
+   ],
+   [
+    "starling",
+    6.246
+   ],
+   [
+    "blackbird",
+    5.871
+   ],
+   [
+    "magpie",
+    5.519
+   ],
+   [
+    "raven",
+    5.188
+   ],
+   [
+    "kingfisher",
+    4.877
+   ],
+   [
+    "woodpecker",
+    4.584
+   ],
+   [
+    "heron",
+    4.309
+   ],
+   [
+    "crane",
+    4.05
+   ],
+   [
+    "stork",
+    3.807
+   ],
+   [
+    "pelican",
+    3.579
+   ],
+   [
+    "albatross",
+    3.364
+   ],
+   [
+    "puffin",
+    3.162
+   ],
+   [
+    "toucan",
+    2.973
+   ],
+   [
+    "macaw",
+    2.794
+   ],
+   [
+    "cockatoo",
+    2.627
+   ],
+   [
+    "canary",
+    2.469
+   ],
+   [
+    "budgie",
+    2.321
+   ],
+   [
+    "falcon",
+    2.182
+   ],
+   [
+    "vulture",
+    2.051
+   ],
+   [
+    "condor",
+    1.928
+   ],
+   [
+    "kiwi",
+    1.812
+   ],
+   [
+    "emu",
+    1.703
+   ],
+   [
+    "chicken",
+    1.601
+   ],
+   [
+    "turkey",
+    1.505
+   ],
+   [
+    "goose",
+    1.415
+   ],
+   [
+    "dove",
+    1.33
+   ],
+   [
+    "nightingale",
+    1.25
+   ],
+   [
+    "lark",
+    1.175
+   ],
+   [
+    "bluebird",
+    1.105
+   ],
+   [
+    "oriole",
+    1.038
+   ],
+   [
+    "cockatiel",
+    0.976
+   ],
+   [
+    "mockingbird",
+    0.917
+   ],
+   [
+    "kookaburra",
+    0.862
+   ],
+   [
+    "goldfinch",
+    0.811
    ]
   ]
  },
@@ -2465,6 +6801,126 @@ export default [
    [
     "apple cider",
     6
+   ],
+   [
+    "green tea",
+    5.64
+   ],
+   [
+    "black tea",
+    5.302
+   ],
+   [
+    "earl grey",
+    4.984
+   ],
+   [
+    "matcha",
+    4.684
+   ],
+   [
+    "americano",
+    4.403
+   ],
+   [
+    "flat white",
+    4.139
+   ],
+   [
+    "macchiato",
+    3.891
+   ],
+   [
+    "chai latte",
+    3.657
+   ],
+   [
+    "hot cider",
+    3.438
+   ],
+   [
+    "mulled wine",
+    3.232
+   ],
+   [
+    "eggnog",
+    3.038
+   ],
+   [
+    "irish coffee",
+    2.856
+   ],
+   [
+    "golden milk",
+    2.684
+   ],
+   [
+    "horlicks",
+    2.523
+   ],
+   [
+    "ovaltine",
+    2.372
+   ],
+   [
+    "chamomile tea",
+    2.229
+   ],
+   [
+    "peppermint tea",
+    2.096
+   ],
+   [
+    "ginger tea",
+    1.97
+   ],
+   [
+    "lemon tea",
+    1.852
+   ],
+   [
+    "bubble tea",
+    1.741
+   ],
+   [
+    "matcha latte",
+    1.636
+   ],
+   [
+    "turmeric latte",
+    1.538
+   ],
+   [
+    "yerba mate",
+    1.446
+   ],
+   [
+    "butter tea",
+    1.359
+   ],
+   [
+    "hot water",
+    1.277
+   ],
+   [
+    "lemon and honey",
+    1.201
+   ],
+   [
+    "caramel macchiato",
+    1.129
+   ],
+   [
+    "pumpkin spice latte",
+    1.061
+   ],
+   [
+    "white hot chocolate",
+    0.997
+   ],
+   [
+    "decaf",
+    0.938
    ]
   ]
  },
@@ -2559,6 +7015,166 @@ export default [
     [
      "professor mcgonagall"
     ]
+   ],
+   [
+    "fred weasley",
+    14.1
+   ],
+   [
+    "george weasley",
+    13.254
+   ],
+   [
+    "ginny weasley",
+    12.459
+   ],
+   [
+    "mrs weasley",
+    11.711
+   ],
+   [
+    "mr weasley",
+    11.009
+   ],
+   [
+    "bellatrix lestrange",
+    10.348
+   ],
+   [
+    "lucius malfoy",
+    9.727
+   ],
+   [
+    "narcissa malfoy",
+    9.144
+   ],
+   [
+    "dolores umbridge",
+    8.595
+   ],
+   [
+    "remus lupin",
+    8.079
+   ],
+   [
+    "tonks",
+    7.594
+   ],
+   [
+    "mad eye moody",
+    7.139
+   ],
+   [
+    "cedric diggory",
+    6.71
+   ],
+   [
+    "cho chang",
+    6.308
+   ],
+   [
+    "fleur delacour",
+    5.929
+   ],
+   [
+    "viktor krum",
+    5.574
+   ],
+   [
+    "kreacher",
+    5.239
+   ],
+   [
+    "hedwig",
+    4.925
+   ],
+   [
+    "fawkes",
+    4.629
+   ],
+   [
+    "buckbeak",
+    4.352
+   ],
+   [
+    "fluffy",
+    4.09
+   ],
+   [
+    "scabbers",
+    3.845
+   ],
+   [
+    "crookshanks",
+    3.614
+   ],
+   [
+    "lavender brown",
+    3.398
+   ],
+   [
+    "seamus finnigan",
+    3.194
+   ],
+   [
+    "dean thomas",
+    3.002
+   ],
+   [
+    "colin creevey",
+    2.822
+   ],
+   [
+    "peeves",
+    2.653
+   ],
+   [
+    "nearly headless nick",
+    2.493
+   ],
+   [
+    "moaning myrtle",
+    2.344
+   ],
+   [
+    "professor flitwick",
+    2.203
+   ],
+   [
+    "professor sprout",
+    2.071
+   ],
+   [
+    "professor trelawney",
+    1.947
+   ],
+   [
+    "quirrell",
+    1.83
+   ],
+   [
+    "gilderoy lockhart",
+    1.72
+   ],
+   [
+    "slughorn",
+    1.617
+   ],
+   [
+    "filch",
+    1.52
+   ],
+   [
+    "madam pomfrey",
+    1.429
+   ],
+   [
+    "rita skeeter",
+    1.343
+   ],
+   [
+    "griphook",
+    1.262
    ]
   ]
  }
