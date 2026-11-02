@@ -83,10 +83,11 @@ export async function decide(rows, vec, th, aiValid) {
   const valid = seedBest >= th.validNear || (await aiValid?.()) === true;
   const { share, top } = computeShares(rows);
   const topTexts = [...rows].sort((a, b) => share.get(b.key) - share.get(a.key)).slice(0, 3).map((r) => r.text);
-  if (!valid) return { valid: false, level: IMPOSTER, matched: null, topTexts };
+  const sim = { best: Math.round(bestSim * 1000) / 1000, seed: Math.round(seedBest * 1000) / 1000, near: best ? best.text : null };
+  if (!valid) return { valid: false, level: IMPOSTER, matched: null, topTexts, sim };
   const matched = bestSim >= th.same ? best : null;
   const ratio = matched ? (share.get(matched.key) || 0) / top : 0;
-  return { valid: true, level: levelForRatio(ratio), matched, topTexts };
+  return { valid: true, level: levelForRatio(ratio), matched, topTexts, sim };
 }
 
 // ---------- offline fallback (browser) ----------

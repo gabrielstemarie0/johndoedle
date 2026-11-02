@@ -101,7 +101,7 @@ export async function judgeQuestion({ db, ai, card, question, player, day }) {
       }
     }
   }
-  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts, ...(aiInfo ? { ai: aiInfo } : {}) };
+  return { valid: d.valid, level: d.level.id, pts: d.level.pts, matched: !!d.matched, text: d.matched ? d.matched.text : question.trim(), top: d.topTexts, sim: d.sim, ...(aiInfo ? { ai: aiInfo } : {}) };
 }
 
 export { isValidQuestion };
