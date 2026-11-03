@@ -1,24 +1,30 @@
 // The garage: every car you can buy, drawn from behind (third person, like you're the driver looking ahead).
-// Prices run from a free starter to an absurd UFO. Art is inline SVG, no image files.
+// Prices run from a free starter to an absurdly expensive tractor. Art is inline SVG, no image files.
 
 export const CARS = [
-  { id: "rusty", name: "Rusty Hatchback", price: 0, tier: "Starter", blurb: "Gets you there. Mostly.", shape: "hatch", color: "#a9733c", rust: true },
-  { id: "commuter", name: "Commuter", price: 350, tier: "Starter", blurb: "Sensible. Dull. Reliable.", shape: "sedan", color: "#4f8fd9" },
-  { id: "zippy", name: "Little Zippy", price: 800, tier: "Starter", blurb: "Tiny, but it has attitude.", shape: "hatch", color: "#7ccf3a", light: "round" },
-  { id: "wagon", name: "Family Wagon", price: 1500, tier: "Starter", blurb: "Room for the kids and the dog.", shape: "wagon", color: "#2a9d8f" },
-  { id: "pickup", name: "Work Pickup", price: 3000, tier: "Everyday", blurb: "Hauls anything. Judges nothing.", shape: "pickup", color: "#c0392b" },
-  { id: "coupe", name: "Street Coupe", price: 6500, tier: "Everyday", blurb: "Two doors, zero regrets.", shape: "coupe", color: "#f08a24", spoiler: "lip" },
-  { id: "muscle", name: "Muscle Machine", price: 14000, tier: "Performance", blurb: "You can hear it from three blocks away.", shape: "muscle", color: "#1f3b73", stripes: "#f4f4f4", exhaust: 2 },
-  { id: "rally", name: "Rally Beast", price: 28000, tier: "Performance", blurb: "Mud is just a suggestion.", shape: "rally", color: "#f1f1f1", accent: "#2e6fe0", spoiler: "wing" },
-  { id: "luxe", name: "Luxe Sedan", price: 55000, tier: "Luxury", blurb: "Leather seats. Quiet confidence.", shape: "lux", color: "#1c1d23", light: "bar" },
-  { id: "sports", name: "Sports Car", price: 110000, tier: "Luxury", blurb: "Low, loud and a little smug.", shape: "sports", color: "#d7263d", spoiler: "wing", exhaust: 2 },
-  { id: "super", name: "Supercar", price: 280000, tier: "Exotic", blurb: "Doors that open upward. Obviously.", shape: "super", color: "#ffd23f", spoiler: "wing", exhaust: 2, light: "led" },
-  { id: "hyper", name: "Hypercar", price: 1200000, tier: "Exotic", blurb: "More horsepower than a stable of horses.", shape: "hyper", color: "#7a3cff", spoiler: "bigwing", exhaust: 4, light: "led", neon: "#7df9ff" },
-  { id: "rocket", name: "Rocket Car", price: 6500000, tier: "Insane", blurb: "Technically a missile with seats.", shape: "rocket", color: "#c9d1dc", accent: "#e8453c" },
-  { id: "gold", name: "Golden Phantom", price: 30000000, tier: "Insane", blurb: "Solid gold. Do not park in the rain.", shape: "super", color: "#ffcf40", gold: true, spoiler: "wing", exhaust: 4, light: "led" },
-  { id: "hover", name: "Hover Car", price: 150000000, tier: "Insane", blurb: "Roads are for people who can't float.", shape: "hover", color: "#e9fbff", neon: "#38f0ff" },
-  { id: "ufo", name: "UFO", price: 1000000000, tier: "Insane", blurb: "Not from around here. Costs a billion.", shape: "ufo", color: "#aab4c4", neon: "#7dff9b" },
+  { id: "rusty", name: "Rusty Hatchback", price: 0, level: "alien", pieces: 2, blurb: "Gets you there. Mostly.", shape: "hatch", color: "#a9733c", rust: true },
+  { id: "commuter", name: "Commuter", price: 350, level: "alien", pieces: 2, blurb: "Sensible. Dull. Reliable.", shape: "sedan", color: "#4f8fd9" },
+  { id: "zippy", name: "Little Zippy", price: 800, level: "alien", pieces: 3, blurb: "Tiny, but it has attitude.", shape: "hatch", color: "#7ccf3a", light: "round" },
+  { id: "wagon", name: "Family Wagon", price: 1500, level: "alien", pieces: 3, blurb: "Room for the kids and the dog.", shape: "wagon", color: "#2a9d8f" },
+  { id: "pickup", name: "Work Pickup", price: 3000, level: "stranger", pieces: 3, blurb: "Hauls anything. Judges nothing.", shape: "pickup", color: "#c0392b" },
+  { id: "coupe", name: "Street Coupe", price: 6500, level: "stranger", pieces: 3, blurb: "Two doors, zero regrets.", shape: "coupe", color: "#f08a24", spoiler: "lip" },
+  { id: "muscle", name: "Muscle Machine", price: 14000, level: "stranger", pieces: 4, blurb: "You can hear it from three blocks away.", shape: "muscle", color: "#1f3b73", stripes: "#f4f4f4", exhaust: 2 },
+  { id: "rally", name: "Rally Beast", price: 28000, level: "stranger", pieces: 5, blurb: "Mud is just a suggestion.", shape: "rally", color: "#f1f1f1", accent: "#2e6fe0", spoiler: "wing" },
+  { id: "luxe", name: "Luxe Sedan", price: 55000, level: "neighbor", pieces: 4, blurb: "Leather seats. Quiet confidence.", shape: "lux", color: "#1c1d23", light: "bar" },
+  { id: "sports", name: "Sports Car", price: 110000, level: "neighbor", pieces: 5, blurb: "Low, loud and a little smug.", shape: "sports", color: "#d7263d", spoiler: "wing", exhaust: 2 },
+  { id: "super", name: "Supercar", price: 280000, level: "neighbor", pieces: 5, blurb: "Doors that open upward. Obviously.", shape: "super", color: "#ffd23f", spoiler: "wing", exhaust: 2, light: "led" },
+  { id: "hyper", name: "Hypercar", price: 1200000, level: "joe", pieces: 5, blurb: "More horsepower than a stable of horses.", shape: "hyper", color: "#7a3cff", spoiler: "bigwing", exhaust: 4, light: "led", neon: "#7df9ff" },
+  { id: "rocket", name: "Rocket Car", price: 6500000, level: "joe", pieces: 6, blurb: "Technically a missile with seats.", shape: "rocket", color: "#c9d1dc", accent: "#e8453c" },
+  { id: "gold", name: "Golden Phantom", price: 30000000, level: "joe", pieces: 6, blurb: "Solid gold. Do not park in the rain.", shape: "super", color: "#ffcf40", gold: true, spoiler: "wing", exhaust: 4, light: "led" },
+  { id: "hover", name: "Hover Car", price: 150000000, level: "johndoe", pieces: 6, blurb: "Roads are for people who can't float.", shape: "hover", color: "#e9fbff", neon: "#38f0ff" },
+  { id: "tractor", name: "Big Green Tractor", price: 1000000000, level: "johndoe", pieces: 7, blurb: "Nothing runs like a big green tractor. Costs a billion.", shape: "tractor", color: "#2f8f3a", accent: "#f2c230" },
 ];
+// Cars are sorted into the five answer levels. Alien holds the cheap starters, John Doe the most expensive cars.
+// `pieces` is how many puzzle pieces of that level unlock the car without paying (cheaper cars need fewer).
+export const LEVEL_ORDER = ["johndoe", "joe", "neighbor", "stranger", "alien"];
+export const carsOfLevel = (level) => CARS.filter((c) => c.level === level);
+// Mystery box odds (percent): the pricier the level's cars, the rarer its puzzle pieces.
+export const PIECE_ODDS = { alien: 50, stranger: 28, neighbor: 14, joe: 6, johndoe: 2 };
 export const carById = (id) => CARS.find((c) => c.id === id) || CARS[0];
 
 // "$1,240", "$6.5M", "$1B"
@@ -169,21 +175,25 @@ function hover(car, damage) {
     ${damageMarks({ bx: 82, bt: 60, bb: 98, ct: 38 }, damage)}`;
 }
 
-function ufo(car, damage) {
-  const n = car.neon, c = car.color;
-  return `<defs><linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${n}" stop-opacity=".7"/><stop offset="1" stop-color="${n}" stop-opacity="0"/></linearGradient></defs>
-    <path d="M52 90 L26 118 H174 L148 90 Z" fill="url(#beam)"/>
-    <ellipse cx="100" cy="82" rx="88" ry="20" fill="${dark(c, 0.25)}"/><ellipse cx="100" cy="76" rx="88" ry="18" fill="${c}"/>
-    <path d="M62 70 Q100 8 138 70 Z" fill="#9ff0ff" opacity=".7"/><path d="M62 70 Q100 8 138 70" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/>
-    ${[22, 52, 82, 118, 148, 178].map((x, i) => `<circle cx="${x}" cy="${80 + (i % 2) * 2}" r="5" fill="${i % 2 ? n : "#ffe27a"}"/>`).join("")}
-    ${damage ? `<path d="M92 40 L100 54 L94 64 M100 54 L116 50" stroke="#fff" stroke-opacity=".8" stroke-width="1.6" fill="none"/>` : ""}`;
+function tractor(car, damage) {
+  const c = car.color, y = car.accent;
+  return `<rect x="86" y="14" width="9" height="30" rx="3" fill="#2b2f3a"/><rect x="84" y="10" width="13" height="6" rx="2" fill="#14161c"/>
+    <rect x="60" y="24" width="80" height="8" rx="3" fill="${dark(c, 0.3)}"/><rect x="64" y="30" width="72" height="44" rx="6" fill="${c}"/>
+    <rect x="72" y="36" width="56" height="30" rx="4" fill="#9fe3ff" opacity=".85"/><rect x="98" y="36" width="4" height="30" fill="${dark(c, 0.3)}"/>
+    <rect x="50" y="66" width="100" height="30" rx="6" fill="${c}"/><rect x="50" y="86" width="100" height="6" fill="${y}"/>
+    <rect x="22" y="40" width="40" height="70" rx="12" fill="#14161c"/><rect x="138" y="40" width="40" height="70" rx="12" fill="#14161c"/>
+    ${[48, 60, 72, 84, 96].map((yy) => `<rect x="24" y="${yy}" width="36" height="4" rx="2" fill="#2b2f3a"/><rect x="140" y="${yy}" width="36" height="4" rx="2" fill="#2b2f3a"/>`).join("")}
+    <circle cx="42" cy="75" r="11" fill="${y}"/><circle cx="42" cy="75" r="4" fill="${dark(y, 0.4)}"/><circle cx="158" cy="75" r="11" fill="${y}"/><circle cx="158" cy="75" r="4" fill="${dark(y, 0.4)}"/>
+    <rect x="68" y="76" width="9" height="8" rx="2" fill="${damage >= 2 ? "#4a1818" : "#ff3b3b"}"/><rect x="123" y="76" width="9" height="8" rx="2" fill="#ff3b3b"/>
+    <rect x="92" y="96" width="16" height="10" rx="2" fill="#2b2f3a"/><circle cx="100" cy="101" r="3" fill="#8f98a6"/>
+    ${damageMarks({ bx: 50, bt: 66, bb: 96, ct: 36 }, damage)}`;
 }
 
 // The car as an SVG string. damage 0..4 adds cracks, scorch and a dead tail light.
 export function carSVG(car, { damage = 0 } = {}) {
   const c = typeof car === "string" ? carById(car) : car;
   const d = Math.max(0, Math.min(4, damage | 0));
-  const inner = c.shape === "pickup" ? pickup(c, d) : c.shape === "rocket" ? rocket(c, d) : c.shape === "hover" ? hover(c, d) : c.shape === "ufo" ? ufo(c, d) : normalCar(c, d);
+  const inner = c.shape === "pickup" ? pickup(c, d) : c.shape === "rocket" ? rocket(c, d) : c.shape === "hover" ? hover(c, d) : c.shape === "tractor" ? tractor(c, d) : normalCar(c, d);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 128" width="200" height="128">${inner}</svg>`;
 }
 export const carDataURI = (car, opts) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(carSVG(car, opts));

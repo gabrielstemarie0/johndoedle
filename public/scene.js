@@ -461,9 +461,6 @@ export function createScene(root, fuelEl) {
     if (S.flash > 0.02) { ctx.fillStyle = `rgba(255,70,50,${S.flash * 0.45})`; ctx.fillRect(0, 0, W, H); }
   }
 
-  // ---------- distance counter ----------
-  const gauge = fuelEl && { dist: fuelEl.querySelector(".dist-n") };
-
   function say(text, bad = false) { S.cap = text ? { text, bad, t0: S.t } : null; }
 
   // ---------- what the game can tell the scene ----------
@@ -499,8 +496,6 @@ export function createScene(root, fuelEl) {
     say,
     // Move the horizon down so the road starts below the game panel (px from the top; null = default).
     setHorizon(y) { hyWanted = y; resize(); },
-    // spaces driven today (0..35)
-    setDistance(spaces) { if (gauge && gauge.dist) gauge.dist.textContent = String(clamp(spaces, 0, MAX_SPACES)); },
     // for tests
     state: () => ({ horizon: hy, obstacleY: S.obs ? Y(S.obs.z) : null, obstacleZ: S.obs ? S.obs.z : null, obstacleMode: S.obs ? S.obs.mode : null, obstacleKind: S.obs ? S.obs.kind : null, carX: S.px, targetX: S.targetX, damage: S.damage, boost: S.boost, phase: S.phase, car: S.car.id, particles: S.particles.length }),
   };

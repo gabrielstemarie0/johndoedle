@@ -154,15 +154,11 @@ body { background: transparent; }
 .scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #7cc2ff; }
 .scene canvas { display: block; }
 /* game panels float over the scene */
-.card, .fuel { background: color-mix(in srgb, var(--card) 94%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.card { background: color-mix(in srgb, var(--card) 94%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .top, main { position: relative; z-index: 1; }
 .brand { padding: 5px 12px 5px 5px; border-radius: 14px; background: color-mix(in srgb, var(--card) 90%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 main { padding-bottom: 24px; }
 
-/* ===== trip bar ===== */
-.fuel { --fuelc: #e0503f; position: relative; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 10px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
-.dist { display: inline-flex; align-items: baseline; gap: 3px; font: 700 13px system-ui, sans-serif; white-space: nowrap; color: var(--muted); }
-.dist b { color: var(--ink); font-variant-numeric: tabular-nums; }
 @keyframes blink { 50% { opacity: .25; } }
 @keyframes pop { 0% { opacity: 0; transform: translateY(10px) scale(.8); } 20% { opacity: 1; transform: translateY(0) scale(1.15); } 100% { opacity: 0; transform: translateY(-22px); } }
 .fuel-note { margin: -8px 0 18px; color: var(--muted); }
@@ -172,7 +168,6 @@ main { padding-bottom: 24px; }
 
 @media (max-width: 420px) {
   .answer-card { font-size: 24px; padding: 9px 16px; }
-  .fuel { padding: 9px 11px; gap: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .scene *, .scene *::before, .scene *::after { animation: none !important; transition: none !important; }
@@ -225,8 +220,6 @@ main { padding-bottom: 24px; }
   .chips { gap: 5px; }
   .chip { padding: 4px 9px; }
   .chip-btn { min-width: 34px; }
-  .fuel { gap: 6px; padding: 9px 10px; }
-  .dist { padding-left: 6px; }
   main { padding: 0 12px 24px; }
 }
 /* short screens: tighten the card so the road and car stay visible underneath */
@@ -256,9 +249,6 @@ main { padding-bottom: 24px; }
 .shop-item.locked .shop-pic { filter: saturate(.55) brightness(.9); }
 .shop-pic svg { display: block; width: 100%; height: auto; }
 .shop-name { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-weight: 700; }
-.shop-tier { padding: 1px 8px; border-radius: 999px; background: var(--line); color: var(--muted); font: 700 11px system-ui, sans-serif; text-transform: uppercase; letter-spacing: .04em; }
-.tier-insane { background: #8a4fd6; color: #fff; }
-.tier-exotic { background: #d9822b; color: #fff; }
 .shop-blurb { color: var(--muted); font-size: 13px; }
 .shop-price { margin-top: 2px; font: 800 16px system-ui, sans-serif; font-variant-numeric: tabular-nums; }
 .modal .shop-btn { width: auto; min-width: 86px; padding: 9px 12px; font-size: 14px; white-space: nowrap; }
@@ -278,7 +268,7 @@ main { padding-bottom: 24px; }
   .chip-btn { min-width: 34px; }
   .card { padding: 18px; }
 }
-@media (max-width: 360px) { .brand-name { display: none; } .brand { padding-right: 5px; } }
+@media (max-width: 430px) { .brand-name { display: none; } .brand { padding-right: 5px; } }
 @media (max-height: 800px) { .ask { display: none; } }
 .feedback { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; align-items: center; text-align: left; margin-top: 12px; padding: 12px 14px; }
 .feedback .pts { grid-row: 1 / 3; font-size: 34px; line-height: 1; text-align: center; }
@@ -286,5 +276,45 @@ main { padding-bottom: 24px; }
 .feedback .fb-text { grid-column: 2; margin: 0; font-size: 13px; line-height: 1.35; }
 .feedback #next { grid-column: 1 / -1; margin-top: 10px; }
 
-.repair-tag { margin-left: auto; font: 700 13px system-ui, sans-serif; color: #c0392b; }
 .repair-note { margin: -6px 0 16px; color: var(--muted); }
+
+.repair-tag { margin: 0 0 12px; padding: 8px 14px; border-radius: 12px; background: color-mix(in srgb, #e0503f 14%, var(--card)); border: 1px solid #e0503f; color: #b83a2b; font: 700 14px system-ui, sans-serif; }
+@media (prefers-color-scheme: dark) { .repair-tag { color: #ff8f80; } }
+
+/* shop button in the header, and the big shop buttons on the start/results screens */
+.chip.wallet { position: relative; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.chip.wallet .shop-word { font-weight: 800; }
+.chip.wallet .dot { position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: #e0503f; border: 2px solid var(--bg); animation: shopping 1.4s ease-in-out infinite; }
+.shop-cta { display: block; width: 100%; margin-top: 12px; padding: 13px 16px; text-align: center; cursor: pointer; border-radius: 14px; border: 2px dashed var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--card)); color: var(--ink); font: inherit; }
+.shop-cta-t { display: block; font: 800 17px system-ui, sans-serif; }
+.shop-cta-s { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
+.shop-cta:hover, .shop-cta:focus-visible { border-style: solid; }
+.shop-cta.hot { border-style: solid; animation: shopping 1.6s ease-in-out infinite; }
+@keyframes shopping { 50% { transform: scale(1.04); } }
+@media (prefers-reduced-motion: reduce) { .shop-cta.hot, .chip.wallet .dot { animation: none; } }
+
+/* streak reward */
+.reward { margin: 0 0 14px; padding: 14px; border-radius: 14px; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--card)); }
+.reward h2 { margin: 0 0 10px; font: 800 20px Georgia, serif; }
+.reward-items { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.reward-item { display: grid; gap: 4px; justify-items: start; padding: 10px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); }
+.reward-item b { font: 800 20px system-ui, sans-serif; }
+.reward-item small { color: var(--muted); font-size: 12px; }
+.reward-ico { font-size: 22px; }
+.reward-item .btn { padding: 7px 12px; font-size: 14px; width: auto; }
+.reward-result { margin: 10px 0 0; min-height: 1.2em; font-weight: 700; }
+@media (max-width: 420px) { .reward-items { grid-template-columns: 1fr; } }
+
+/* shop sections by level and puzzle pieces */
+.shop-pieces { margin: 0 0 10px; }
+.piece-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.piece-chip { padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font: 700 13px system-ui, sans-serif; cursor: help; }
+.box-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; font-size: 14px; }
+.shop-sec { margin: 0 0 14px; }
+.shop-sec-h { margin: 0 0 8px; font: 800 17px Georgia, serif; }
+.shop-sec-h small { font: 600 12px system-ui, sans-serif; color: var(--muted); }
+.shop-puzzle { margin-top: 3px; font-size: 13px; letter-spacing: 1px; }
+.shop-actions { display: grid; gap: 6px; }
+.modal .shop-btn.piece { border-color: var(--l-stranger); color: var(--l-stranger); }
+@media (max-width: 420px) { .shop-item .shop-actions { grid-column: 1 / -1; } }
+@media (max-width: 350px) { .chip.wallet .shop-word { display: none; } }

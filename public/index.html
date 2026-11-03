@@ -35,18 +35,14 @@
     </a>
     <div class="chips">
       <span class="chip" id="streak-chip" title="Days in a row you've finished">🔥 <b id="streak">0</b></span>
-      <button class="chip chip-btn wallet" id="wallet-btn" type="button" aria-label="Your cash and the car shop" title="Your cash and the car shop"><span aria-hidden="true">&#128663;</span><b id="wallet">$0</b></button>
+      <button class="chip chip-btn wallet" id="wallet-btn" type="button" aria-label="Car shop. Your cash is shown on the button." title="Car shop: spend your cash"><span aria-hidden="true">&#127978;</span><span class="shop-word">Shop</span><b id="wallet">$0</b><i class="dot" id="shop-dot" hidden aria-hidden="true"></i></button>
       <button class="chip chip-btn" id="stats-btn" type="button" aria-label="Your stats" title="Your stats">&#128202;</button>
       <button class="chip chip-btn" id="help-btn" type="button" aria-label="How to play" title="How to play">?</button>
     </div>
   </header>
 
   <main>
-    <!-- Distance driven today (spaces) -->
-    <div class="fuel" id="fuel" aria-label="Distance driven today">
-      <span class="dist" title="Spaces driven today. A John Doe answer is 5, down to 1 for an Alien. 35 is the finish line."><span aria-hidden="true">&#127937;</span><b class="dist-n">0</b><span>/35</span> spaces</span>
-      <span class="repair-tag" id="repair-tag" hidden>&#128295; Car needs repairs</span>
-    </div>
+    <p class="repair-tag" id="repair-tag" hidden>&#128295; Your car needs repairs</p>
 
     <!-- INTRO -->
     <section id="intro" class="card" hidden>
@@ -55,7 +51,16 @@
       <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash, and each crash is a $25 repair bill. Seven questions a day.</p>
       <ul class="levels" id="levels" aria-label="Scoring levels"></ul>
       <p class="rules-note">Only one answer per question is a John Doe. A perfect day is <b>$700</b>. Your cash adds up from day to day: spend it in the shop.</p>
+      <section class="reward" id="reward" hidden aria-live="polite">
+        <h2 id="reward-title">&#128293; Streak reward</h2>
+        <div class="reward-items">
+          <div class="reward-item"><span class="reward-ico" aria-hidden="true">&#128176;</span><b id="reward-pct">+10%</b><small>cash bonus on today's earnings</small></div>
+          <div class="reward-item"><span class="reward-ico" aria-hidden="true">&#127873;</span><b>Mystery box</b><small id="reward-box-note">a random puzzle piece</small><button class="btn primary" type="button" id="reward-open">Open it</button></div>
+        </div>
+        <p class="reward-result" id="reward-result" role="status"></p>
+      </section>
       <button class="btn primary" id="start">Start today's game</button>
+      <button class="shop-cta" type="button" data-shop-cta><span class="shop-cta-t">&#127978; Visit the car shop</span><small class="shop-cta-s"></small></button>
     </section>
 
     <!-- PLAY -->
@@ -90,6 +95,7 @@
       <p class="verdict" id="verdict"></p>
       <p class="fuel-note" id="fuel-note"></p>
       <p class="repair-note" id="repair-note"></p>
+      <button class="shop-cta" style="margin:0 0 16px" type="button" data-shop-cta><span class="shop-cta-t">&#127978; Visit the car shop</span><small class="shop-cta-s"></small></button>
       <ol class="breakdown" id="breakdown"></ol>
       <div class="actions">
         <button class="btn primary" id="repair" hidden>Repair car</button>
@@ -111,7 +117,8 @@
         <li><b>Type the answer most people would give</b> before it reaches you. Typos are forgiven.</li>
         <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Every crash costs $25 in repairs, paid from your cash when you press Repair car, and you have to repair the car before you can drive again.</li>
         <li><b>The more popular your answer, the more cash you earn.</b> Only the #1 answer (<em>pepperoni</em>) is a John Doe: $100. The next 5 are Average Joes ($85), the next 10 Neighbors ($60), the next 20 Strangers ($30). Any other real answer is an Alien: $10.</li>
-        <li><b>Your cash adds up every day.</b> Spend it in the shop (the car button) on better cars, from a cheap starter to an absurdly expensive UFO.</li>
+        <li><b>Your cash adds up every day.</b> Spend it in the <b>Shop</b> (top right) on better cars. Cars are sorted by answer level: cheap starters are Aliens, and the absurd Big Green Tractor is a John Doe.</li>
+        <li><b>Keep a streak.</b> Play two or more days in a row and each day starts with a cash bonus for that day's earnings (it grows every day, up to +50%) and a mystery box. A box holds a puzzle piece for one level of cars; collect enough pieces for a car and it's yours for free. Pricier levels have rarer pieces.</li>
       </ol>
       <p class="modal-note">Seven questions a day, with a new set at midnight UTC. A perfect day is $700.</p>
       <form method="dialog"><button class="btn primary" id="help-ok">Let's drive</button></form>
@@ -133,9 +140,10 @@
     <div class="modal-body">
       <h2 id="shop-title">Car shop</h2>
       <p class="shop-wallet">Your cash: <b id="shop-balance">$0</b></p>
+      <div class="shop-pieces" id="shop-pieces"></div>
       <p class="shop-msg" id="shop-msg" role="status" aria-live="polite"></p>
-      <ul class="shop-list" id="shop-list"></ul>
-      <p class="modal-note">Cash is everything you've earned on every day you've played, saved in this browser.</p>
+      <div id="shop-list"></div>
+      <p class="modal-note">Buy a car with cash, or put puzzle pieces of its level toward it. Cash and pieces are saved in this browser.</p>
       <form method="dialog"><button class="btn">Close</button></form>
     </div>
   </dialog>

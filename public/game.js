@@ -1,7 +1,7 @@
-import questions from "./lib/questions.js";
+import questions from "./lib/bank.js";
 import { isValidAnswer } from "./lib/text.js";
-import { LEVELS, IMPOSTER, NOTHING, MAX_SPACES, levelById, judgeLocal } from "./lib/scoring.js";
-import { CARS, carById, carSVG, money } from "./cars.js";
+import { LEVELS, IMPOSTER, NOTHING, levelById, judgeLocal } from "./lib/scoring.js";
+import { CARS, LEVEL_ORDER, PIECE_ODDS, carsOfLevel, carById, carSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 
 // ---------- settings ----------
@@ -47,12 +47,18 @@ function uid() {
   return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 const REPAIR_COST = 25; // dollars per hit
-const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty", hits: 0 }); // hits = unrepaired crashes
+const zeroPieces = () => Object.fromEntries(LEVEL_ORDER.map((l) => [l, 0]));
+// hits = unrepaired crashes, boxes = unopened mystery boxes, pieces = loose puzzle pieces per level, progress = pieces put toward each car
+const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty", hits: 0, boxes: 0, pieces: zeroPieces(), progress: {} });
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
     if (s && s.player) {
       s.wallet = { ...newWallet(), ...(s.wallet || {}) };
+      s.wallet.pieces = { ...zeroPieces(), ...(s.wallet.pieces || {}) };
+      s.wallet.progress = s.wallet.progress || {};
+      s.wallet.owned = s.wallet.owned.map((id) => (id === "ufo" ? "tractor" : id)); // the UFO became the tractor
+      if (s.wallet.car === "ufo") s.wallet.car = "tractor";
       if (!s.wallet.owned.includes("rusty")) s.wallet.owned.unshift("rusty");
       if (!s.wallet.owned.includes(s.wallet.car)) s.wallet.car = "rusty";
       return s;
@@ -67,13 +73,14 @@ const day = todayUTC();
 const gameNo = dayIndex(day) + 1;
 const today = (state.days[day] ||= { answers: [], startedAt: null });
 const todaysQs = pickCards(questions, day);
-const scene = createScene($("scene"), $("fuel")); // the driving scene (purely visual)
+const scene = createScene($("scene"), null); // the driving scene (purely visual)
 
 // Cash: every dollar you've ever earned, minus what you've spent in the shop.
 const earnedIn = (d) => (d.answers || []).reduce((n, a) => n + (a.pts || 0), 0);
-const lifetimeEarned = () => Object.values(state.days).reduce((n, d) => n + earnedIn(d), 0);
+const cashIn = (d) => earnedIn(d) + (d.bonus || 0); // a day's answers plus its streak bonus
+const lifetimeEarned = () => Object.values(state.days).reduce((n, d) => n + cashIn(d), 0);
 const balance = () => lifetimeEarned() - state.wallet.spent;
-const renderWallet = () => { $("wallet").textContent = money(balance()); };
+const renderWallet = () => { $("wallet").textContent = money(balance()); if (typeof renderShopCta === "function") renderShopCta(); };
 
 scene.setCar(state.wallet.car);
 scene.setDamage(state.wallet.hits || 0);
@@ -220,7 +227,6 @@ async function lockIn(timedOut = false) {
   today.startedAt = null;
   running += result.pts;
   save();
-  scene.setDistance(spacesDriven());
   if (crashed) {
     scene.resolve(false, { damage: state.wallet.hits });
     scene.say(timedOut ? "TOO SLOW! CRASH!" : "WRONG TURN! CRASH!", true);
@@ -237,7 +243,7 @@ async function lockIn(timedOut = false) {
   $("fb-pts").className = `pts lvl-${lvl.id}`;
   $("fb-level").textContent = crashed
     ? `💥 Crash · ${timedOut ? "out of time" : "no cash"}`
-    : `${lvl.emoji} ${lvl.name} · +${lvl.spaces} space${lvl.spaces > 1 ? "s" : ""}`;
+    : `${lvl.emoji} ${lvl.name}`;
   $("fb-text").textContent = timedOut
     ? `You ran out of time and hit the obstacle.${best ? ` The popular answer was "${best}".` : ""}`
     : result.limited
@@ -266,6 +272,7 @@ function finish() {
       s.best = Math.max(s.best, s.count);
       s.last = day;
     }
+    today.bonus = Math.round((earnedIn(today) * ((today.reward && today.reward.pct) || 0)) / 100);
     save();
   }
   updateStreak();
@@ -276,16 +283,14 @@ function finish() {
 
 // ---------- results ----------
 const total = () => earnedIn(today);
-const spacesDriven = () => Math.min(MAX_SPACES, today.answers.reduce((n, a) => n + (levelById(a.level).spaces || 0), 0));
 const emojiOf = (a) => (a.pts > 0 ? levelById(a.level).emoji : "💥");
 
 function renderResults() {
   show("results");
   const t = total();
   scene.setPhase(7);
-  scene.setDistance(spacesDriven());
   const crashes = today.crashes || 0;
-  $("fuel-note").textContent = `Wallet: ${money(balance())}. Drove ${spacesDriven()} of ${MAX_SPACES} spaces, ${crashes ? `crashed ${crashes} time${crashes > 1 ? "s" : ""}` : "no crashes"}.`;
+  $("fuel-note").textContent = `Wallet: ${money(balance())}.${crashes ? ` Crashed ${crashes} time${crashes > 1 ? "s" : ""}.` : " No crashes."}${today.bonus ? ` Streak bonus: +${money(today.bonus)} (${today.reward.pct}%).` : ""}`;
   renderRepairNote();
   $("res-day").textContent = `John Doedle #${gameNo}`;
   $("total").textContent = money(t);
@@ -460,44 +465,177 @@ function renderStats() {
 }
 $("stats-btn").addEventListener("click", () => { renderStats(); openDialog($("stats-dialog")); });
 
-// The shop: spend your cash on cars. Starter cars are cheap, the exotic ones are absurdly expensive.
+// ---------- puzzle pieces and mystery boxes ----------
+const levelName = (id) => levelById(id).name;
+const levelTag = (id) => `${levelById(id).emoji} ${levelName(id)}`;
+// A box holds one piece of a random level. The pricier a level's cars, the rarer its pieces (PIECE_ODDS, in percent).
+function rollPieceLevel() {
+  const total = LEVEL_ORDER.reduce((n, l) => n + PIECE_ODDS[l], 0);
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  let r = (buf[0] / 4294967296) * total;
+  for (const l of LEVEL_ORDER) { if ((r -= PIECE_ODDS[l]) < 0) return l; }
+  return "alien";
+}
+function openBox() {
+  if (!state.wallet.boxes) return null;
+  const lvl = rollPieceLevel();
+  state.wallet.boxes--;
+  state.wallet.pieces[lvl]++;
+  save();
+  refreshShopUi();
+  return lvl;
+}
+function usePiece(car) {
+  const w = state.wallet;
+  if (w.owned.includes(car.id) || !w.pieces[car.level]) return;
+  w.pieces[car.level]--;
+  w.progress[car.id] = (w.progress[car.id] || 0) + 1;
+  let msg = `Piece added to the ${car.name}: ${w.progress[car.id]} of ${car.pieces}.`;
+  if (w.progress[car.id] >= car.pieces) {
+    w.owned.push(car.id);
+    w.car = car.id;
+    scene.setCar(car.id);
+    msg = `Puzzle complete! The ${car.name} is yours, no cash needed.`;
+  }
+  save();
+  refreshShopUi(msg);
+}
+
+// ---------- daily streak reward ----------
+// Finish yesterday's game (so you are on a 2+ day run) and today starts with a cash bonus plus a mystery box.
+const streakPct = (n) => Math.min(50, n * 5); // 2 days: +10%, then +5% a day up to +50%
+function grantDailyReward() {
+  if (today.reward || today.done) return;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const n = state.streak.last === yesterday ? state.streak.count + 1 : 0; // today would be day n of the run
+  if (n < 2) return; // a one-day streak doesn't count
+  today.reward = { streak: n, pct: streakPct(n), boxId: 1 };
+  state.wallet.boxes++;
+  save();
+}
+function renderReward(result = "") {
+  const r = today.reward, box = $("reward");
+  box.hidden = !r || today.answers.length > 0;
+  if (box.hidden) return;
+  $("reward-title").textContent = `🔥 ${r.streak}-day streak!`;
+  $("reward-pct").textContent = `+${r.pct}%`;
+  const left = state.wallet.boxes;
+  $("reward-open").hidden = !left;
+  $("reward-box-note").textContent = left ? `${left > 1 ? left + " boxes" : "1 box"} to open: each holds a random puzzle piece` : "opened";
+  $("reward-result").textContent = result;
+}
+$("reward-open").addEventListener("click", () => {
+  const lvl = openBox();
+  if (lvl) renderReward(`You found a ${levelTag(lvl)} puzzle piece! Put it toward any ${levelName(lvl)} car in the shop.`);
+});
+
+// ---------- the shop ----------
+// Cars are grouped under the answer levels: cheap starters are Aliens, the pricey ones are John Does.
+let shopMsg = "";
+function refreshShopUi(message) {
+  if (message !== undefined) shopMsg = message;
+  renderWallet();
+  renderShopCta();
+  if ($("shop-dialog").open) renderShop(shopMsg);
+  renderReward();
+}
 function renderShop(message = "") {
+  shopMsg = message;
+  const w = state.wallet;
   $("shop-balance").textContent = money(balance());
   $("shop-msg").textContent = message;
+  const bar = $("shop-pieces");
+  bar.replaceChildren();
+  const chips = document.createElement("div");
+  chips.className = "piece-chips";
+  for (const l of LEVEL_ORDER) {
+    const c = document.createElement("span");
+    c.className = `piece-chip lvl-${l}`;
+    c.title = `${w.pieces[l]} loose ${levelName(l)} puzzle piece${w.pieces[l] === 1 ? "" : "s"}. A mystery box gives one ${levelName(l)} piece ${PIECE_ODDS[l]}% of the time.`;
+    c.textContent = `🧩 ${levelById(l).emoji} ${w.pieces[l]}`;
+    chips.append(c);
+  }
+  bar.append(chips);
+  const box = document.createElement("div");
+  box.className = "box-row";
+  const label = document.createElement("span");
+  label.textContent = w.boxes ? `🎁 ${w.boxes} mystery box${w.boxes > 1 ? "es" : ""} waiting` : "🎁 No mystery boxes. Play 2 days in a row to earn one every day.";
+  box.append(label);
+  if (w.boxes) {
+    const ob = document.createElement("button");
+    ob.type = "button"; ob.className = "btn primary shop-btn"; ob.textContent = "Open a box";
+    ob.addEventListener("click", () => { const l = openBox(); if (l) refreshShopUi(`Mystery box: a ${levelTag(l)} puzzle piece! Put it toward any ${levelName(l)} car below.`); });
+    box.append(ob);
+  }
+  bar.append(box);
+
   const list = $("shop-list");
   list.replaceChildren();
-  for (const car of CARS) {
-    const owned = state.wallet.owned.includes(car.id);
-    const equipped = state.wallet.car === car.id;
-    const li = document.createElement("li");
-    li.className = "shop-item" + (equipped ? " equipped" : "") + (owned ? "" : " locked");
-    const pic = document.createElement("div");
-    pic.className = "shop-pic";
-    pic.innerHTML = carSVG(car).replace('width="200" height="128"', 'width="100%"');
-    const info = document.createElement("div");
-    info.className = "shop-info";
-    const name = document.createElement("div"); name.className = "shop-name"; name.textContent = car.name;
-    const tier = document.createElement("span"); tier.className = `shop-tier tier-${car.tier.toLowerCase()}`; tier.textContent = car.tier;
-    name.append(tier);
-    const blurb = document.createElement("div"); blurb.className = "shop-blurb"; blurb.textContent = car.blurb;
-    const price = document.createElement("div"); price.className = "shop-price"; price.textContent = car.price ? money(car.price) : "Free";
-    info.append(name, blurb, price);
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "btn shop-btn";
-    if (equipped) { btn.textContent = "Equipped"; btn.disabled = true; }
-    else if (owned) { btn.textContent = "Equip"; btn.addEventListener("click", () => equip(car)); }
-    else if (balance() >= car.price) { btn.textContent = "Buy"; btn.classList.add("primary"); btn.addEventListener("click", () => buy(car)); }
-    else { btn.textContent = `Need ${money(car.price - balance())}`; btn.disabled = true; }
-    li.append(pic, info, btn);
-    list.append(li);
+  for (const lvl of LEVEL_ORDER) {
+    const L = levelById(lvl);
+    const sec = document.createElement("section");
+    sec.className = "shop-sec";
+    const h = document.createElement("h3");
+    h.className = `shop-sec-h lvl-${lvl}`;
+    h.textContent = `${L.emoji} ${L.name}`;
+    const sub = document.createElement("small");
+    sub.textContent = ` ${w.pieces[lvl]} loose piece${w.pieces[lvl] === 1 ? "" : "s"}`;
+    h.append(sub);
+    const ul = document.createElement("ul");
+    ul.className = "shop-list";
+    for (const car of carsOfLevel(lvl)) ul.append(carRow(car));
+    sec.append(h, ul);
+    list.append(sec);
   }
+}
+function carRow(car) {
+  const w = state.wallet;
+  const owned = w.owned.includes(car.id);
+  const equipped = w.car === car.id;
+  const li = document.createElement("li");
+  li.className = "shop-item" + (equipped ? " equipped" : "") + (owned ? "" : " locked");
+  const pic = document.createElement("div");
+  pic.className = "shop-pic";
+  pic.innerHTML = carSVG(car).replace('width="200" height="128"', 'width="100%"');
+  const info = document.createElement("div");
+  info.className = "shop-info";
+  const name = document.createElement("div"); name.className = "shop-name"; name.textContent = car.name;
+  const blurb = document.createElement("div"); blurb.className = "shop-blurb"; blurb.textContent = car.blurb;
+  const price = document.createElement("div"); price.className = "shop-price"; price.textContent = car.price ? money(car.price) : "Free";
+  info.append(name, blurb, price);
+  if (!owned) {
+    const got = w.progress[car.id] || 0;
+    const pz = document.createElement("div");
+    pz.className = "shop-puzzle";
+    pz.setAttribute("aria-label", `${got} of ${car.pieces} puzzle pieces`);
+    pz.textContent = `${"🧩".repeat(got)}${"▫️".repeat(car.pieces - got)} ${got}/${car.pieces}`;
+    info.append(pz);
+  }
+  const acts = document.createElement("div");
+  acts.className = "shop-actions";
+  const mk = (text, cls, fn, disabled = false) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "btn shop-btn " + cls; b.textContent = text; b.disabled = disabled;
+    if (fn) b.addEventListener("click", fn);
+    acts.append(b);
+  };
+  if (equipped) mk("Equipped", "", null, true);
+  else if (owned) mk("Equip", "", () => equip(car));
+  else {
+    if (balance() >= car.price) mk(`Buy ${money(car.price)}`, "primary", () => buy(car));
+    else mk(`Need ${money(car.price - balance())}`, "", null, true);
+    const have = w.pieces[car.level];
+    mk(have ? `Use a ${levelName(car.level)} piece` : `No ${levelName(car.level)} pieces`, have ? "piece" : "", have ? () => usePiece(car) : null, !have);
+  }
+  li.append(pic, info, acts);
+  return li;
 }
 function equip(car) {
   state.wallet.car = car.id;
   save();
   scene.setCar(car.id);
-  renderShop(`${car.name} is now your ride.`);
+  refreshShopUi(`${car.name} is now your ride.`);
 }
 function buy(car) {
   if (state.wallet.owned.includes(car.id) || balance() < car.price) return;
@@ -506,10 +644,27 @@ function buy(car) {
   state.wallet.car = car.id;
   save();
   scene.setCar(car.id);
-  renderWallet();
-  renderShop(`Bought the ${car.name} for ${money(car.price)}. Nice ride!`);
+  refreshShopUi(`Bought the ${car.name} for ${money(car.price)}. Nice ride!`);
 }
-$("wallet-btn").addEventListener("click", () => { renderShop(); openDialog($("shop-dialog")); });
+// Big, obvious "go to the shop" buttons on the start and results screens, with a hint about what you can do there.
+function renderShopCta() {
+  const w = state.wallet, bal = balance();
+  const next = CARS.filter((c) => !w.owned.includes(c.id)).sort((a, b) => a.price - b.price)[0];
+  const canBuy = next && bal >= next.price;
+  const bits = [];
+  if (w.boxes) bits.push(`🎁 ${w.boxes} mystery box${w.boxes > 1 ? "es" : ""} to open`);
+  if (canBuy) bits.push(`You can afford the ${next.name}!`);
+  else if (next) bits.push(`Next car: ${next.name} (${money(next.price)})`);
+  const hot = canBuy || w.boxes > 0 || LEVEL_ORDER.some((l) => w.pieces[l] > 0);
+  document.querySelectorAll("[data-shop-cta]").forEach((b) => {
+    b.classList.toggle("hot", hot);
+    b.querySelector(".shop-cta-s").textContent = `You have ${money(bal)}. ${bits.join(" · ")}`;
+  });
+  $("shop-dot").hidden = !hot;
+}
+function openShop() { renderShop(); openDialog($("shop-dialog")); }
+$("wallet-btn").addEventListener("click", openShop);
+document.querySelectorAll("[data-shop-cta]").forEach((b) => b.addEventListener("click", openShop));
 
 // ---------- wire up ----------
 $("answer-form").addEventListener("submit", (e) => { e.preventDefault(); trySubmit(); });
@@ -572,15 +727,16 @@ $("levels").replaceChildren(
   })
 );
 
+grantDailyReward();
 updateStreak();
 renderWallet();
+renderReward();
 syncRepair();
 $("intro-day").textContent = `Game #${gameNo} · ${new Date(day + "T00:00:00Z").toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })}`;
 setInterval(countdown, 1000);
 countdown();
 
 running = earnedIn(today);
-scene.setDistance(spacesDriven());
 scene.setPhase(today.done ? 7 : Math.min(today.answers.length, 6));
 if (today.done || today.answers.length >= PER_DAY) finish();
 else if (today.answers.length > 0 || today.startedAt) showCard();

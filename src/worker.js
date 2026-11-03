@@ -1,7 +1,7 @@
 // John Doedle: static game (public/) plus one API route.
 //   POST /api/answer  { player, day, q, answer }
 //     -> { valid, level, pts, label, top: [most popular answers] }
-import questions from "../public/lib/questions.js";
+import questions from "../public/lib/bank.js";
 import { isValidAnswer } from "../public/lib/text.js";
 import { scoreAnswer, makeAI } from "./answer-server.js";
 import { checkLimits } from "./ratelimit.js";

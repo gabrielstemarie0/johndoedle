@@ -10,7 +10,7 @@ public/                           the static game (served as Workers assets)
   index.html, styles.css, game.js   the page and game flow
   scene.js                        the third-person driving scene (canvas), the obstacle timer
   cars.js                         the car catalog and shop prices, and each car drawn from behind as SVG
-  lib/questions.js                the question bank: ranked answers with popularity weights
+  lib/questions.js, questions2.js the question banks (bank.js joins them): ranked answers with popularity weights
   lib/scoring.js                  levels, ranking, answer matching (shared by browser and server)
   lib/text.js                     normalising, typo tolerance, "is this a real answer"
 src/worker.js                     routes POST /api/answer; everything else is served from public/
@@ -30,29 +30,27 @@ and a hazard sign plus a red strip along your lane make that easy to read.
   unsubmitted answer doesn't count when time runs out.
 - Repairs: each crash is a $25 repair. The damage stays on the car after the run. Crashes × $25 comes out of your cash only when you press
   "Repair car" (on the results screen, or "Repair car and start" next game), and you must repair before you can drive
-  again. If you have less cash than the bill, the garage takes what you have and writes off the rest, so you never get stuck. The flag counter shows spaces driven (5 for a John Doe down to 1 for an Alien; 35 would be the finish line).
+  again. If you have less cash than the bill, the garage takes what you have and writes off the rest, so you never get stuck.
 
 ## Scoring
 Each question's known answers are ranked by popularity (the weights in `questions.js` blended with real players'
 answers; live data takes over as more people play, weight `n / (n + 100)`). An answer's **rank** sets its level:
 
-| Level | Cash | Spaces | Rank |
-|---|---|---|---|
-| 🟩 John Doe | 100 | 5 | #1 (only one answer) |
-| 🟨 Average Joe | 85 | 4 | #2 to #6 (5 answers) |
-| 🟧 Neighbor | 60 | 3 | #7 to #16 (10 answers) |
-| 🟪 Stranger | 30 | 2 | #17 to #36 (20 answers) |
-| 👽 Alien | 10 | 1 | any other real answer |
-| ❌ Imposter | 0 | 0 | the answer doesn't fit the question |
-| ⬛ Nothing | 0 | 0 | timed out with nothing real typed |
+| Level | Cash | Rank |
+|---|---|---|
+| 🟩 John Doe | 100 | #1 (only one answer) |
+| 🟨 Average Joe | 85 | #2 to #6 (5 answers) |
+| 🟧 Neighbor | 60 | #7 to #16 (10 answers) |
+| 🟪 Stranger | 30 | #17 to #36 (20 answers) |
+| 👽 Alien | 10 | any other real answer |
+| ❌ Imposter | 0 | the answer doesn't fit the question |
+| ⬛ Nothing | 0 | timed out with nothing real typed |
 
 The amounts are Krillion's points (10/30/60/85/100, as listed by fan sites; check krillion.io if exact figures matter),
-flipped so the most common answer is best, and counted in **dollars**. A perfect day is $700. **Spaces** are how far the car drives after each answer,
-like Krillion's dive depth: 5 for a John Doe down to 1 for an Alien, so seven John Does reach the 35-space finish
-line.
+flipped so the most common answer is best, and counted in **dollars**. A perfect day is $700. 
 
 Because tiers are by rank, a question needs at least 37 ranked answers for every level to be reachable (each of the
-35 questions has 38 to 55). A player-made answer is ranked only once 3 players have given it, so friends can't make
+56 questions has 38 to 55). A player-made answer is ranked only once 3 players have given it, so friends can't make
 up a "popular" answer; until then a real answer is an Alien. Blank, symbol-only and one-character answers can't be
 submitted (the field shakes and the timer keeps running).
 
@@ -81,28 +79,35 @@ Every `/api/answer` call is counted in the `rate_limits` D1 table:
 A real player makes 7 calls a day. When a limit is hit the API returns `429` with `Retry-After`, and the page shows a
 message and lets the player try again while time remains. Counters reset each UTC hour/day. Change the numbers in `LIMITS`.
 
-## Cash and the car shop
-Every dollar you earn adds to your **cash**, day after day. Spend it in the shop (the car button in the header). The
-starter car is free; starter cars are cheap and the exotic ones are absurdly expensive:
+## Cash, the car shop and puzzle pieces
+Every dollar you earn adds to your **cash**, day after day. Spend it in the **Shop** (the yellow button in the header, plus a
+big button on the start and results screens). Cars are sorted under the answer levels: cheap starters are Aliens and the
+absurd ones are John Does. Each car also needs a number of **puzzle pieces** to unlock it without paying:
 
-| Car | Price | Tier |
-|---|---|---|
-| Rusty Hatchback | Free | Starter |
-| Commuter | $350 | Starter |
-| Little Zippy | $800 | Starter |
-| Family Wagon | $1,500 | Starter |
-| Work Pickup | $3,000 | Everyday |
-| Street Coupe | $6,500 | Everyday |
-| Muscle Machine | $14,000 | Performance |
-| Rally Beast | $28,000 | Performance |
-| Luxe Sedan | $55,000 | Luxury |
-| Sports Car | $110,000 | Luxury |
-| Supercar | $280,000 | Exotic |
-| Hypercar | $1.20M | Exotic |
-| Rocket Car | $6.50M | Insane |
-| Golden Phantom | $30M | Insane |
-| Hover Car | $150M | Insane |
-| UFO | $1B | Insane |
+| Level | Car | Price | Pieces |
+|---|---|---|---|
+| 🟩 John Doe | Hover Car | $150M | 6 |
+| 🟩 John Doe | Big Green Tractor | $1B | 7 |
+| 🟨 Average Joe | Hypercar | $1.20M | 5 |
+| 🟨 Average Joe | Rocket Car | $6.50M | 6 |
+| 🟨 Average Joe | Golden Phantom | $30M | 6 |
+| 🟧 Neighbor | Luxe Sedan | $55,000 | 4 |
+| 🟧 Neighbor | Sports Car | $110,000 | 5 |
+| 🟧 Neighbor | Supercar | $280,000 | 5 |
+| 🟪 Stranger | Work Pickup | $3,000 | 3 |
+| 🟪 Stranger | Street Coupe | $6,500 | 3 |
+| 🟪 Stranger | Muscle Machine | $14,000 | 4 |
+| 🟪 Stranger | Rally Beast | $28,000 | 5 |
+| 👽 Alien | Rusty Hatchback (starter) | Free | 2 |
+| 👽 Alien | Commuter | $350 | 2 |
+| 👽 Alien | Little Zippy | $800 | 3 |
+| 👽 Alien | Family Wagon | $1,500 | 3 |
+
+**Streak rewards.** Finish a game and come back the next day (a one-day streak doesn't count) and the day starts with two
+rewards: a **cash bonus** on that day's earnings (+10% on day 2, +5% more each day, up to +50%) and a **mystery box**. A box
+holds one puzzle piece of a random *level*, not of a particular car; put it toward any car of that level in the shop. The
+pricier a level's cars, the rarer its pieces: Alien 50%, Stranger 28%, Neighbor 14%, Average Joe 6%, John Doe 2%. Miss a day
+and the streak (and the bonus) resets.
 
 Cash is derived from every game saved in this browser (lifetime earnings minus what you've spent), so it can't
 double count. It lives in `localStorage` only: it doesn't follow you to another device or browser, and anyone who
@@ -136,8 +141,8 @@ This is a **Workers** project (not Pages). `wrangler.toml` describes everything,
 Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then `npx wrangler dev --local`.
 
 ## Daily questions
-Based on the UTC date. Everyone gets the same 7. The bank is shuffled in cycles, so 35 questions give 5 days with no
-repeats. To add a question, append to `public/lib/questions.js` with the next id (`q36`, ...): a prompt such as
+Based on the UTC date. Everyone gets the same 7. The bank is shuffled in cycles, so 56 questions give 8 days with no
+repeats. To add a question, add it to `public/lib/questions2.js` (compact `build("q57", "Name a ...", "answer|alias,answer,...")`, most popular first; or append to `questions.js` as `[answer, weight, [aliases]]`) with the next id (`q57`, ...): a prompt such as
 "Name a ..." and at least 40 answers as `[answer, weight, [aliases]]`, listed from most to least popular (the most
 popular is 100; the weights only set the order). Fewer than 37 answers means the Stranger tier can't be filled.
 Game #1 is `LAUNCH_DAY` in `public/game.js`.
