@@ -318,3 +318,25 @@ main { padding-bottom: 24px; }
 .modal .shop-btn.piece { border-color: var(--l-stranger); color: var(--l-stranger); }
 @media (max-width: 420px) { .shop-item .shop-actions { grid-column: 1 / -1; } }
 @media (max-width: 350px) { .chip.wallet .shop-word { display: none; } }
+
+/* ===== slim, sleek question panel (game-HUD look) ===== */
+#play.card { padding: 12px 14px 14px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, .14); background: rgba(14, 18, 28, .78); color: #f4f1ea; box-shadow: 0 10px 30px rgba(0, 0, 0, .35); }
+#play .meta { color: rgba(244, 241, 234, .7); font: 700 11px system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+#play .timer { height: 5px; margin-top: 8px; background: rgba(255, 255, 255, .16); }
+#play .timer-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } /* the bar and the road show time; kept for screen readers */
+#play .card-eyebrow { margin: 10px 0 0; color: rgba(244, 241, 234, .55); font-size: 10px; letter-spacing: .14em; }
+#play .answer-card { display: block; margin: 4px 0 10px; padding: 8px 14px; border-width: 2px; border-radius: 8px; box-shadow: 0 0 0 2px #0b6b3a, 0 4px 10px rgba(0, 0, 0, .3); font-size: 22px; line-height: 1.15; text-align: center; }
+#play .ask { margin: 0 0 8px; color: rgba(244, 241, 234, .6); font-size: 12px; }
+#play #answer-form { flex-wrap: nowrap; gap: 0; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .22); transition: border-color .2s, box-shadow .2s; }
+#play #answer-form:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
+#play #answer-form input { flex: 1 1 auto; min-width: 0; padding: 9px 14px; border: 0; border-radius: 999px; background: transparent; color: #fff; font-size: 17px; }
+#play #answer-form input::placeholder { color: rgba(244, 241, 234, .5); }
+#play #answer-form input:focus { border: 0; outline: none; }
+#play #answer-form input[aria-invalid="true"] { color: #ff9b8f; }
+#play #answer-form .btn { flex: none; padding: 9px 18px; border-radius: 999px; font-size: 15px; }
+#play .hint { color: #ff9b8f; }
+#play .judging { color: rgba(244, 241, 234, .7); }
+#play .feedback { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .16); margin-top: 12px; padding: 12px; }
+#play .feedback .fb-text { color: rgba(244, 241, 234, .75); margin-bottom: 10px; }
+#play .feedback .btn:not(.primary) { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+#play .feedback .pts { font-size: 36px; }
