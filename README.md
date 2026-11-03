@@ -28,9 +28,9 @@ and a hazard sign plus a red strip along your lane make that easy to read.
 - **Score nothing** (an answer that doesn't fit) or **run out of time** and you **crash**: the car takes damage that
   stays for the rest of the day (cracked rear window, a dead tail light, smoke, a hanging bumper) and you earn $0. An
   unsubmitted answer doesn't count when time runs out.
-- Repairs: each crash is a $25 repair. When the run ends, crashes × $25 comes out of your cash (if you have less, the
-  garage takes what you have and writes off the rest, so you can never get stuck). The damage stays on the car until you
-  press "Repair car and start" on the next game, so you must repair before you can drive again. The flag counter shows spaces driven (5 for a John Doe down to 1 for an Alien; 35 would be the finish line).
+- Repairs: each crash is a $25 repair. The damage stays on the car after the run. Crashes × $25 comes out of your cash only when you press
+  "Repair car" (on the results screen, or "Repair car and start" next game), and you must repair before you can drive
+  again. If you have less cash than the bill, the garage takes what you have and writes off the rest, so you never get stuck. The flag counter shows spaces driven (5 for a John Doe down to 1 for an Alien; 35 would be the finish line).
 
 ## Scoring
 Each question's known answers are ranked by popularity (the weights in `questions.js` blended with real players'
