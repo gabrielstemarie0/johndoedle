@@ -340,3 +340,6 @@ main { padding-bottom: 24px; }
 #play .feedback .fb-text { color: rgba(244, 241, 234, .75); margin-bottom: 10px; }
 #play .feedback .btn:not(.primary) { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 #play .feedback .pts { font-size: 36px; }
+
+.modal-x { position: sticky; top: 0; float: right; z-index: 3; width: 38px; height: 38px; margin: -8px -8px 0 8px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: 400 26px/1 system-ui, sans-serif; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, .2); }
+.modal-x:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }

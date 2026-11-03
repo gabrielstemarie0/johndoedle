@@ -572,7 +572,7 @@ function renderShop(message = "") {
 
   const list = $("shop-list");
   list.replaceChildren();
-  for (const lvl of LEVEL_ORDER) {
+  for (const lvl of [...LEVEL_ORDER].reverse()) { // cheapest level (Alien) at the top, the priciest (John Doe) at the bottom
     const L = levelById(lvl);
     const sec = document.createElement("section");
     sec.className = "shop-sec";
@@ -662,6 +662,14 @@ function renderShopCta() {
   });
   $("shop-dot").hidden = !hot;
 }
+// Every dialog gets an X in a sticky corner (reachable however far you've scrolled), and a click outside closes it.
+document.querySelectorAll("dialog.modal").forEach((d) => {
+  const x = document.createElement("button");
+  x.type = "button"; x.className = "modal-x"; x.textContent = "×"; x.setAttribute("aria-label", "Close");
+  x.addEventListener("click", () => d.close());
+  d.querySelector(".modal-body").prepend(x);
+  d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
+});
 function openShop() { renderShop(); openDialog($("shop-dialog")); }
 $("wallet-btn").addEventListener("click", openShop);
 document.querySelectorAll("[data-shop-cta]").forEach((b) => b.addEventListener("click", openShop));
