@@ -6,7 +6,7 @@ import { createScene } from "./scene.js";
 
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
-const SECONDS = 25; // the obstacle on the road reaches your bumper when this runs out
+const SECONDS = 20; // the obstacle on the road reaches your bumper when this runs out
 const PER_DAY = 7;
 const STORE_KEY = "jd:v3";
 
