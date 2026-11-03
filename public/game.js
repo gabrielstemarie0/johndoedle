@@ -276,6 +276,7 @@ function finish() {
   updateStreak();
   renderWallet();
   renderResults();
+  syncRepair();
 }
 
 // ---------- results ----------
@@ -292,7 +293,7 @@ function renderResults() {
   const bill = today.bill;
   $("fuel-note").textContent = `Wallet: ${money(balance())}. Drove ${spacesDriven()} of ${MAX_SPACES} spaces, ${crashes ? `crashed ${crashes} time${crashes > 1 ? "s" : ""}` : "no crashes"}.`;
   $("repair-note").textContent = bill && bill.owed
-    ? `Repair bill: ${crashes} × ${money(REPAIR_COST)} = ${money(bill.owed)}, taken from your cash.${bill.paid < bill.owed ? ` You only had ${money(bill.paid)}, so the garage wrote off the rest.` : ""} Your car must be repaired before you can drive again.`
+    ? `Repair bill: ${crashes} × ${money(REPAIR_COST)} = ${money(bill.owed)}, taken from your cash.${bill.paid < bill.owed ? ` You only had ${money(bill.paid)}, so the garage wrote off the rest.` : ""} Repair the car below (or at the next start) before you drive again.`
     : crashes ? "" : "No damage, no repair bill.";
   $("res-day").textContent = `John Doedle #${gameNo}`;
   $("total").textContent = money(t);
@@ -528,9 +529,11 @@ $("next").addEventListener("click", showCard);
 function syncRepair() {
   const hits = state.wallet.hits || 0;
   $("repair-tag").hidden = !hits;
+  $("repair").hidden = !hits || !today.done;
   $("start").textContent = hits ? "Repair car and start" : "Start today's game";
   scene.setDamage(hits);
 }
+$("repair").addEventListener("click", () => { state.wallet.hits = 0; save(); syncRepair(); }); // already paid at the end of the run
 $("start").addEventListener("click", () => {
   if (state.wallet.hits) { state.wallet.hits = 0; save(); syncRepair(); } // already paid at the end of last run
   if (!helpSeen()) openHelp(showCard); // first visit: explain the game, then start
