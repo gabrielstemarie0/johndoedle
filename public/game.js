@@ -1,5 +1,6 @@
 import questions from "./lib/bank.js";
 import fancy from "./lib/fancy.js";
+import { rejectReason, REJECT_TEXT } from "./lib/rules.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, levelForRank, judgeLocal } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
@@ -183,17 +184,23 @@ function frame() {
 }
 
 // Manual submit: a non-answer is rejected (shake) and the timer keeps running.
+const shownText = (q) => fancy[q.id] || q.prompt; // the wording the player actually sees
+// Something that can't be an answer (not a word, or a word from the question): clear the box, shake the bar, keep the clock running.
+function shakeOff(reason) {
+  const input = $("answer"), form = $("answer-form");
+  input.value = "";
+  $("answer-hint").textContent = REJECT_TEXT[reason] || REJECT_TEXT.notword;
+  $("answer-hint").hidden = false;
+  form.classList.remove("shake");
+  void form.offsetWidth; // restart the animation
+  form.classList.add("shake");
+  input.focus();
+}
 function trySubmit() {
   if (locked) return;
-  if (isValidAnswer($("answer").value)) return lockIn();
-  const input = $("answer");
-  $("answer-hint").textContent = "That's not an answer. Try again before the obstacle reaches you.";
-  $("answer-hint").hidden = false;
-  input.setAttribute("aria-invalid", "true");
-  input.classList.remove("shake");
-  void input.offsetWidth; // restart the animation
-  input.classList.add("shake");
-  input.focus();
+  const reason = rejectReason($("answer").value, shownText(todaysQs[cur]));
+  if (reason) return shakeOff(reason);
+  return lockIn();
 }
 
 async function lockIn(timedOut = false) {
@@ -212,6 +219,22 @@ async function lockIn(timedOut = false) {
     $("judging").hidden = false;
     result = await judge(q, raw);
     $("judging").hidden = true;
+  }
+
+  if (result.rejected) {
+    const timeLeft = SECONDS * 1000 - (Date.now() - today.startedAt);
+    if (!timedOut && timeLeft > 0) {
+      // The server says it isn't a word (or uses a word from the question): shake it off and carry on.
+      locked = false;
+      scene.resume();
+      $("answer").disabled = false;
+      $("submit").disabled = false;
+      tick = setInterval(frame, 100);
+      syncHeaderButtons();
+      shakeOff(result.rejected);
+      return;
+    }
+    result = { level: NOTHING.id, pts: NOTHING.pts, label: "", top: [] }; // the clock ran out while it was being checked
   }
 
   if (result.rateLimited) {

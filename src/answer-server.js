@@ -6,21 +6,30 @@ import { IMPOSTER, buildIndex, resolveKey, levelFor, topLabels } from "../public
 const CHAT_MODELS = ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/meta/llama-3.1-8b-instruct-fast"];
 
 const CHECK_RULES = `You help run a game. The game asks a question like "Name a popular pizza topping" and the player types an answer. Players score by giving the answer most people would give.
-You get the QUESTION and the player's ANSWER. Reply with exactly two lines:
+You get the QUESTION and the player's ANSWER. Reply with exactly three lines:
+WORD: YES or NO. YES if the ANSWER is a real word, name, brand, title or common term (slang and proper nouns are fine). NO if it is gibberish or a misspelling that is not itself a real word (for example "hamedr", "pizzza", "asdfgh"). A misspelling of a real word is NO unless it is a recognisable common spelling variant.
 VALID: YES or NO. YES if the answer is a real, sensible answer to the question (even an unusual one). NO for gibberish, jokes that don't answer, and things that don't fit the question.
 CANONICAL: if VALID is YES, the answer's common short name: lowercase, singular, no adjectives or extra words, so that different ways of saying it match (for example "extra cheese" -> "cheese", "Pepperoni slices" -> "pepperoni", "the Eiffel Tower in Paris" -> "eiffel tower"). If VALID is NO, write NONE.
 
 Examples with the question "Name a popular pizza topping":
 ANSWER: pepperoni slices
+WORD: YES
 VALID: YES
 CANONICAL: pepperoni
 ANSWER: pickled beets
+WORD: YES
 VALID: YES
 CANONICAL: pickled beets
 ANSWER: my dog
+WORD: YES
 VALID: NO
 CANONICAL: NONE
 ANSWER: asdfgh
+WORD: NO
+VALID: NO
+CANONICAL: NONE
+ANSWER: peperonni
+WORD: NO
 VALID: NO
 CANONICAL: NONE`;
 
@@ -34,7 +43,7 @@ export function makeAI(binding) {
       for (const model of CHAT_MODELS) {
         try {
           const out = await binding.run(model, {
-            max_tokens: 40,
+            max_tokens: 50,
             temperature: 0,
             messages: [
               { role: "system", content: CHECK_RULES },
@@ -47,7 +56,8 @@ export function makeAI(binding) {
           if (v) {
             const c = text.match(/CANONICAL:?\s*([^\n\r]+)/i);
             const canonical = c && !/^none\b/i.test(c[1].trim()) ? c[1].trim().replace(/^["']|["']$/g, "").slice(0, 40) : null;
-            return { valid: v[1].toUpperCase() === "YES", canonical };
+            const w = text.match(/WORD:?\s*(YES|NO)/i);
+            return { valid: v[1].toUpperCase() === "YES", canonical, word: !(w && w[1].toUpperCase() === "NO") };
           }
           errors.push(`${model}: unexpected reply`);
         } catch (e) {
@@ -92,6 +102,7 @@ export async function scoreAnswer({ db, ai, question, answer, player, day }) {
   if (key === null) {
     // Not a known answer: ask the AI whether it fits, and what to call it so variants merge.
     const check = await ai.check(question.prompt, answer);
+    if (check && check.word === false) return { rejected: "notword" }; // not a real word: the player may try again
     if (check && check.valid === false) {
       return { valid: false, level: IMPOSTER.id, pts: IMPOSTER.pts, label: answer.trim(), top: topLabels(rows) };
     }

@@ -421,3 +421,4 @@ main { padding-bottom: 24px; }
 .finale-car.fighting { overflow: visible; }
 .scuffle { width: 66%; }
 @keyframes poke { from { transform: translateX(-6px); } to { transform: translateX(16px); } }
+#play .hint { display: inline-block; margin: 8px 0 0; padding: 4px 12px; border-radius: 999px; background: rgba(255, 110, 90, .18); border: 1px solid #ff9b8f; font: 700 13px system-ui, sans-serif; }
