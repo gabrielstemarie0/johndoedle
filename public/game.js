@@ -73,6 +73,18 @@ const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)
 
 const day = todayUTC();
 const gameNo = dayIndex(day) + 1;
+// Visit /?reset=today to wipe today's game in this browser (answers, bonus, repair bill) and play it again.
+if (new URLSearchParams(location.search).get("reset") === "today") {
+  const old = state.days[day];
+  if (old) {
+    if (old.bill) state.wallet.spent = Math.max(0, state.wallet.spent - old.bill.paid); // give back what repairs cost
+    else state.wallet.hits = Math.max(0, (state.wallet.hits || 0) - (old.crashes || 0));
+    delete state.days[day];
+    if (old.done && state.streak.last === day) { state.streak.last = null; state.streak.count = Math.max(0, state.streak.count - 1); }
+    save();
+  }
+  history.replaceState(null, "", location.pathname);
+}
 const today = (state.days[day] ||= { answers: [], startedAt: null });
 const todaysQs = pickCards(questions, day);
 const scene = createScene($("scene"), null); // the driving scene (purely visual)
