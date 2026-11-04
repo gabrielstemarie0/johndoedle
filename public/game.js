@@ -624,7 +624,7 @@ function renderResults(fresh = false, dmg = 0) {
 
 // Messaging apps remember a link's preview picture for a long time. Bump this number whenever the preview image changes
 // so shared links look new to them and fetch the current picture.
-const SHARE_V = 2;
+const SHARE_V = 3;
 const shareText = () =>
   `John Doedle #${gameNo} ${money(total())} of ${money(MAX_DAY)}\n${today.answers.map(emojiOf).join("")}\n${location.origin}${location.pathname}?v=${SHARE_V}`;
 
