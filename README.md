@@ -1,6 +1,6 @@
 # John Doedle
 
-A daily game of 7 questions. Each question asks for something in fancy vocabulary (a pizza topping becomes "a savory garnish strewn atop a baked, saucy disc of cheesy dough"; `public/lib/fancy.js`) and you type the
+A daily game of 10 questions. Each question asks for something in fancy vocabulary (a pizza topping becomes "a savory garnish strewn atop a baked, saucy disc of cheesy dough"; `public/lib/fancy.js`) and you type the
 answer **most people would give**. The more popular your answer, the more points you earn
 and the further your car drives. Plain HTML/JS front end plus one Cloudflare Worker, with D1 for answer counts and
 Workers AI for checking unfamiliar answers. No build step.
@@ -21,7 +21,7 @@ schema.sql, wrangler.toml         D1 tables, bindings (DB, AI, ASSETS) and Worke
 
 ## How a round plays
 You see the road from behind your car (third person, as if you were the driver). When a question starts, an
-**obstacle** appears on the horizon. **Its distance is the timer**: it reaches your bumper when the 20 seconds are up,
+**obstacle** appears on the horizon. **Its distance is the timer**: it reaches your bumper when the 25 seconds are up,
 and a hazard sign plus a red strip along your lane make that easy to read.
 - **Score any dollars** and the car **swerves around** the obstacle with no damage. The harder you scored, the harder you
   boost (and the more nitro).
@@ -47,7 +47,7 @@ answers; live data takes over as more people play, weight `n / (n + 100)`). An a
 | ⬛ Nothing | 0 | timed out with nothing real typed |
 
 The amounts are Krillion's points (10/30/60/85/100, as listed by fan sites; check krillion.io if exact figures matter),
-flipped so the most common answer is best, and counted in **dollars**. A perfect day is $700. 
+flipped so the most common answer is best, and counted in **dollars**. A perfect day is $1,000. 
 
 Because tiers are by rank, a question needs at least 37 ranked answers for every level to be reachable (each of the
 56 questions has 38 to 55). A player-made answer is ranked only once 3 players have given it, so friends can't make
@@ -76,7 +76,7 @@ Every `/api/answer` call is counted in the `rate_limits` D1 table:
 | per player id, per day | 30 |
 | everyone, per day | 3000 |
 
-A real player makes 7 calls a day. When a limit is hit the API returns `429` with `Retry-After`, and the page shows a
+A real player makes 10 calls a day. When a limit is hit the API returns `429` with `Retry-After`, and the page shows a
 message and lets the player try again while time remains. Counters reset each UTC hour/day. Change the numbers in `LIMITS`.
 
 ## Cash, the car shop and puzzle pieces
@@ -141,7 +141,7 @@ This is a **Workers** project (not Pages). `wrangler.toml` describes everything,
 Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then `npx wrangler dev --local`.
 
 ## Daily questions
-Based on the UTC date. Everyone gets the same 7. The bank is shuffled in cycles, so 56 questions give 8 days with no
+Based on the UTC date. Everyone gets the same 10. The bank is shuffled in cycles, so 70 questions give 7 days with no
 repeats. To add a question, add it to `public/lib/questions2.js` (compact `build("q57", "Name a ...", "answer|alias,answer,...")`, most popular first; or append to `questions.js` as `[answer, weight, [aliases]]`) with the next id (`q57`, ...): a prompt such as
 "Name a ..." and at least 40 answers as `[answer, weight, [aliases]]`, listed from most to least popular (the most
 popular is 100; the weights only set the order). Fewer than 37 answers means the Stranger tier can't be filled.

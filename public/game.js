@@ -7,8 +7,9 @@ import { createScene } from "./scene.js";
 
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
-const SECONDS = 20; // the obstacle on the road reaches your bumper when this runs out
-const PER_DAY = 7;
+const SECONDS = 25; // the obstacle on the road reaches your bumper when this runs out
+const PER_DAY = 10;
+const MAX_DAY = PER_DAY * 100; // a perfect day: every answer a John Doe
 const STORE_KEY = "jd:v3";
 
 const $ = (id) => document.getElementById(id);
@@ -26,7 +27,7 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-// Everyone gets the same 7 questions on a given date. Each cycle walks the whole bank in a
+// Everyone gets the same 10 questions on a given date. Each cycle walks the whole bank in a
 // fresh shuffled order, so questions don't repeat until the bank is used up.
 function pickCards(bank, day) {
   const idx = dayIndex(day);
@@ -125,7 +126,7 @@ function showCard() {
   if (cur >= PER_DAY) return finish();
   locked = false;
   show("play");
-  scene.setPhase(Math.min(cur, 6));
+  scene.setPhase(Math.min(6, Math.round((cur * 6) / (PER_DAY - 1))));
   $("feedback").hidden = true;
   $("judging").hidden = true;
   $("answer-form").hidden = false;
@@ -298,10 +299,10 @@ function renderResults() {
   $("res-day").textContent = `John Doedle #${gameNo}`;
   $("total").textContent = money(t);
   $("verdict").textContent =
-    t >= 650 ? "Peak John Doe. Perfectly ordinary."
-    : t >= 500 ? "Very relatable. You'd blend into any crowd."
-    : t >= 300 ? "Pretty average, which is the goal."
-    : t >= 150 ? "A bit quirky. Maybe too quirky."
+    t >= MAX_DAY * 0.93 ? "Peak John Doe. Perfectly ordinary."
+    : t >= MAX_DAY * 0.71 ? "Very relatable. You'd blend into any crowd."
+    : t >= MAX_DAY * 0.43 ? "Pretty average, which is the goal."
+    : t >= MAX_DAY * 0.21 ? "A bit quirky. Maybe too quirky."
     : "You march to your own drum. Not great for this game.";
   const list = $("breakdown");
   list.replaceChildren();
@@ -332,7 +333,7 @@ function renderResults() {
 }
 
 const shareText = () =>
-  `John Doedle #${gameNo} ${money(total())} of $700\n${today.answers.map(emojiOf).join("")}\n${location.origin}${location.pathname}`;
+  `John Doedle #${gameNo} ${money(total())} of ${money(MAX_DAY)}\n${today.answers.map(emojiOf).join("")}\n${location.origin}${location.pathname}`;
 
 async function copyShare() {
   const text = shareText();
@@ -434,7 +435,7 @@ function renderStats() {
   sum.textContent = `Earned ${money(lifetimeEarned())} in total · ${st.crashes} crash${st.crashes === 1 ? "" : "es"} · wallet ${money(balance())}`;
   box.append(sum);
 
-  // last 14 games as bars (full height = a $700 perfect day)
+  // last 14 games as bars (full height = a perfect day)
   const recent = st.games.slice(-14);
   const h = document.createElement("h3"); h.textContent = `Last ${recent.length} game${recent.length > 1 ? "s" : ""}`; box.append(h);
   const chart = document.createElement("div");
@@ -443,7 +444,7 @@ function renderStats() {
   chart.setAttribute("aria-label", `Earnings of your last ${recent.length} games: ${recent.map((g) => "$" + g.total).join(", ")}`);
   for (const g of recent) {
     const col = document.createElement("div"); col.className = "stat-bar";
-    const bar = document.createElement("i"); bar.style.height = `${Math.max(3, Math.round((Math.max(0, g.total) / 700) * 100))}%`;
+    const bar = document.createElement("i"); bar.style.height = `${Math.max(3, Math.round((Math.max(0, g.total) / MAX_DAY) * 100))}%`;
     bar.title = `${g.day}: ${money(g.total)}`;
     const val = document.createElement("small"); val.textContent = g.total;
     col.append(bar, val);
@@ -748,7 +749,7 @@ setInterval(countdown, 1000);
 countdown();
 
 running = earnedIn(today);
-scene.setPhase(today.done ? 7 : Math.min(today.answers.length, 6));
+scene.setPhase(today.done ? 7 : Math.min(6, Math.round((today.answers.length * 6) / (PER_DAY - 1))));
 if (today.done || today.answers.length >= PER_DAY) finish();
 else if (today.answers.length > 0 || today.startedAt) showCard();
 else show("intro");

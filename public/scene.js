@@ -42,7 +42,7 @@ function rng(seed) {
 //   x = cx + wx * rw / z   and   y = horizon + (H - horizon) / z
 const Z_CAR = 1.18; // where the player's car sits
 const Z_START = 30; // where the obstacle appears (near the horizon)
-const BASE_SPEED = (Z_START - Z_CAR) / 20; // road units per second: an obstacle reaches the car in a 20 second question
+const BASE_SPEED = (Z_START - Z_CAR) / 25; // road units per second: an obstacle reaches the car in a 25 second question
 const SEG = 1.6;
 const Z_NEAR = 0.7;
 const Z_FAR = 70;

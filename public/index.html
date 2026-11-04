@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>John Doedle</title>
-  <meta name="description" content="A daily game of 7 questions. Type the answer most people would give before the obstacle hits you. Earn cash and buy better cars.">
+  <meta name="description" content="A daily game of 10 questions. Type the answer most people would give before the obstacle hits you. Earn cash and buy better cars.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#f2b632">
   <!-- Link previews (Open Graph / Twitter). Update the URLs below if you add a custom domain. -->
@@ -48,9 +48,9 @@
     <section id="intro" class="card" hidden>
       <p class="eyebrow" id="intro-day"></p>
       <h1>Think like<br>everyone else.</h1>
-      <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash, and each crash is a $25 repair bill. Seven questions a day.</p>
+      <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash, and each crash is a $25 repair bill. Ten questions a day.</p>
       <ul class="levels" id="levels" aria-label="Scoring levels"></ul>
-      <p class="rules-note">Only one answer per question is a John Doe. A perfect day is <b>$700</b>. Your cash adds up from day to day: spend it in the shop.</p>
+      <p class="rules-note">Only one answer per question is a John Doe. A perfect day is <b>$1,000</b>. Your cash adds up from day to day: spend it in the shop.</p>
       <section class="reward" id="reward" hidden aria-live="polite">
         <h2 id="reward-title">&#128293; Streak reward</h2>
         <div class="reward-items">
@@ -66,11 +66,11 @@
     <!-- PLAY -->
     <section id="play" class="card" hidden>
       <div class="meta">
-        <span id="qnum">Question 1 of 7</span>
+        <span id="qnum">Question 1 of 10</span>
         <span id="running">$0 today</span>
       </div>
       <div class="timer" aria-hidden="true"><div class="timer-bar" id="timer-bar"></div></div>
-      <div class="timer-text" id="timer-text" aria-live="off">20</div>
+      <div class="timer-text" id="timer-text" aria-live="off">25</div>
       <p class="eyebrow card-eyebrow">Next exit: the question is</p>
       <h2 id="prompt" class="answer-card"></h2>
       <p class="ask">Type the answer most people would give.</p>
@@ -92,7 +92,7 @@
     <!-- RESULTS -->
     <section id="results" class="card" hidden>
       <p class="eyebrow" id="res-day"></p>
-      <div class="score"><span id="total">$0</span><small>of $700 possible</small></div>
+      <div class="score"><span id="total">$0</span><small>of $1,000 possible</small></div>
       <p class="verdict" id="verdict"></p>
       <p class="fuel-note" id="fuel-note"></p>
       <p class="repair-note" id="repair-note"></p>
@@ -121,7 +121,7 @@
         <li><b>Your cash adds up every day.</b> Spend it in the <b>Shop</b> (top right) on better cars. Cars are sorted by answer level: cheap starters are Aliens, and the absurd Big Green Tractor is a John Doe.</li>
         <li><b>Keep a streak.</b> Play two or more days in a row and each day starts with a cash bonus for that day's earnings (it grows every day, up to +50%) and a mystery box. A box holds a puzzle piece for one level of cars; collect enough pieces for a car and it's yours for free. Pricier levels have rarer pieces.</li>
       </ol>
-      <p class="modal-note">Seven questions a day, with a new set at midnight UTC. A perfect day is $700.</p>
+      <p class="modal-note">Ten questions a day, with a new set at midnight UTC. A perfect day is $1,000.</p>
       <form method="dialog"><button class="btn primary" id="help-ok">Let's drive</button></form>
     </div>
   </dialog>
