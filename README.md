@@ -29,7 +29,7 @@ and a hazard sign plus a red strip along your lane make that easy to read.
   stays for the rest of the day (cracked rear window, a dead tail light, smoke, a hanging bumper) and you earn $0. An
   unsubmitted answer doesn't count when time runs out.
 - Crashes cost $25 each. When the last question is answered, an end-of-game scene plays on its own: your winnings (plus any
-  streak bonus) count up with a flourish, a side view of your car shows its damage, the car is repaired automatically, and
+  streak bonus) count up with a flourish, a side view of your car shows its damage, a cartoon scuffle cloud full of tools and a mechanic's arms and boots (with tool sounds, mute button on the card) repairs the car, and
   crashes × $25 comes off your total. If you have less cash than the bill, the garage takes what you have and writes off the
   rest, so you never get stuck. The results screen appears once the scene ends. Reloading skips the scene.
 

@@ -338,6 +338,110 @@ function burst(host, emoji, n, spread = 140) {
     setTimeout(() => p.remove(), 1500);
   }
 }
+
+// ---------- tool sounds (made with the Web Audio API, no files) ----------
+let actx = null;
+let muted = false;
+try { muted = localStorage.getItem("jd:mute") === "1"; } catch {}
+function ensureAudio() {
+  try {
+    if (!actx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) actx = new AC(); }
+    if (actx && actx.state === "suspended") actx.resume();
+  } catch {}
+}
+document.addEventListener("pointerdown", ensureAudio);
+document.addEventListener("keydown", ensureAudio);
+function tone(freq, dur, { type = "sine", vol = 0.2, slide = 0, at = 0 } = {}) {
+  if (!actx || muted) return;
+  const t = actx.currentTime + at, o = actx.createOscillator(), g = actx.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, freq * slide), t + dur);
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(actx.destination);
+  o.start(t); o.stop(t + dur + 0.02);
+}
+function noise(dur, { vol = 0.2, freq = 2000, q = 1, at = 0, type = "bandpass" } = {}) {
+  if (!actx || muted) return;
+  const t = actx.currentTime + at, len = Math.max(1, Math.floor(actx.sampleRate * dur));
+  const buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+  src.buffer = buf; f.type = type; f.frequency.value = freq; f.Q.value = q;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  src.connect(f).connect(g).connect(actx.destination);
+  src.start(t);
+}
+const sfx = {
+  clank() { tone(1300 + Math.random() * 700, 0.25, { type: "square", vol: 0.07, slide: 0.6 }); tone(2100, 0.18, { type: "triangle", vol: 0.1 }); noise(0.05, { vol: 0.15, freq: 4000 }); },
+  bonk() { tone(150, 0.2, { vol: 0.4, slide: 0.35 }); noise(0.06, { vol: 0.2, freq: 500 }); },
+  ratchet() { for (let i = 0; i < 6; i++) noise(0.025, { vol: 0.14, freq: 3200, at: i * 0.045 }); },
+  drill() { tone(170, 0.45, { type: "sawtooth", vol: 0.09, slide: 1.8 }); tone(175, 0.45, { type: "square", vol: 0.04, slide: 1.8 }); },
+  zap() { noise(0.28, { vol: 0.1, freq: 5200, q: 0.4 }); tone(900, 0.2, { type: "sawtooth", vol: 0.04, slide: 0.5 }); },
+  poof() { noise(0.4, { vol: 0.28, freq: 700, type: "lowpass" }); tone(240, 0.3, { vol: 0.22, slide: 0.35 }); },
+  ding() { tone(1318, 0.5, { vol: 0.2 }); tone(1760, 0.8, { vol: 0.18, at: 0.12 }); },
+  tada() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.4, { type: "triangle", vol: 0.16, at: i * 0.09 })); },
+  cash() { tone(1568, 0.1, { type: "square", vol: 0.08 }); tone(2093, 0.4, { type: "square", vol: 0.08, at: 0.09 }); },
+};
+const FIGHT = [["CLANG!", "clank"], ["BONK!", "bonk"], ["ZZZT!", "zap"], ["TINK!", "clank"], ["WHACK!", "bonk"], ["BRRRR!", "drill"], ["CLUNK!", "bonk"], ["CLICK-CLICK!", "ratchet"]];
+
+// A classic cartoon fight cloud, but the things flying out of it are tools and a mechanic's arms and boots.
+function scuffleSVG() {
+  const blobs = [[100, 70, 44], [68, 58, 28], [134, 56, 30], [62, 88, 27], [140, 90, 29], [100, 102, 30], [100, 40, 26], [84, 72, 26], [118, 72, 26]];
+  const out = blobs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r + 1.5}" fill="#8c7357" stroke="#8c7357" stroke-width="4"/>`).join("");
+  const fill = blobs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#ecd9bd"/>`).join("");
+  const swirl = `<g fill="none" stroke="#c9ae8a" stroke-width="3" stroke-linecap="round"><path d="M70 62 q12 -16 28 -4"/><path d="M108 52 q18 -6 24 10"/><path d="M80 94 q14 10 30 2"/><path d="M118 88 q12 -2 16 -14"/><circle cx="100" cy="72" r="13"/></g>`;
+  const skin = "#f2c29a", ink = "#5b3d22";
+  const arm = (tool) => `<rect x="0" y="-5" width="24" height="10" rx="5" fill="${skin}" stroke="${ink}" stroke-width="1.5"/><rect x="0" y="-5.5" width="9" height="11" rx="3" fill="#e8742a" stroke="${ink}" stroke-width="1.5"/><circle cx="27" cy="0" r="7.5" fill="#fff" stroke="${ink}" stroke-width="1.5"/><text x="28" y="9" font-size="26" text-anchor="middle">${tool}</text>`;
+  const boot = `<rect x="0" y="-6" width="16" height="12" rx="3" fill="#3a5ea8" stroke="#223c75" stroke-width="1.5"/><path d="M14 -8 H31 Q38 -8 38 0 Q38 8 31 8 H14 Z" fill="#7a4a24" stroke="#3b2412" stroke-width="2"/>`;
+  const hat = `<path d="M0 -13 Q20 -13 20 0 Q20 13 0 13 Z" fill="#ffd23f" stroke="#8a6a00" stroke-width="2"/><rect x="-3" y="-15" width="6" height="30" rx="2" fill="#e0b000" stroke="#8a6a00" stroke-width="1.5"/>`;
+  const limbs = [
+    [-140, arm("🔧"), 0.0, 0.26], [-48, arm("🔨"), 0.1, 0.3], [18, boot, 0.05, 0.34], [150, arm("🪛"), 0.15, 0.28],
+    [102, boot, 0.2, 0.32], [-92, hat, 0.12, 0.36], [196, arm("🪚"), 0.18, 0.27], [60, arm("🔩"), 0.08, 0.31],
+  ].map(([a, shape, delay, dur]) => `<g transform="translate(100 70) rotate(${a})"><g class="poke" style="animation-delay:${delay}s;animation-duration:${dur}s"><g transform="translate(52 0)">${shape}</g></g></g>`).join("");
+  const stars = `<text class="twinkle" x="14" y="26" font-size="22">⭐</text><text class="twinkle" x="168" y="30" font-size="18" style="animation-delay:.2s">⭐</text><text class="twinkle" x="176" y="124" font-size="20" style="animation-delay:.35s">⭐</text><text class="twinkle" x="6" y="118" font-size="16" style="animation-delay:.1s">✨</text>`;
+  return `<svg viewBox="0 0 200 140" aria-hidden="true">${limbs}<g class="cloud">${out}${fill}${swirl}</g>${stars}</svg>`;
+}
+function comicWord(host, text) {
+  const w = document.createElement("span");
+  w.className = "bam";
+  w.textContent = text;
+  w.style.left = `${15 + Math.random() * 70}%`;
+  w.style.top = `${Math.random() * 70}%`;
+  w.style.setProperty("--r", `${(Math.random() - 0.5) * 30}deg`);
+  host.append(w);
+  setTimeout(() => w.remove(), 700);
+}
+async function repairScuffle(host, layers, box, showClean) {
+  const sc = document.createElement("div");
+  host.classList.add("fighting");
+  sc.className = "scuffle in";
+  sc.innerHTML = scuffleSVG();
+  host.append(sc);
+  sfx.poof();
+  await sleep(380);
+  let n = layers;
+  for (let step = 0; step < 12; step++) {
+    const [word, sound] = FIGHT[(step * 3 + Math.floor(Math.random() * 3)) % FIGHT.length];
+    sfx[sound]();
+    comicWord(sc, word);
+    if (step % 2 === 1 && n >= 1) { // a bit of the damage disappears inside the cloud
+      box.querySelectorAll(`.d${n}`).forEach((g) => { g.style.transition = "opacity .3s"; g.style.opacity = "0"; });
+      n--;
+    }
+    await sleep(240);
+  }
+  sc.classList.remove("in");
+  sc.classList.add("out");
+  sfx.poof();
+  await sleep(300);
+  showClean(); // swap in the repaired car while the cloud blows away
+  await sleep(250);
+  sc.remove();
+  host.classList.remove("fighting");
+}
+
 async function playFinale(fresh, dmg) {
   const t = total(), bonus = today.bonus || 0, win = t + bonus, bill = today.bill || { owed: 0, paid: 0, hits: 0 };
   const amt = $("total"), carBox = $("finale-car"), status = $("finale-status"), fx = $("finale-fx");
@@ -372,7 +476,7 @@ async function playFinale(fresh, dmg) {
   $("finale").classList.add("flash");
   await countTo(amt, 0, t, 1500);
   amt.classList.add("pop");
-  if (t > 0) burst(fx, ["🟩", "✨", "💰", "🎉", "🟨"], 26, 150);
+  if (t > 0) { burst(fx, ["🟩", "✨", "💰", "🎉", "🟨"], 26, 150); sfx.tada(); }
   await sleep(500);
   // 2. the streak bonus
   if (bonus) {
@@ -391,24 +495,12 @@ async function playFinale(fresh, dmg) {
   // 4. automatic repair, then the bill comes out of the total
   if (dmg) {
     status.textContent = "🔧 Repairing…";
-    const box = $("finale-car-svg");
-    box.classList.add("repairing");
-    const wrench = document.createElement("span");
-    wrench.className = "wrench"; wrench.textContent = "🔧";
-    box.append(wrench);
-    for (let n = Math.min(4, dmg); n >= 1; n--) {
-      burst(fx, ["✨", "🔩", "⚙️"], 6, 70);
-      await sleep(420);
-      box.querySelectorAll(`.d${n}`).forEach((g) => { g.style.transition = "opacity .35s"; g.style.opacity = "0"; });
-      await sleep(380);
-    }
-    box.classList.remove("repairing");
-    wrench.remove();
-    showCar(0);
-    scene.setDamage(0);
+    await repairScuffle(carBox, Math.min(4, dmg), $("finale-car-svg"), () => { showCar(0); scene.setDamage(0); });
     status.textContent = "✨ Good as new";
+    sfx.ding();
     burst(fx, ["✨", "⭐"], 14, 110);
-    await sleep(500);
+    await sleep(600);
+    sfx.cash();
     costEl.hidden = false; costEl.textContent = costText; costEl.classList.add("in");
     $("finale-label").textContent = "Cash earned today (after repairs)";
     amt.classList.add("down");
@@ -892,6 +984,9 @@ $("start").addEventListener("click", () => {
   else showCard();
 });
 $("share").addEventListener("click", copyShare);
+const syncMute = () => { $("mute-btn").textContent = muted ? "🔇" : "🔊"; $("mute-btn").setAttribute("aria-pressed", String(muted)); };
+$("mute-btn").addEventListener("click", () => { muted = !muted; try { localStorage.setItem("jd:mute", muted ? "1" : "0"); } catch {} syncMute(); ensureAudio(); });
+syncMute();
 
 // intro level list comes from the same table the scoring uses
 $("levels").replaceChildren(
