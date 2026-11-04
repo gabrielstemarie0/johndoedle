@@ -346,3 +346,11 @@ main { padding-bottom: 24px; }
 
 .fb-plain { margin: -4px 0 12px; font-size: 13px; font-style: italic; opacity: .8; }
 #play .answer-card.long { font-size: 17px; line-height: 1.25; padding: 8px 12px; }
+
+/* ===== tidy result card after answering: amount + level on one row, then the explanation, then the button ===== */
+#play .feedback { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto; gap: 6px 14px; align-items: center; text-align: left; margin-top: 10px; padding: 12px 14px; }
+#play .feedback .pts { grid-column: 1; grid-row: 1; font-size: 34px; line-height: 1; text-align: left; }
+#play .feedback .fb-level { grid-column: 2; grid-row: 1; margin: 0; font-size: 16px; font-weight: 800; }
+#play .feedback .fb-text { grid-column: 1 / -1; grid-row: 2; margin: 0; font-size: 14px; line-height: 1.4; }
+#play .feedback .fb-plain { grid-column: 1 / -1; grid-row: 3; margin: 0; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, .14); font-size: 12.5px; }
+#play .feedback #next { grid-column: 1 / -1; grid-row: 4; margin-top: 6px; padding: 11px; }
