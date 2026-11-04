@@ -29,19 +29,16 @@ export function levelForRank(rank) {
   return LEVELS[LEVELS.length - 1];
 }
 
-export const LIVE_HALF = 100; // after ~100 live answers to a question, seed and live data count equally
-export const MIN_LIVE = 3; // a player-only answer is ranked only once 3 players have given it
+export const MIN_LIVE = 3; // (kept for reference) player-made answers no longer change the ranking
 
-// rows: [{ key, label, seedw, count }]. Returns each known answer's popularity share.
+// rows: [{ key, label, seedw, count }]. The ranking is FIXED: it comes only from each question's written order
+// (seedw). Live player counts are still recorded, but they never move an answer up or down.
 export function computeShares(rows) {
   const seedTotal = rows.reduce((n, r) => n + (r.seedw || 0), 0) || 1;
-  const liveTotal = rows.reduce((n, r) => n + (r.count || 0), 0);
-  const lambda = liveTotal / (liveTotal + LIVE_HALF);
   const share = new Map();
   let top = 1e-9;
   for (const r of rows) {
-    const known = r.seedw > 0 || r.count >= MIN_LIVE;
-    const s = known ? (1 - lambda) * ((r.seedw || 0) / seedTotal) + lambda * (liveTotal ? (r.count || 0) / liveTotal : 0) : 0;
+    const s = (r.seedw || 0) / seedTotal;
     share.set(r.key, s);
     if (s > top) top = s;
   }

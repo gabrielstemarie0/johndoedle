@@ -33,8 +33,9 @@ and a hazard sign plus a red strip along your lane make that easy to read.
   again. If you have less cash than the bill, the garage takes what you have and writes off the rest, so you never get stuck.
 
 ## Scoring
-Each question's known answers are ranked by popularity (the weights in `questions.js` blended with real players'
-answers; live data takes over as more people play, weight `n / (n + 100)`). An answer's **rank** sets its level:
+Each question has ONE fixed ranking, set by the order I wrote its answers (`public/lib/bank.js` turns it into a strict
+1, 2, 3... order with no ties). Player answers are still counted, but they never move an answer up or down, so the
+John Doe for a question is always the same answer. An answer's **rank** sets its level:
 
 | Level | Cash | Rank |
 |---|---|---|
@@ -50,8 +51,8 @@ The amounts are Krillion's points (10/30/60/85/100, as listed by fan sites; chec
 flipped so the most common answer is best, and counted in **dollars**. A perfect day is $1,000. 
 
 Because tiers are by rank, a question needs at least 37 ranked answers for every level to be reachable (each of the
-56 questions has 38 to 55). A player-made answer is ranked only once 3 players have given it, so friends can't make
-up a "popular" answer; until then a real answer is an Alien. Blank, symbol-only and one-character answers can't be
+70 questions has 38 to 55). An answer that isn't on a question's list is never ranked, however many players give it,
+so friends can't make up a "popular" answer: a real unlisted answer is an Alien. Blank, symbol-only and one-character answers can't be
 submitted (the field shakes and the timer keeps running).
 
 ## How an answer is scored (`/api/answer`)

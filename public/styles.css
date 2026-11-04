@@ -354,3 +354,11 @@ main { padding-bottom: 24px; }
 #play .feedback .fb-text { grid-column: 1 / -1; grid-row: 2; margin: 0; font-size: 14px; line-height: 1.4; }
 #play .feedback .fb-plain { grid-column: 1 / -1; grid-row: 3; margin: 0; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, .14); font-size: 12.5px; }
 #play .feedback #next { grid-column: 1 / -1; grid-row: 4; margin-top: 6px; padding: 11px; }
+
+/* results: the fixed top answers for each question */
+.row-best { margin-top: 8px; }
+.row-best summary { cursor: pointer; font: 700 13px system-ui, sans-serif; color: var(--muted); padding: 4px 0; }
+.best-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.best-chip { padding: 3px 9px; border: 1px solid currentColor; border-radius: 999px; font: 600 13px system-ui, sans-serif; background: color-mix(in srgb, currentColor 8%, transparent); }
+.best-chip b { font-weight: 800; }
+.best-chip.yours { background: color-mix(in srgb, currentColor 25%, transparent); box-shadow: 0 0 0 2px currentColor; }

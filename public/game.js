@@ -1,7 +1,7 @@
 import questions from "./lib/bank.js";
 import fancy from "./lib/fancy.js";
-import { isValidAnswer } from "./lib/text.js";
-import { LEVELS, IMPOSTER, NOTHING, levelById, judgeLocal } from "./lib/scoring.js";
+import { isValidAnswer, normalize } from "./lib/text.js";
+import { LEVELS, IMPOSTER, NOTHING, levelById, levelForRank, judgeLocal } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, carsOfLevel, carById, carSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 
@@ -251,7 +251,6 @@ async function lockIn(timedOut = false) {
   }
   renderWallet();
 
-  const best = (result.top || [])[0];
   $("answer-form").hidden = true;
   $("running").textContent = `${money(running)} today`;
   $("fb-pts").textContent = fmt(result.pts);
@@ -260,14 +259,14 @@ async function lockIn(timedOut = false) {
     ? `💥 Crash · ${timedOut ? "out of time" : "no cash"}`
     : `${lvl.emoji} ${lvl.name}`;
   $("fb-text").textContent = timedOut
-    ? `You ran out of time and hit the obstacle.${best ? ` The popular answer was "${best}".` : ""}`
+    ? `You ran out of time and hit the obstacle.`
     : result.limited
       ? "Too many requests, so this answer couldn't be scored. You hit the obstacle."
       : result.level === "imposter"
         ? `That doesn't answer "${q.prompt}". You hit the obstacle.`
         : result.level === "johndoe"
-          ? `"${result.label}" is the most popular answer. You swerved clear!`
-          : `"${result.label}" is ${lvl.note}. You swerved clear.${best ? ` The most popular was "${best}".` : ""}`;
+          ? `"${result.label}" is the #1 answer. You swerved clear!`
+          : `"${result.label}" is ${lvl.note}. You swerved clear.`;
   $("fb-plain").textContent = `In plain English: ${q.prompt}`;
   $("next").textContent = today.answers.length >= PER_DAY ? "See results" : "Next question";
   $("feedback").hidden = false;
@@ -320,12 +319,13 @@ function renderResults() {
   list.replaceChildren();
   today.answers.forEach((a, i) => {
     const lvl = levelById(a.level);
+    const question = todaysQs[i];
     const li = document.createElement("li");
     const top = document.createElement("div");
     top.className = "row-top";
     const q = document.createElement("span");
     q.className = "row-q";
-    q.textContent = todaysQs[i].prompt;
+    q.textContent = question.prompt; // the plain-English question
     const p = document.createElement("span");
     p.className = `row-pts lvl-${lvl.id}`;
     p.textContent = a.pts > 0 ? `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}` : `💥 Crash $0`;
@@ -334,12 +334,25 @@ function renderResults() {
     you.className = "row-you";
     you.textContent = a.raw ? `You said: ${a.raw}` : "No answer";
     li.append(top, you);
-    if (a.top && a.top.length) {
-      const common = document.createElement("div");
-      common.className = "row-top3";
-      common.textContent = `Most popular: ${a.top.join(", ")}`;
-      li.append(common);
+    // the fixed ranking for this question: #1 is the John Doe, #2-6 Average Joes, #7-16 Neighbors, #17-36 Strangers
+    const det = document.createElement("details");
+    det.className = "row-best";
+    const sum = document.createElement("summary");
+    sum.textContent = "See the top answers";
+    const chips = document.createElement("ol");
+    chips.className = "best-list";
+    let rank = 0;
+    for (const [label] of question.answers.slice(0, 16)) {
+      rank++;
+      const c = document.createElement("li");
+      c.className = `best-chip lvl-${levelForRank(rank).id}`;
+      const n = document.createElement("b"); n.textContent = `#${rank}`;
+      c.append(n, ` ${label}`);
+      if (a.label && normalize(label) === normalize(a.label)) c.classList.add("yours");
+      chips.append(c);
     }
+    det.append(sum, chips);
+    li.append(det);
     list.append(li);
   });
 }
