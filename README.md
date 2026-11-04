@@ -121,7 +121,7 @@ real economy to protect. Prices live in `public/cars.js`.
   buttons (including the shop) are disabled while a question is being timed, so they can't be used to stall the clock.
 - **Stats** dialog (the chart button): games played, average, best, streak, a bar chart of the last 14 games and how
   often the player got each level, plus lifetime earnings and crashes. Computed from this browser's saved games only.
-- **Link previews**: Open Graph and Twitter tags in `public/index.html` plus `public/og-image.png` (1200x630, a staged
+- **Link previews**: Open Graph and Twitter tags in `public/index.html` plus `public/og-image-v2.png` (1200x630, a staged
   screenshot of the game). The tag URLs are absolute, so update them if you add a custom domain.
 - The scene is hidden from screen readers (the numeric countdown and the result text carry the same
   information). With reduced motion the road stops scrolling and there is no shake, smoke or boost; the obstacle
