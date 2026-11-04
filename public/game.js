@@ -1,4 +1,5 @@
 import questions from "./lib/bank.js";
+import fancy from "./lib/fancy.js";
 import { isValidAnswer } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, judgeLocal } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, carsOfLevel, carById, carSVG, money } from "./cars.js";
@@ -135,7 +136,8 @@ function showCard() {
   $("answer-hint").hidden = true;
   $("qnum").textContent = `Question ${cur + 1} of ${PER_DAY}`;
   $("running").textContent = `${money(running)} today`;
-  $("prompt").textContent = todaysQs[cur].prompt;
+  $("prompt").textContent = fancy[todaysQs[cur].id] || todaysQs[cur].prompt; // the fancy wording; the plain one is revealed after you answer
+  $("prompt").classList.toggle("long", $("prompt").textContent.length > 70);
   if (!today.startedAt) { today.startedAt = Date.now(); save(); }
   // An obstacle appears on the horizon. It reaches your bumper when the time runs out.
   scene.beginQuestion({ startedAt: today.startedAt, durationMs: SECONDS * 1000, index: cur });
@@ -253,6 +255,7 @@ async function lockIn(timedOut = false) {
         : result.level === "johndoe"
           ? `"${result.label}" is the most popular answer. You swerved clear!`
           : `"${result.label}" is ${lvl.note}. You swerved clear.${best ? ` The most popular was "${best}".` : ""}`;
+  $("fb-plain").textContent = `In plain English: ${q.prompt}`;
   $("next").textContent = today.answers.length >= PER_DAY ? "See results" : "Next question";
   $("feedback").hidden = false;
   syncHeaderButtons();

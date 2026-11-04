@@ -1,6 +1,6 @@
 # John Doedle
 
-A daily game of 7 questions. Each question asks for something ("Name a popular pizza topping") and you type the
+A daily game of 7 questions. Each question asks for something in fancy vocabulary (a pizza topping becomes "a savory garnish strewn atop a baked, saucy disc of cheesy dough"; `public/lib/fancy.js`) and you type the
 answer **most people would give**. The more popular your answer, the more points you earn
 and the further your car drives. Plain HTML/JS front end plus one Cloudflare Worker, with D1 for answer counts and
 Workers AI for checking unfamiliar answers. No build step.
