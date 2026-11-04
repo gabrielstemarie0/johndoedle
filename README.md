@@ -28,9 +28,10 @@ and a hazard sign plus a red strip along your lane make that easy to read.
 - **Score nothing** (an answer that doesn't fit) or **run out of time** and you **crash**: the car takes damage that
   stays for the rest of the day (cracked rear window, a dead tail light, smoke, a hanging bumper) and you earn $0. An
   unsubmitted answer doesn't count when time runs out.
-- Repairs: each crash is a $25 repair. The damage stays on the car after the run. Crashes × $25 comes out of your cash only when you press
-  "Repair car" (on the results screen, or "Repair car and start" next game), and you must repair before you can drive
-  again. If you have less cash than the bill, the garage takes what you have and writes off the rest, so you never get stuck.
+- Crashes cost $25 each. When the last question is answered, an end-of-game scene plays on its own: your winnings (plus any
+  streak bonus) count up with a flourish, a side view of your car shows its damage, the car is repaired automatically, and
+  crashes × $25 comes off your total. If you have less cash than the bill, the garage takes what you have and writes off the
+  rest, so you never get stuck. The results screen appears once the scene ends. Reloading skips the scene.
 
 ## Scoring
 Each question has ONE fixed ranking, set by the order I wrote its answers (`public/lib/bank.js` turns it into a strict

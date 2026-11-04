@@ -197,3 +197,64 @@ export function carSVG(car, { damage = 0 } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 128" width="200" height="128">${inner}</svg>`;
 }
 export const carDataURI = (car, opts) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(carSVG(car, opts));
+
+// ---------- side view (used by the end-of-game repair scene) ----------
+// The car faces right. Damage comes in four layers (class d1..d4) so they can be repaired one by one:
+// d1 cracked windshield, d2 scorched hood + dead headlight, d3 hanging bumper + smoke, d4 crumpled nose + flat tire.
+const SIDE = {
+  hatch: { cab: [[56, 50], [66, 26], [138, 26], [172, 50]], lo: 50, hi: 74 },
+  sedan: { cab: [[60, 50], [84, 26], [148, 26], [176, 50]], lo: 50, hi: 74 },
+  wagon: { cab: [[44, 50], [52, 24], [160, 24], [178, 50]], lo: 50, hi: 74 },
+  coupe: { cab: [[72, 50], [104, 28], [150, 28], [186, 50]], lo: 52, hi: 74 },
+  muscle: { cab: [[76, 50], [102, 28], [144, 28], [186, 50]], lo: 50, hi: 74 },
+  rally: { cab: [[56, 50], [70, 26], [140, 26], [172, 50]], lo: 48, hi: 74 },
+  lux: { cab: [[58, 50], [86, 26], [152, 26], [180, 50]], lo: 50, hi: 74 },
+  sports: { cab: [[84, 54], [114, 34], [150, 34], [192, 54]], lo: 54, hi: 74 },
+  super: { cab: [[90, 56], [118, 38], [152, 38], [196, 56]], lo: 56, hi: 74 },
+  hyper: { cab: [[94, 58], [120, 42], [152, 42], [198, 58]], lo: 58, hi: 74 },
+  pickup: { cab: [[100, 50], [114, 24], [158, 24], [184, 50]], lo: 50, hi: 74 },
+};
+const pts = (a) => a.map((p) => p.join(",")).join(" ");
+
+function sideDamage(front, d) {
+  // front = x of the nose
+  const hood = front - 40;
+  const layers = [`<g class="dmg d1"><path d="M${front - 62} 32 L${front - 52} 40 L${front - 58} 46 M${front - 52} 40 L${front - 40} 38" stroke="#fff" stroke-opacity=".9" stroke-width="2" fill="none" stroke-linecap="round"/></g>`, `<g class="dmg d2"><ellipse cx="${hood}" cy="52" rx="26" ry="6" fill="#000" fill-opacity=".45"/><circle cx="${front - 6}" cy="58" r="5" fill="#2a1313"/></g>`, `<g class="dmg d3"><rect x="${front - 6}" y="66" width="26" height="7" rx="2" fill="#2b2d33" transform="rotate(14 ${front - 6} 66)"/>
+    <circle cx="${hood}" cy="40" r="9" fill="#555" fill-opacity=".6"/><circle cx="${hood - 10}" cy="28" r="12" fill="#666" fill-opacity=".5"/><circle cx="${hood - 18}" cy="12" r="14" fill="#777" fill-opacity=".4"/></g>`, `<g class="dmg d4"><polygon points="${front - 18},54 ${front + 4},60 ${front + 2},74 ${front - 22},72" fill="#000" fill-opacity=".5"/><path d="M${front - 30} 56 l12 8 M${front - 26} 66 l14 -4" stroke="#000" stroke-opacity=".5" stroke-width="2"/></g>`];
+  return layers.slice(0, d).join("");
+}
+
+export function carSideSVG(car, { damage = 0 } = {}) {
+  const c = typeof car === "string" ? carById(car) : car;
+  const d = Math.max(0, Math.min(4, damage | 0));
+  const wheel = (x, r = 13) => `<g><circle cx="${x}" cy="76" r="${r}" fill="#14161c"/><circle cx="${x}" cy="76" r="${r * 0.55}" fill="#9aa3b2"/><circle cx="${x}" cy="76" r="${r * 0.18}" fill="#14161c"/></g>`;
+  let inner;
+  if (c.shape === "rocket") {
+    inner = `<path d="M18 64 Q18 46 44 44 H170 Q218 44 226 62 Q218 80 170 80 H44 Q18 80 18 64 Z" fill="${c.color}"/><path d="M18 64 L2 84 L40 78 Z M18 62 L2 42 L40 48 Z" fill="${c.accent}"/>
+      <ellipse cx="170" cy="58" rx="22" ry="8" fill="#7be7ff" opacity=".85"/><rect x="60" y="56" width="90" height="6" fill="${c.accent}"/>${wheel(70, 11)}${wheel(176, 11)}${sideDamage(226, d)}`;
+  } else if (c.shape === "hover") {
+    inner = `<ellipse cx="120" cy="86" rx="92" ry="8" fill="${c.neon}" opacity=".45"/><path d="M14 70 Q14 54 40 52 L84 48 L104 28 H152 L184 48 Q226 52 226 66 Q226 76 214 76 H26 Q14 76 14 70 Z" fill="${c.color}"/>
+      <path d="M92 48 L108 32 H148 L172 48 Z" fill="#7be7ff" opacity=".85"/><rect x="26" y="72" width="188" height="4" rx="2" fill="${c.neon}"/><circle cx="60" cy="68" r="7" fill="${c.neon}"/><circle cx="188" cy="68" r="7" fill="${c.neon}"/>${sideDamage(226, d)}`;
+  } else if (c.shape === "tractor") {
+    inner = `<rect x="60" y="14" width="8" height="30" rx="3" fill="#2b2f3a"/><rect x="58" y="10" width="12" height="6" rx="2" fill="#14161c"/>
+      <rect x="96" y="22" width="62" height="34" rx="4" fill="${c.color}"/><rect x="102" y="28" width="22" height="22" rx="2" fill="#9fe3ff" opacity=".85"/><rect x="128" y="28" width="24" height="22" rx="2" fill="#9fe3ff" opacity=".85"/>
+      <rect x="92" y="18" width="70" height="6" rx="2" fill="${dark(c.color, 0.3)}"/>
+      <path d="M150 44 H214 Q222 44 222 52 V66 H150 Z" fill="${c.color}"/><rect x="150" y="62" width="74" height="6" fill="${c.accent}"/>
+      <circle cx="82" cy="62" r="30" fill="#14161c"/><circle cx="82" cy="62" r="18" fill="${c.accent}"/><circle cx="82" cy="62" r="6" fill="${dark(c.accent, 0.4)}"/>
+      <circle cx="196" cy="74" r="16" fill="#14161c"/><circle cx="196" cy="74" r="8" fill="${c.accent}"/>${sideDamage(224, d)}`;
+  } else {
+    const s = SIDE[c.shape] || SIDE.sedan;
+    const body = c.shape === "pickup"
+      ? `<rect x="14" y="${s.lo - 6}" width="92" height="${s.hi - s.lo + 8}" rx="4" fill="${dark(c.color, 0.18)}"/>`
+      : "";
+    const win = s.cab.map(([x, y], i) => (i === 0 ? [x + 8, y - 2] : i === 3 ? [x - 8, y - 2] : [x + (i === 1 ? 6 : -6), y + 5]));
+    inner = `${body}<path d="M14 ${s.hi - 2} V${s.lo + 4} Q14 ${s.lo - 2} 28 ${s.lo - 2} H210 Q226 ${s.lo - 2} 228 ${s.lo + 10} V${s.hi - 2} Q228 ${s.hi + 2} 222 ${s.hi + 2} H20 Q14 ${s.hi + 2} 14 ${s.hi - 2} Z" fill="${c.color}"/>
+      <polygon points="${pts(s.cab)}" fill="${c.color}"/><polygon points="${pts(win)}" fill="#9fe3ff" opacity=".85"/>
+      <rect x="14" y="${s.lo + 12}" width="214" height="3" fill="#000" opacity=".15"/>
+      ${c.stripes ? `<rect x="14" y="${s.lo + 4}" width="214" height="5" fill="${c.stripes}"/>` : ""}
+      ${c.spoiler ? `<rect x="14" y="${s.lo - 12}" width="22" height="4" rx="1" fill="${dark(c.color, 0.35)}"/><rect x="22" y="${s.lo - 8}" width="3" height="8" fill="${dark(c.color, 0.35)}"/>` : ""}
+      <rect x="212" y="${s.lo + 4}" width="12" height="7" rx="2" fill="#fff6c8"/><rect x="14" y="${s.lo + 4}" width="7" height="8" rx="2" fill="#ff3b3b"/>
+      ${wheel(62)}${wheel(182)}${sideDamage(228, d)}`;
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 0 240 100" class="side-car" role="img" aria-label="${c.name}, side view"><ellipse cx="120" cy="92" rx="104" ry="5" fill="#000" opacity=".25"/>${inner}</svg>`;
+}

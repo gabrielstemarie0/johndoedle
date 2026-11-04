@@ -48,7 +48,7 @@
     <section id="intro" class="card" hidden>
       <p class="eyebrow" id="intro-day"></p>
       <h1>Think like<br>everyone else.</h1>
-      <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash, and each crash is a $25 repair bill. Ten questions a day.</p>
+      <p class="lead">You get a question and an obstacle is coming down the road. Type the answer most people would give before it reaches your bumper. Score anything and you swerve clear; run out of time or score nothing and you crash, and each crash is a $25 repair bill, paid automatically when the run ends. Ten questions a day.</p>
       <ul class="levels" id="levels" aria-label="Scoring levels"></ul>
       <p class="rules-note">Only one answer per question is a John Doe. A perfect day is <b>$1,000</b>. Your cash adds up from day to day: spend it in the shop.</p>
       <section class="reward" id="reward" hidden aria-live="polite">
@@ -92,18 +92,32 @@
     <!-- RESULTS -->
     <section id="results" class="card" hidden>
       <p class="eyebrow" id="res-day"></p>
-      <div class="score"><span id="total">$0</span><small>of $1,000 possible</small></div>
-      <p class="verdict" id="verdict"></p>
-      <p class="fuel-note" id="fuel-note"></p>
-      <p class="repair-note" id="repair-note"></p>
-      <button class="shop-cta" style="margin:0 0 16px" type="button" data-shop-cta><span class="shop-cta-t">&#127978; Visit the car shop</span><small class="shop-cta-s"></small></button>
-      <ol class="breakdown" id="breakdown"></ol>
-      <div class="actions">
-        <button class="btn primary" id="repair" hidden>Repair car</button>
-        <button class="btn primary" id="share">Copy result</button>
-        <span class="copied" id="copied" hidden>Copied!</span>
+      <div class="finale" id="finale" aria-live="polite">
+        <div class="finale-won">
+          <small id="finale-label">You won</small>
+          <div class="finale-amt" id="finale-amt"><span id="total">$0</span></div>
+          <div class="finale-sub" id="finale-sub">of $1,000 possible</div>
+          <div class="finale-line" id="finale-bonus" hidden></div>
+        </div>
+        <div class="finale-car" id="finale-car" hidden>
+          <div class="finale-car-svg" id="finale-car-svg"></div>
+          <div class="finale-fx" id="finale-fx" aria-hidden="true"></div>
+          <div class="finale-status" id="finale-status"></div>
+        </div>
+        <div class="finale-line finale-cost" id="finale-cost" hidden></div>
       </div>
-      <p class="next-up">Next game in <b id="countdown">--:--:--</b></p>
+      <div class="after" id="after">
+        <p class="verdict" id="verdict"></p>
+        <p class="fuel-note" id="fuel-note"></p>
+        <p class="repair-note" id="repair-note"></p>
+        <button class="shop-cta" style="margin:0 0 16px" type="button" data-shop-cta><span class="shop-cta-t">&#127978; Visit the car shop</span><small class="shop-cta-s"></small></button>
+        <ol class="breakdown" id="breakdown"></ol>
+        <div class="actions">
+          <button class="btn primary" id="share">Copy result</button>
+          <span class="copied" id="copied" hidden>Copied!</span>
+        </div>
+        <p class="next-up">Next game in <b id="countdown">--:--:--</b></p>
+      </div>
     </section>
 
     <noscript><p class="card">John Doedle needs JavaScript to run.</p></noscript>
@@ -116,7 +130,7 @@
       <ol class="steps">
         <li><b>You get a question</b> on an exit sign, worded in fancy vocabulary (<em>Cite a savory garnish customarily strewn atop a baked, saucy disc of cheesy dough</em> means a pizza topping). Decode it first. The plain version is shown after you answer. An obstacle appears far down the road, and it gets closer as the clock runs down.</li>
         <li><b>Type the answer most people would give</b> before it reaches you. Typos are forgiven.</li>
-        <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Every crash costs $25 in repairs, paid from your cash when you press Repair car, and you have to repair the car before you can drive again.</li>
+        <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Every crash costs $25. When your run ends you watch your winnings roll in, then your car is repaired automatically and the repair bill is taken out of your total.</li>
         <li><b>The more popular your answer, the more cash you earn.</b> Only the #1 answer (<em>pepperoni</em>) is a John Doe: $100. The next 5 are Average Joes ($85), the next 10 Neighbors ($60), the next 20 Strangers ($30). Any other real answer is an Alien: $10.</li>
         <li><b>Your cash adds up every day.</b> Spend it in the <b>Shop</b> (top right) on better cars. Cars are sorted by answer level: cheap starters are Aliens, and the absurd Big Green Tractor is a John Doe.</li>
         <li><b>Keep a streak.</b> Play two or more days in a row and each day starts with a cash bonus for that day's earnings (it grows every day, up to +50%) and a mystery box. A box holds a puzzle piece for one level of cars; collect enough pieces for a car and it's yours for free. Pricier levels have rarer pieces.</li>

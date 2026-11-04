@@ -2,7 +2,7 @@ import questions from "./lib/bank.js";
 import fancy from "./lib/fancy.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, levelForRank, judgeLocal } from "./lib/scoring.js";
-import { CARS, LEVEL_ORDER, PIECE_ODDS, carsOfLevel, carById, carSVG, money } from "./cars.js";
+import { CARS, LEVEL_ORDER, PIECE_ODDS, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 
 // ---------- settings ----------
@@ -94,7 +94,9 @@ const earnedIn = (d) => (d.answers || []).reduce((n, a) => n + (a.pts || 0), 0);
 const cashIn = (d) => earnedIn(d) + (d.bonus || 0); // a day's answers plus its streak bonus
 const lifetimeEarned = () => Object.values(state.days).reduce((n, d) => n + cashIn(d), 0);
 const balance = () => lifetimeEarned() - state.wallet.spent;
-const renderWallet = () => { $("wallet").textContent = money(balance()); if (typeof renderShopCta === "function") renderShopCta(); };
+let finaleOn = false; // true while the end-of-game scene plays
+let holdWallet = null; // while the end-of-game scene plays, the header keeps showing your cash from before it
+const renderWallet = () => { $("wallet").textContent = money(holdWallet !== null ? holdWallet : balance()); if (typeof renderShopCta === "function") renderShopCta(); };
 
 scene.setCar(state.wallet.car);
 scene.setDamage(state.wallet.hits || 0);
@@ -278,7 +280,9 @@ function finish() {
   clearInterval(tick);
   scene.clearObstacle();
   scene.setHorizon(null);
+  let fresh = false, dmg = 0;
   if (!today.done) {
+    fresh = true;
     today.done = true;
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
     const s = state.streak;
@@ -287,20 +291,140 @@ function finish() {
       s.best = Math.max(s.best, s.count);
       s.last = day;
     }
+    const before = balance(); // your cash from before today's bonus and repairs
     today.bonus = Math.round((earnedIn(today) * ((today.reward && today.reward.pct) || 0)) / 100);
+    // The car is repaired automatically and the bill comes out of your cash. If you can't cover it, the garage takes what you have.
+    dmg = state.wallet.hits || 0;
+    const owed = dmg * REPAIR_COST;
+    const paid = Math.min(owed, Math.max(0, balance()));
+    state.wallet.spent += paid;
+    state.wallet.hits = 0;
+    today.bill = { owed, paid, hits: dmg };
     save();
+    holdWallet = before;
   }
   updateStreak();
   renderWallet();
-  renderResults();
+  renderResults(fresh, dmg);
   syncRepair();
+}
+
+
+// ---------- end-of-game scene: winnings, then the car's damage, then an automatic repair ----------
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const reduceMotion = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function countTo(el, from, to, ms) {
+  return new Promise((res) => {
+    const t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = money(Math.round(from + (to - from) * e));
+      if (k < 1) requestAnimationFrame(step); else res();
+    };
+    requestAnimationFrame(step);
+  });
+}
+function burst(host, emoji, n, spread = 140) {
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement("span");
+    p.className = "fx-bit";
+    p.textContent = emoji[i % emoji.length];
+    const ang = Math.random() * Math.PI * 2, dist = spread * (0.4 + Math.random() * 0.7);
+    p.style.setProperty("--dx", `${Math.cos(ang) * dist}px`);
+    p.style.setProperty("--dy", `${Math.sin(ang) * dist - 30}px`);
+    p.style.setProperty("--rot", `${(Math.random() - 0.5) * 540}deg`);
+    p.style.left = "50%"; p.style.top = "50%";
+    host.append(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+async function playFinale(fresh, dmg) {
+  const t = total(), bonus = today.bonus || 0, win = t + bonus, bill = today.bill || { owed: 0, paid: 0, hits: 0 };
+  const amt = $("total"), carBox = $("finale-car"), status = $("finale-status"), fx = $("finale-fx");
+  const bonusEl = $("finale-bonus"), costEl = $("finale-cost"), after = $("after");
+  $("finale-sub").textContent = `of ${money(MAX_DAY)} possible`;
+  const bonusText = `🔥 +${money(bonus)} streak bonus (${(today.reward && today.reward.pct) || 0}%)`;
+  const net = win - bill.paid;
+  const car = carById(state.wallet.car);
+  const showCar = (damage) => { $("finale-car-svg").innerHTML = carSideSVG(car, { damage }); };
+  const costText = `🔧 Repairs: −${money(bill.paid)}${bill.paid < bill.owed ? ` (the garage wrote off ${money(bill.owed - bill.paid)})` : ""}`;
+
+  // Not a fresh finish (reload), or reduced motion: just show where things ended up.
+  if (!fresh || reduceMotion()) {
+    amt.textContent = money(net);
+    $("finale-label").textContent = bill.paid ? "Cash earned today (after repairs)" : "You won";
+    bonusEl.hidden = !bonus; bonusEl.textContent = bonusText;
+    costEl.hidden = !bill.paid; costEl.textContent = costText;
+    carBox.hidden = !bill.owed;
+    if (bill.owed) { showCar(0); status.textContent = "✨ Repaired and good as new"; }
+    after.classList.remove("pending");
+    holdWallet = null; renderWallet(); scene.setDamage(0);
+    finaleOn = false; syncHeaderButtons();
+    return;
+  }
+
+  finaleOn = true; syncHeaderButtons();
+  after.classList.add("pending");
+  amt.textContent = "$0";
+  $("finale-label").textContent = "You won";
+  bonusEl.hidden = true; costEl.hidden = true; carBox.hidden = true;
+  // 1. the winnings
+  $("finale").classList.add("flash");
+  await countTo(amt, 0, t, 1500);
+  amt.classList.add("pop");
+  if (t > 0) burst(fx, ["🟩", "✨", "💰", "🎉", "🟨"], 26, 150);
+  await sleep(500);
+  // 2. the streak bonus
+  if (bonus) {
+    bonusEl.hidden = false; bonusEl.textContent = bonusText; bonusEl.classList.add("in");
+    await sleep(500);
+    await countTo(amt, t, win, 800);
+    await sleep(400);
+  }
+  // 3. the car and its damage
+  carBox.hidden = false;
+  showCar(Math.min(4, dmg));
+  $("finale-car-svg").classList.add("in");
+  status.textContent = dmg ? `💥 Your car took ${dmg} hit${dmg > 1 ? "s" : ""}` : "✨ Not a scratch on it";
+  scene.setDamage(dmg);
+  await sleep(dmg ? 1700 : 1100);
+  // 4. automatic repair, then the bill comes out of the total
+  if (dmg) {
+    status.textContent = "🔧 Repairing…";
+    const box = $("finale-car-svg");
+    box.classList.add("repairing");
+    const wrench = document.createElement("span");
+    wrench.className = "wrench"; wrench.textContent = "🔧";
+    box.append(wrench);
+    for (let n = Math.min(4, dmg); n >= 1; n--) {
+      burst(fx, ["✨", "🔩", "⚙️"], 6, 70);
+      await sleep(420);
+      box.querySelectorAll(`.d${n}`).forEach((g) => { g.style.transition = "opacity .35s"; g.style.opacity = "0"; });
+      await sleep(380);
+    }
+    box.classList.remove("repairing");
+    wrench.remove();
+    showCar(0);
+    scene.setDamage(0);
+    status.textContent = "✨ Good as new";
+    burst(fx, ["✨", "⭐"], 14, 110);
+    await sleep(500);
+    costEl.hidden = false; costEl.textContent = costText; costEl.classList.add("in");
+    $("finale-label").textContent = "Cash earned today (after repairs)";
+    amt.classList.add("down");
+    await countTo(amt, win, net, 1200);
+    await sleep(500);
+  }
+  holdWallet = null; renderWallet();
+  after.classList.remove("pending");
+  finaleOn = false; syncHeaderButtons();
 }
 
 // ---------- results ----------
 const total = () => earnedIn(today);
 const emojiOf = (a) => (a.pts > 0 ? levelById(a.level).emoji : "💥");
 
-function renderResults() {
+function renderResults(fresh = false, dmg = 0) {
   show("results");
   const t = total();
   scene.setPhase(7);
@@ -308,7 +432,6 @@ function renderResults() {
   $("fuel-note").textContent = `Wallet: ${money(balance())}.${crashes ? ` Crashed ${crashes} time${crashes > 1 ? "s" : ""}.` : " No crashes."}${today.bonus ? ` Streak bonus: +${money(today.bonus)} (${today.reward.pct}%).` : ""}`;
   renderRepairNote();
   $("res-day").textContent = `John Doedle #${gameNo}`;
-  $("total").textContent = money(t);
   $("verdict").textContent =
     t >= MAX_DAY * 0.93 ? "Peak John Doe. Perfectly ordinary."
     : t >= MAX_DAY * 0.71 ? "Very relatable. You'd blend into any crowd."
@@ -334,27 +457,54 @@ function renderResults() {
     you.className = "row-you";
     you.textContent = a.raw ? `You said: ${a.raw}` : "No answer";
     li.append(top, you);
-    // the fixed ranking for this question: #1 is the John Doe, #2-6 Average Joes, #7-16 Neighbors, #17-36 Strangers
+    // The fixed ranking for this question, one level at a time: pick John Doe, Average Joe, Neighbor, Stranger or Alien.
     const det = document.createElement("details");
     det.className = "row-best";
     const sum = document.createElement("summary");
-    sum.textContent = "See the top answers";
+    sum.textContent = "See the answers by level";
+    const tabs = document.createElement("div");
+    tabs.className = "best-tabs";
+    tabs.setAttribute("role", "tablist");
     const chips = document.createElement("ol");
     chips.className = "best-list";
-    let rank = 0;
-    for (const [label] of question.answers.slice(0, 16)) {
-      rank++;
-      const c = document.createElement("li");
-      c.className = `best-chip lvl-${levelForRank(rank).id}`;
-      const n = document.createElement("b"); n.textContent = `#${rank}`;
-      c.append(n, ` ${label}`);
-      if (a.label && normalize(label) === normalize(a.label)) c.classList.add("yours");
-      chips.append(c);
+    const note = document.createElement("p");
+    note.className = "best-note";
+    const all = question.answers.map(([label], i) => ({ label, rank: i + 1, level: levelForRank(i + 1) }));
+    const yours = a.label ? normalize(a.label) : null;
+    const showLevel = (id) => {
+      tabs.querySelectorAll(".best-tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.level === id)));
+      chips.replaceChildren();
+      for (const r of all.filter((x) => x.level.id === id)) {
+        const c = document.createElement("li");
+        c.className = `best-chip lvl-${id}`;
+        const n = document.createElement("b"); n.textContent = `#${r.rank}`;
+        c.append(n, ` ${r.label}`);
+        if (yours && normalize(r.label) === yours) c.classList.add("yours");
+        chips.append(c);
+      }
+      const L = levelById(id);
+      note.textContent = id === "alien"
+        ? `${L.name} (${money(L.pts)}): the answers listed here, plus any other real answer.`
+        : `${L.name} (${money(L.pts)}): ${L.note}.`;
+    };
+    for (const L of LEVELS) {
+      const t = document.createElement("button");
+      t.type = "button";
+      t.className = `best-tab lvl-${L.id}`;
+      t.dataset.level = L.id;
+      t.setAttribute("role", "tab");
+      const lab = document.createElement("span");
+      lab.textContent = `${L.emoji} ${L.name}`;
+      t.append(lab);
+      t.addEventListener("click", () => showLevel(L.id));
+      tabs.append(t);
     }
-    det.append(sum, chips);
+    showLevel(a.pts > 0 && LEVELS.some((l) => l.id === a.level) ? a.level : "johndoe");
+    det.append(sum, tabs, chips, note);
     li.append(det);
     list.append(li);
   });
+  playFinale(fresh, dmg);
 }
 
 const shareText = () =>
@@ -406,7 +556,7 @@ $("help-dialog").addEventListener("close", () => {
 // Don't let the stats/help/shop buttons be used to stall the clock during a timed question.
 function syncHeaderButtons() {
   const timing = !views.play.hidden && !locked && $("feedback").hidden;
-  $("help-btn").disabled = $("stats-btn").disabled = $("wallet-btn").disabled = timing;
+  $("help-btn").disabled = $("stats-btn").disabled = $("wallet-btn").disabled = timing || finaleOn;
 }
 $("help-btn").addEventListener("click", () => openHelp());
 
@@ -724,22 +874,18 @@ function repairCar() {
   if (today.done) renderRepairNote();
 }
 function renderRepairNote() {
-  const n = state.wallet.hits || 0, bill = today.bill;
-  $("repair-note").textContent = n
-    ? `Repair bill: ${n} hit${n > 1 ? "s" : ""} × ${money(REPAIR_COST)} = ${money(repairDue())}. It comes out of your cash when you press Repair car, and you must repair before you can drive again.`
-    : bill && bill.owed
-      ? `Repaired: ${money(bill.paid)} paid.${bill.paid < bill.owed ? ` You only had that much, so the garage wrote off the rest.` : ""}`
-      : "No damage, no repair bill.";
+  const bill = today.bill;
+  $("repair-note").textContent = bill && bill.owed
+    ? `Repairs: ${bill.hits} hit${bill.hits > 1 ? "s" : ""} × ${money(REPAIR_COST)} = ${money(bill.owed)}, taken from your cash.${bill.paid < bill.owed ? ` You only had ${money(bill.paid)}, so the garage wrote off the rest.` : ""}`
+    : "No damage, no repair bill.";
 }
 function syncRepair() {
+  // Only an old unrepaired car (from before repairs became automatic) still needs fixing at the start of a game.
   const hits = state.wallet.hits || 0;
   $("repair-tag").hidden = !hits;
-  $("repair").hidden = !hits || !today.done;
-  $("repair").textContent = `Repair car (${money(repairDue())})`;
   $("start").textContent = hits ? `Repair car (${money(repairDue())}) and start` : "Start today's game";
   scene.setDamage(hits);
 }
-$("repair").addEventListener("click", repairCar);
 $("start").addEventListener("click", () => {
   if (state.wallet.hits) repairCar();
   if (!helpSeen()) openHelp(showCard); // first visit: explain the game, then start
