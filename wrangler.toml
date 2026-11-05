@@ -2,10 +2,12 @@ name = "johndoedle"
 main = "src/worker.js"
 compatibility_date = "2024-11-01"
 
-# The game itself. Requests that don't match a file here go to the Worker (/api/judge).
+# The game itself, served by the Worker through env.ASSETS.
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# Run the Worker before serving files, so it can send direct visitors to The Daily Station
+run_worker_first = true
 
 [[d1_databases]]
 binding = "DB"
