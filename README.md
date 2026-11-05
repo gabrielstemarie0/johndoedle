@@ -143,7 +143,7 @@ This is a **Workers** project (not Pages). `wrangler.toml` describes everything,
 Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then `npx wrangler dev --local`.
 
 ## Daily questions
-Based on the UTC date. Everyone gets the same 10. The bank is shuffled in cycles, so 70 questions give 7 days with no
+Based on the US Eastern date (the day rolls over at midnight in New York, EST or EDT). Everyone gets the same 10. The bank is shuffled in cycles, so 70 questions give 7 days with no
 repeats. To add a question, add it to `public/lib/questions2.js` (compact `build("q57", "Name a ...", "answer|alias,answer,...")`, most popular first; or append to `questions.js` as `[answer, weight, [aliases]]`) with the next id (`q57`, ...): a prompt such as
 "Name a ..." and at least 40 answers as `[answer, weight, [aliases]]`, listed from most to least popular (the most
 popular is 100; the weights only set the order). Fewer than 37 answers means the Stranger tier can't be filled.

@@ -17,7 +17,16 @@ const $ = (id) => document.getElementById(id);
 const views = { intro: $("intro"), play: $("play"), results: $("results") };
 
 // ---------- date + question selection ----------
-const todayUTC = () => new Date().toISOString().slice(0, 10);
+// The game day rolls over at midnight US Eastern time (EST in winter, EDT in summer), for everyone.
+const TZ = "America/New_York";
+const ymdET = (d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+const todayET = () => ymdET();
+const prevDay = (ds) => { const d = new Date(ds + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); };
+const secondsToMidnightET = () => {
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(new Date());
+  const v = (t) => Number(parts.find((p) => p.type === t).value);
+  return 86400 - (v("hour") * 3600 + v("minute") * 60 + v("second"));
+};
 const dayIndex = (day) =>
   Math.max(0, Math.round((Date.parse(day + "T00:00:00Z") - Date.parse(LAUNCH_DAY + "T00:00:00Z")) / 86400000));
 function mulberry32(seed) {
@@ -72,7 +81,7 @@ function loadState() {
 const state = loadState();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {} };
 
-const day = todayUTC();
+const day = todayET();
 const gameNo = dayIndex(day) + 1;
 // Visit /?reset=today to wipe today's game in this browser (answers, bonus, repair bill) and play it again.
 if (new URLSearchParams(location.search).get("reset") === "today") {
@@ -128,7 +137,7 @@ async function judge(question, answer) {
 const show = (name) => { for (const [k, el] of Object.entries(views)) el.hidden = k !== name; };
 const fmt = (p) => (p > 0 ? `+${money(p)}` : "$0");
 function updateStreak() {
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const yesterday = prevDay(day);
   const { count, last } = state.streak;
   $("streak").textContent = last === day || last === yesterday ? count : 0;
 }
@@ -307,7 +316,7 @@ function finish() {
   if (!today.done) {
     fresh = true;
     today.done = true;
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const yesterday = prevDay(day);
     const s = state.streak;
     if (s.last !== day) {
       s.count = s.last === yesterday ? s.count + 1 : 1;
@@ -649,10 +658,8 @@ async function copyShare() {
 }
 
 function countdown() {
-  const now = new Date();
-  const next = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
-  const left = Math.max(0, Math.floor((next - now) / 1000));
-  if (left === 0) return location.reload();
+  if (ymdET() !== day) return location.reload(); // midnight Eastern passed: a new game is out
+  const left = secondsToMidnightET();
   const p = (n) => String(n).padStart(2, "0");
   $("countdown").textContent = `${p(Math.floor(left / 3600))}:${p(Math.floor((left % 3600) / 60))}:${p(left % 60)}`;
 }
@@ -709,7 +716,7 @@ function renderStats() {
     box.append(p);
     return;
   }
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const yesterday = prevDay(day);
   const cur = state.streak.last === day || state.streak.last === yesterday ? state.streak.count : 0;
   const tiles = [["Games", st.played], ["Average", money(st.average)], ["Best", money(st.best)], ["Streak", `${cur} (best ${Math.max(state.streak.best, cur)})`]];
   const grid = document.createElement("div");
@@ -804,7 +811,7 @@ function usePiece(car) {
 const streakPct = (n) => Math.min(50, n * 5); // 2 days: +10%, then +5% a day up to +50%
 function grantDailyReward() {
   if (today.reward || today.done) return;
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const yesterday = prevDay(day);
   const n = state.streak.last === yesterday ? state.streak.count + 1 : 0; // today would be day n of the run
   if (n < 2) return; // a one-day streak doesn't count
   today.reward = { streak: n, pct: streakPct(n), boxId: 1 };
