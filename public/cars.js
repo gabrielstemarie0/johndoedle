@@ -17,7 +17,7 @@ export const CARS = [
   { id: "rocket", name: "Rocket Car", price: 6500000, level: "joe", pieces: 6, blurb: "Technically a missile with seats.", shape: "rocket", color: "#c9d1dc", accent: "#e8453c" },
   { id: "gold", name: "Golden Phantom", price: 30000000, level: "joe", pieces: 6, blurb: "Solid gold. Do not park in the rain.", shape: "super", color: "#ffcf40", gold: true, spoiler: "wing", exhaust: 4, light: "led" },
   { id: "hover", name: "Hover Car", price: 150000000, level: "johndoe", pieces: 6, blurb: "Roads are for people who can't float.", shape: "hover", color: "#e9fbff", neon: "#38f0ff" },
-  { id: "tractor", name: "Big Green Tractor", price: 1000000000, level: "johndoe", pieces: 7, blurb: "Nothing runs like a big green tractor. Costs a billion.", shape: "tractor", color: "#2f8f3a", accent: "#f2c230" },
+  { id: "tractor", name: "Big Green Tractor", price: 1000000000, level: "johndoe", pieces: 7, blurb: "No bonus. Own it, then pull off 10 perfect games to move to the next planet.", shape: "tractor", color: "#2f8f3a", accent: "#f2c230" },
 ];
 // Cars are sorted into the five answer levels. Alien holds the cheap starters, John Doe the most expensive cars.
 // `pieces` is how many puzzle pieces of that level unlock the car without paying (cheaper cars need fewer).
@@ -25,6 +25,11 @@ export const LEVEL_ORDER = ["johndoe", "joe", "neighbor", "stranger", "alien"];
 export const carsOfLevel = (level) => CARS.filter((c) => c.level === level);
 // Mystery box odds (percent): the pricier the level's cars, the rarer its puzzle pieces.
 export const PIECE_ODDS = { alien: 50, stranger: 28, neighbor: 14, joe: 6, johndoe: 2 };
+// Winnings bonus (percent) for the equipped car, added at the end of every round. Evenly spaced from +1% to +10,000%.
+// The Rusty Hatchback and the prestige Big Green Tractor give none.
+const MULT = { commuter: 1, zippy: 2, wagon: 4, pickup: 8, coupe: 17, muscle: 35, rally: 70, luxe: 143, sports: 289, super: 588, hyper: 1194, rocket: 2424, gold: 4924, hover: 10000 };
+CARS.forEach((c) => { c.mult = MULT[c.id] || 0; });
+export const PRESTIGE_GAMES = 10; // perfect games (10/10 John Doe) with the tractor needed to reset to the next planet
 export const carById = (id) => CARS.find((c) => c.id === id) || CARS[0];
 
 // "$1,240", "$6.5M", "$1B"

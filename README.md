@@ -105,6 +105,16 @@ absurd ones are John Does. Each car also needs a number of **puzzle pieces** to 
 | 👽 Alien | Little Zippy | $800 | 3 |
 | 👽 Alien | Family Wagon | $1,500 | 3 |
 
+**Car bonuses.** The equipped car adds a bonus to each round's total: Commuter +1%, Little Zippy +2%, Family Wagon +4%,
+Work Pickup +8%, Street Coupe +17%, Muscle Machine +35%, Rally Beast +70%, Luxe Sedan +143%, Sports Car +289%, Supercar +588%,
+Hypercar +1,194%, Rocket Car +2,424%, Golden Phantom +4,924%, Hover Car +10,000%. The Rusty Hatchback and the Big Green Tractor
+give none. At the end of a round the order is: your answers, streak bonus, car bonus, planet bonus, then repairs.
+
+**Planets.** The tractor is the prestige car. Once you own it, every perfect game (10/10 John Doe) fills a 10-game bar in the
+shop. At 10/10 a Reset button appears: it sends you back to day 1 with no money and only the starter car, on the next planet
+(Mars, the Moon, Venus...). The planet number is the only thing kept. Each planet gives a new look to the road and +25% on all
+winnings, permanently. Prices, bonuses and planets are in `public/cars.js` and `public/lib/planets.js`.
+
 **Streak rewards.** Finish a game and come back the next day (a one-day streak doesn't count) and the day starts with two
 rewards: a **cash bonus** on that day's earnings (+10% on day 2, +5% more each day, up to +50%) and a **mystery box**. A box
 holds one puzzle piece of a random *level*, not of a particular car; put it toward any car of that level in the shop. The

@@ -1,9 +1,10 @@
 import questions from "./lib/bank.js";
 import fancy from "./lib/fancy.js";
 import { rejectReason, REJECT_TEXT } from "./lib/rules.js";
+import { planetInfo, planetPct, PLANET_BONUS } from "./lib/planets.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, levelForRank, judgeLocal } from "./lib/scoring.js";
-import { CARS, LEVEL_ORDER, PIECE_ODDS, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
+import { CARS, LEVEL_ORDER, PIECE_ODDS, PRESTIGE_GAMES, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 
 // ---------- settings ----------
@@ -61,7 +62,7 @@ function uid() {
 const REPAIR_COST = 25; // dollars per hit
 const zeroPieces = () => Object.fromEntries(LEVEL_ORDER.map((l) => [l, 0]));
 // hits = unrepaired crashes, boxes = unopened mystery boxes, pieces = loose puzzle pieces per level, progress = pieces put toward each car
-const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty", hits: 0, boxes: 0, pieces: zeroPieces(), progress: {} });
+const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty", hits: 0, boxes: 0, pieces: zeroPieces(), progress: {}, perfect: 0 });
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
@@ -69,6 +70,7 @@ function loadState() {
       s.wallet = { ...newWallet(), ...(s.wallet || {}) };
       s.wallet.pieces = { ...zeroPieces(), ...(s.wallet.pieces || {}) };
       s.wallet.progress = s.wallet.progress || {};
+      s.planet = s.planet || 1;
       s.wallet.owned = s.wallet.owned.map((id) => (id === "ufo" ? "tractor" : id)); // the UFO became the tractor
       if (s.wallet.car === "ufo") s.wallet.car = "tractor";
       if (!s.wallet.owned.includes("rusty")) s.wallet.owned.unshift("rusty");
@@ -76,7 +78,7 @@ function loadState() {
       return s;
     }
   } catch {}
-  return { player: uid(), days: {}, streak: { count: 0, best: 0, last: null }, wallet: newWallet() };
+  return { player: uid(), days: {}, streak: { count: 0, best: 0, last: null }, wallet: newWallet(), planet: 1 };
 }
 const state = loadState();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {} };
@@ -89,6 +91,7 @@ if (new URLSearchParams(location.search).get("reset") === "today") {
   if (old) {
     if (old.bill) state.wallet.spent = Math.max(0, state.wallet.spent - old.bill.paid); // give back what repairs cost
     else state.wallet.hits = Math.max(0, (state.wallet.hits || 0) - (old.crashes || 0));
+    if (old.perfectCounted) state.wallet.perfect = Math.max(0, (state.wallet.perfect || 0) - 1);
     delete state.days[day];
     if (old.done && state.streak.last === day) { state.streak.last = null; state.streak.count = Math.max(0, state.streak.count - 1); }
     save();
@@ -101,7 +104,7 @@ const scene = createScene($("scene"), null); // the driving scene (purely visual
 
 // Cash: every dollar you've ever earned, minus what you've spent in the shop.
 const earnedIn = (d) => (d.answers || []).reduce((n, a) => n + (a.pts || 0), 0);
-const cashIn = (d) => earnedIn(d) + (d.bonus || 0); // a day's answers plus its streak bonus
+const cashIn = (d) => earnedIn(d) + (d.bonus || 0) + (d.carBonus || 0) + (d.planetBonus || 0); // a day's answers plus streak, car and planet bonuses
 const lifetimeEarned = () => Object.values(state.days).reduce((n, d) => n + cashIn(d), 0);
 const balance = () => lifetimeEarned() - state.wallet.spent;
 let finaleOn = false; // true while the end-of-game scene plays
@@ -324,7 +327,18 @@ function finish() {
       s.last = day;
     }
     const before = balance(); // your cash from before today's bonus and repairs
-    today.bonus = Math.round((earnedIn(today) * ((today.reward && today.reward.pct) || 0)) / 100);
+    const base = earnedIn(today);
+    today.bonus = Math.round((base * ((today.reward && today.reward.pct) || 0)) / 100); // streak bonus
+    const car = carById(state.wallet.car);
+    today.carPct = car.mult || 0; today.carName = car.name; // the equipped car's multiplier
+    today.carBonus = Math.round(((base + today.bonus) * today.carPct) / 100);
+    today.planetPct = planetPct(state.planet); // +25% for every planet you've reached
+    today.planetBonus = Math.round(((base + today.bonus + today.carBonus) * today.planetPct) / 100);
+    // A perfect game (10 of 10 John Does) counts toward the next planet once you own the Big Green Tractor.
+    if (state.wallet.owned.includes("tractor") && today.answers.length >= PER_DAY && today.answers.every((a) => a.level === "johndoe")) {
+      state.wallet.perfect = Math.min(PRESTIGE_GAMES, (state.wallet.perfect || 0) + 1);
+      today.perfectCounted = true;
+    }
     // The car is repaired automatically and the bill comes out of your cash. If you can't cover it, the garage takes what you have.
     dmg = state.wallet.hits || 0;
     const owed = dmg * REPAIR_COST;
@@ -475,11 +489,20 @@ async function repairScuffle(host, layers, box, showClean) {
 }
 
 async function playFinale(fresh, dmg) {
-  const t = total(), bonus = today.bonus || 0, win = t + bonus, bill = today.bill || { owed: 0, paid: 0, hits: 0 };
+  const t = total(), bill = today.bill || { owed: 0, paid: 0, hits: 0 };
+  // Everything that adds to today's total, in the order it is applied.
+  const steps = [];
+  if (today.bonus) steps.push({ text: `🔥 Streak bonus +${(today.reward && today.reward.pct) || 0}%: +${money(today.bonus)}`, add: today.bonus });
+  if (today.carBonus) steps.push({ text: `🚗 ${today.carName} +${today.carPct.toLocaleString("en-US")}%: +${money(today.carBonus)}`, add: today.carBonus });
+  if (today.planetBonus) steps.push({ text: `🪐 ${planetInfo(state.planet).name} +${today.planetPct}%: +${money(today.planetBonus)}`, add: today.planetBonus });
+  if (today.perfectCounted) steps.push({ text: `🏆 Perfect game! ${state.wallet.perfect}/${PRESTIGE_GAMES} toward the next planet`, add: 0 });
+  const win = t + steps.reduce((n, x) => n + x.add, 0);
+  const pills = $("finale-pills");
+  pills.replaceChildren();
+  const addPill = (st, show) => { const el = document.createElement("div"); el.className = "finale-line" + (show ? " in" : ""); el.textContent = st.text; pills.append(el); return el; };
   const amt = $("total"), carBox = $("finale-car"), status = $("finale-status"), fx = $("finale-fx");
-  const bonusEl = $("finale-bonus"), costEl = $("finale-cost"), after = $("after");
+  const costEl = $("finale-cost"), after = $("after");
   $("finale-sub").textContent = `of ${money(MAX_DAY)} possible`;
-  const bonusText = `🔥 +${money(bonus)} streak bonus (${(today.reward && today.reward.pct) || 0}%)`;
   const net = win - bill.paid;
   const car = carById(state.wallet.car);
   const showCar = (damage) => { $("finale-car-svg").innerHTML = carSideSVG(car, { damage }); };
@@ -489,7 +512,7 @@ async function playFinale(fresh, dmg) {
   if (!fresh || reduceMotion()) {
     amt.textContent = money(net);
     $("finale-label").textContent = bill.paid ? "Cash earned today (after repairs)" : "You won";
-    bonusEl.hidden = !bonus; bonusEl.textContent = bonusText;
+    steps.forEach((st) => addPill(st, true));
     costEl.hidden = !bill.paid; costEl.textContent = costText;
     carBox.hidden = !bill.owed;
     if (bill.owed) { showCar(0); status.textContent = "✨ Repaired and good as new"; }
@@ -503,19 +526,21 @@ async function playFinale(fresh, dmg) {
   after.classList.add("pending");
   amt.textContent = "$0";
   $("finale-label").textContent = "You won";
-  bonusEl.hidden = true; costEl.hidden = true; carBox.hidden = true;
+  costEl.hidden = true; carBox.hidden = true;
   // 1. the winnings
   $("finale").classList.add("flash");
   await countTo(amt, 0, t, 1500);
   amt.classList.add("pop");
   if (t > 0) { burst(fx, ["🟩", "✨", "💰", "🎉", "🟨"], 26, 150); sfx.tada(); }
   await sleep(500);
-  // 2. the streak bonus
-  if (bonus) {
-    bonusEl.hidden = false; bonusEl.textContent = bonusText; bonusEl.classList.add("in");
+  // 2. each bonus in turn: streak, car multiplier, planet
+  let running = t;
+  for (const st of steps) {
+    const el = addPill(st, false);
+    void el.offsetWidth; el.classList.add("in");
     await sleep(500);
-    await countTo(amt, t, win, 800);
-    await sleep(400);
+    if (st.add) { sfx.cash(); await countTo(amt, running, running + st.add, 800); running += st.add; await sleep(350); }
+    else { sfx.ding(); burst(fx, ["🏆", "✨", "⭐"], 14, 120); await sleep(700); }
   }
   // 3. the car and its damage
   carBox.hidden = false;
@@ -553,9 +578,9 @@ function renderResults(fresh = false, dmg = 0) {
   const t = total();
   scene.setPhase(7);
   const crashes = today.crashes || 0;
-  $("fuel-note").textContent = `Wallet: ${money(balance())}.${crashes ? ` Crashed ${crashes} time${crashes > 1 ? "s" : ""}.` : " No crashes."}${today.bonus ? ` Streak bonus: +${money(today.bonus)} (${today.reward.pct}%).` : ""}`;
+  $("fuel-note").textContent = `Wallet: ${money(balance())}.${crashes ? ` Crashed ${crashes} time${crashes > 1 ? "s" : ""}.` : " No crashes."}`;
   renderRepairNote();
-  $("res-day").textContent = `John Doedle #${gameNo}`;
+  $("res-day").textContent = `John Doedle #${gameNo}${state.planet > 1 ? ` · 🪐 ${planetInfo(state.planet).name}` : ""}`;
   $("verdict").textContent =
     t >= MAX_DAY * 0.93 ? "Peak John Doe. Perfectly ordinary."
     : t >= MAX_DAY * 0.71 ? "Very relatable. You'd blend into any crowd."
@@ -851,6 +876,10 @@ function renderShop(message = "") {
   $("shop-msg").textContent = message;
   const bar = $("shop-pieces");
   bar.replaceChildren();
+  const pl = document.createElement("p");
+  pl.className = "shop-planet";
+  pl.textContent = `🪐 ${planetInfo(state.planet).name}${state.planet > 1 ? `: +${planetPct(state.planet)}% on all winnings` : ": the first planet. Each new planet adds +25% to all winnings."}`;
+  bar.append(pl);
   const chips = document.createElement("div");
   chips.className = "piece-chips";
   for (const l of LEVEL_ORDER) {
@@ -907,7 +936,27 @@ function carRow(car) {
   const name = document.createElement("div"); name.className = "shop-name"; name.textContent = car.name;
   const blurb = document.createElement("div"); blurb.className = "shop-blurb"; blurb.textContent = car.blurb;
   const price = document.createElement("div"); price.className = "shop-price"; price.textContent = car.price ? money(car.price) : "Free";
-  info.append(name, blurb, price);
+  const mult = document.createElement("div");
+  mult.className = "shop-mult";
+  mult.textContent = car.mult ? `💰 +${car.mult.toLocaleString("en-US")}% on your winnings` : "No winnings bonus";
+  info.append(name, blurb, price, mult);
+  if (car.id === "tractor") {
+    const done = w.perfect || 0;
+    const pr = document.createElement("div");
+    pr.className = "prestige" + (owned ? "" : " locked");
+    const lab = document.createElement("div");
+    lab.className = "prestige-label";
+    lab.textContent = owned ? `🪐 Perfect games: ${done}/${PRESTIGE_GAMES}` : `🔒 Perfect games: 0/${PRESTIGE_GAMES} (own the tractor to start)`;
+    const track = document.createElement("div");
+    track.className = "prestige-track";
+    const fill = document.createElement("i");
+    fill.style.width = `${owned ? (done / PRESTIGE_GAMES) * 100 : 0}%`;
+    track.append(fill);
+    const how = document.createElement("small");
+    how.textContent = "A perfect game is 10 out of 10 John Doe answers. Finish 10 to unlock the planet reset.";
+    pr.append(lab, track, how);
+    info.append(pr);
+  }
   if (!owned) {
     const got = w.progress[car.id] || 0;
     const pz = document.createElement("div");
@@ -924,6 +973,7 @@ function carRow(car) {
     if (fn) b.addEventListener("click", fn);
     acts.append(b);
   };
+  if (car.id === "tractor" && owned && (w.perfect || 0) >= PRESTIGE_GAMES) mk(`🪐 Reset to ${planetInfo((state.planet || 1) + 1).name}`, "primary", resetToNextPlanet);
   if (equipped) mk("Equipped", "", null, true);
   else if (owned) mk("Equip", "", () => equip(car));
   else {
@@ -934,6 +984,23 @@ function carRow(car) {
   }
   li.append(pic, info, acts);
   return li;
+}
+// Prestige: wipe everything except the planet number and start over, one planet further out.
+function resetToNextPlanet() {
+  if ((state.wallet.perfect || 0) < PRESTIGE_GAMES) return;
+  const next = (state.planet || 1) + 1;
+  const info = planetInfo(next);
+  const ok = window.confirm(`Reset to ${info.name}?\n\nYou go back to day 1 with no money and only the starter car. The only thing you keep is your planet number. Every planet you reach adds +${PLANET_BONUS}% to all your winnings, for good.`);
+  if (!ok) return;
+  state.days = {};
+  state.streak = { count: 0, best: 0, last: null };
+  state.wallet = newWallet();
+  state.planet = next;
+  save();
+  location.href = location.pathname;
+}
+function applyPlanet() {
+  $("scene").style.filter = planetInfo(state.planet).filter || "";
 }
 function equip(car) {
   state.wallet.car = car.id;
@@ -959,7 +1026,9 @@ function renderShopCta() {
   if (w.boxes) bits.push(`🎁 ${w.boxes} mystery box${w.boxes > 1 ? "es" : ""} to open`);
   if (canBuy) bits.push(`You can afford the ${next.name}!`);
   else if (next) bits.push(`Next car: ${next.name} (${money(next.price)})`);
-  const hot = canBuy || w.boxes > 0 || LEVEL_ORDER.some((l) => w.pieces[l] > 0);
+  const resetReady = w.owned.includes("tractor") && (w.perfect || 0) >= PRESTIGE_GAMES;
+  if (resetReady) bits.unshift("🪐 Planet reset ready!");
+  const hot = canBuy || resetReady || w.boxes > 0 || LEVEL_ORDER.some((l) => w.pieces[l] > 0);
   document.querySelectorAll("[data-shop-cta]").forEach((b) => {
     b.classList.toggle("hot", hot);
     b.querySelector(".shop-cta-s").textContent = `You have ${money(bal)}. ${bits.join(" · ")}`;
@@ -1038,12 +1107,13 @@ $("levels").replaceChildren(
   })
 );
 
+applyPlanet();
 grantDailyReward();
 updateStreak();
 renderWallet();
 renderReward();
 syncRepair();
-$("intro-day").textContent = `Game #${gameNo} · ${new Date(day + "T00:00:00Z").toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })}`;
+$("intro-day").textContent = `Game #${gameNo} · ${new Date(day + "T00:00:00Z").toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })}${state.planet > 1 ? ` · 🪐 ${planetInfo(state.planet).name}` : ""}`;
 setInterval(countdown, 1000);
 countdown();
 
