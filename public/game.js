@@ -120,7 +120,7 @@ async function judge(question, answer) {
   try {
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), 12000);
-    const res = await fetch("/api/answer", {
+    const res = await fetch("api/answer", { // relative, so it also works at thedailystation.com/johndoedle/
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ player: state.player, day, q: question.id, answer }),

@@ -10,9 +10,19 @@ import { checkLimits } from "./ratelimit.js";
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
+// John Doedle is a Daily Station original: it's played at thedailystation.com/johndoedle/,
+// which forwards requests here with an x-daily-station header. Anyone opening this
+// Worker's own address is sent there instead.
+const HOME = "https://thedailystation.com/johndoedle";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const viaStation = request.headers.get("x-daily-station") === "1";
+    const isLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    if (!viaStation && !isLocal) {
+      return Response.redirect(HOME + url.pathname + url.search, 301);
+    }
     if (url.pathname === "/api/answer") {
       if (request.method !== "POST") return reply({ error: "POST only" }, 405, { allow: "POST" });
       return handleAnswer(request, env);
@@ -39,7 +49,8 @@ async function handleAnswer(request, env) {
 
   // Cap AI usage per network address, per player id and globally.
   try {
-    const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+    // Via The Daily Station, the player's own address arrives in x-station-client-ip
+    const ip = request.headers.get("x-station-client-ip") || request.headers.get("CF-Connecting-IP") || "unknown";
     const limit = await checkLimits(env.DB, { ip, player });
     if (!limit.ok) {
       console.warn("rate limited:", limit.which);
