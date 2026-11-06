@@ -1,7 +1,7 @@
 // Where a day's score ranks among players. Until plenty of people have played, the real scores are blended with a
 // made-up "typical player" distribution (the prior), so the first few players don't all see "you beat 100%".
 export const BUCKETS = 12;
-export const PRIOR_N = 40; // the typical-player distribution counts as this many pretend players
+export const PRIOR_N = 10; // the typical-player distribution counts as this many pretend players (the nightly sample players do most of the work)
 
 // How likely each answer is for a typical player: [points, chance]. Estimated, not measured.
 const PER_ANSWER = [[100, 0.15], [85, 0.23], [60, 0.2], [30, 0.16], [10, 0.13], [0, 0.13]];
@@ -20,7 +20,7 @@ export function priorDistribution(perDay) {
 const bucketOf = (score, max) => Math.min(BUCKETS - 1, Math.floor((score / (max + 1)) * BUCKETS));
 
 // counts: { score: howManyPlayers } from the server. Returns the bar heights and the share of players you beat.
-export function standing(score, counts, perDay) {
+export function standing(score, counts, perDay, sim = 0) {
   const max = perDay * 100;
   const prior = priorDistribution(perDay);
   const bars = new Array(BUCKETS).fill(0);
@@ -39,5 +39,5 @@ export function standing(score, counts, perDay) {
   // you are one of the real players, so don't count yourself as someone you beat
   const others = Math.max(1, total - 1);
   const pct = Math.max(0, Math.min(100, Math.round(((below + Math.max(0, tied - 1) * 0.5) / others) * 100)));
-  return { bars, pct, players: n, max, position: bucketOf(score, max) };
+  return { bars, pct, players: n, sim, max, position: bucketOf(score, max) };
 }

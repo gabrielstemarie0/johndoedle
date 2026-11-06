@@ -6,6 +6,7 @@ export async function recordScore(db, { day, player, score }) {
   const counts = {};
   let n = 0;
   for (const r of results) { counts[r.score] = r.n; n += r.n; }
+  const simRow = await db.prepare("SELECT COUNT(*) AS n FROM daily_scores WHERE day = ? AND player LIKE 'sim-%'").bind(day).first();
   const mine = await db.prepare("SELECT score FROM daily_scores WHERE day = ? AND player = ?").bind(day, player).first();
-  return { n, counts, score: mine ? mine.score : score };
+  return { n, sim: simRow ? simRow.n : 0, counts, score: mine ? mine.score : score }; // sim = simulated sample players among the n
 }

@@ -82,6 +82,7 @@ async function handleScore(request, env) {
   try { body = await request.json(); } catch { return reply({ error: "bad json" }, 400); }
   const { player, day, score } = body || {};
   if (typeof player !== "string" || player.length < 8 || player.length > 64) return reply({ error: "bad player" }, 400);
+  if (player.startsWith("sim-")) return reply({ error: "bad player" }, 400); // "sim-" ids are the nightly sample players
   if (typeof day !== "string" || !DAY.test(day) || Math.abs(Date.parse(day + "T00:00:00Z") - Date.now()) / 86400000 >= 2) return reply({ error: "bad day" }, 400);
   if (!Number.isInteger(score) || score < 0 || score > 1000) return reply({ error: "bad score" }, 400);
   try {

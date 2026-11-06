@@ -521,7 +521,7 @@ async function loadStanding() {
     if (!res.ok) return null;
     const data = await res.json();
     const mine = Number.isInteger(data.score) ? data.score : total(); // the server keeps your first score for the day
-    const st = standing(mine, data.counts, PER_DAY);
+    const st = standing(mine, data.counts, PER_DAY, data.sim || 0);
     st.score = mine;
     st.pct = Math.min(99, st.pct); // never claim you beat literally everyone
     today.pct = st.pct;
@@ -577,7 +577,11 @@ function slideLine(chart, pct, ms) {
     requestAnimationFrame(step);
   });
 }
-const standingNote = (st) => st.players < 30 ? `${st.players} real player${st.players === 1 ? "" : "s"} so far, plus typical players` : `out of ${st.players} players`;
+const standingNote = (st) => {
+  const real = st.players - (st.sim || 0);
+  if (st.sim) return `${real} real player${real === 1 ? "" : "s"} and ${st.sim} sample players`;
+  return st.players < 30 ? `${st.players} real player${st.players === 1 ? "" : "s"} so far, plus typical players` : `out of ${st.players} players`;
+};
 const setStanding = (el, st) => { el.innerHTML = ""; el.append(document.createTextNode(`📊 You beat ${st.pct}% of players today`)); const sm = document.createElement("small"); sm.textContent = standingNote(st); el.append(sm); };
 async function morphToGraph(st, animate = true) {
   const box = $("finale-car"), svg = $("finale-car-svg"), host = $("finale-chart"), status = $("finale-status");
