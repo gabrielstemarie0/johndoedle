@@ -1090,22 +1090,7 @@ const syncMute = () => { $("mute-btn").textContent = muted ? "🔇" : "🔊"; $(
 $("mute-btn").addEventListener("click", () => { muted = !muted; try { localStorage.setItem("jd:mute", muted ? "1" : "0"); } catch {} syncMute(); ensureAudio(); });
 syncMute();
 
-// intro level list comes from the same table the scoring uses
-$("levels").replaceChildren(
-  ...[...LEVELS, { ...IMPOSTER, note: "that doesn't answer the question: you crash" }, { ...NOTHING, note: "out of time: you crash" }].map((l) => {
-    const li = document.createElement("li");
-    li.className = `lvl-${l.id}`;
-    const name = document.createElement("span");
-    name.textContent = `${l.emoji} ${l.name} `;
-    const note = document.createElement("small");
-    note.textContent = `(${l.note})`;
-    name.append(note);
-    const pts = document.createElement("b");
-    pts.textContent = l.pts ? money(l.pts) : "$0";
-    li.append(name, pts);
-    return li;
-  })
-);
+$("htp-secs").textContent = String(SECONDS);
 
 applyPlanet();
 grantDailyReward();
