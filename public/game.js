@@ -533,7 +533,7 @@ async function repairScuffle(host, layers, box, showClean) {
 // ---------- the "where you rank" graph that the car morphs into ----------
 async function loadStanding() {
   try {
-    const res = await fetch("/api/score", {
+    const res = await fetch("api/score", { // relative, like api/answer, so it works at thedailystation.com/johndoedle/
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ player: state.player, day, score: total() }),
