@@ -137,7 +137,7 @@
       <ol class="steps">
         <li><b>You get a question</b> on an exit sign, worded in fancy vocabulary (<em>Cite a savory garnish customarily strewn atop a baked, saucy disc of cheesy dough</em> means a pizza topping). Decode it first. The plain version is shown after you answer. An obstacle appears far down the road, and it gets closer as the clock runs down.</li>
         <li><b>Type the answer most people would give</b> before it reaches you. Typos are forgiven.</li>
-        <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Every crash costs a repair bill that depends on your car: $25 for the starter up to $100,000 for the most expensive. When your run ends you watch your winnings roll in, then your car is repaired automatically and the bill comes out of your cash. If the bill is bigger than your cash, your cash goes negative and you owe it.</li>
+        <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Every crash costs a repair bill that depends on your car: $25 for the starter up to $100,000 for the most expensive. When your run ends you watch your winnings roll in, then your car is repaired automatically and the bill comes out of your cash. If the bill is bigger than your cash, your cash goes negative and you owe it: pay it off within a week or the car you are driving is taken as collateral (never the starter car), your balance goes back to $0 and you drive the best car you have left.</li>
         <li><b>The more popular your answer, the more cash you earn.</b> Only the #1 answer (<em>pepperoni</em>) is a John Doe: $100. The next 3 are Average Joes ($85), the next 5 Neighbors ($60), the next 10 Strangers ($30). Any other real answer is an Alien: $10.</li>
         <li><b>Your cash adds up every day.</b> Spend it in the <b>Shop</b> (top right) on better cars. Cars are sorted by answer level: cheap starters are Aliens, and the absurd Midnight Monster Tractor is a John Doe.</li>
         <li><b>Every car boosts your winnings.</b> The car you have equipped adds a bonus to your total at the end of each round, from +1% for the first car up to +20,000% for the Big Green Tractor. The Midnight Monster Tractor gives no bonus: own it, finish 10 perfect games (7 out of 7 John Does) and you can reset to a new planet, keeping only the planet. Each planet adds +25% to all your winnings for good.</li>
@@ -168,6 +168,16 @@
       <div id="shop-list"></div>
       <p class="modal-note">Buy a car with cash, or put puzzle pieces of its level toward it. Cash and pieces are saved in this browser.</p>
       <form method="dialog"><button class="btn">Close</button></form>
+    </div>
+  </dialog>
+
+  <!-- Debt: the one-time warning, and the "thank you for your donation" notice when a car is taken -->
+  <dialog id="debt-dialog" class="modal" aria-labelledby="debt-title">
+    <div class="modal-body debt-body">
+      <div class="debt-face" id="debt-face" aria-hidden="true">&#128512;</div>
+      <h2 id="debt-title"></h2>
+      <p id="debt-body"></p>
+      <form method="dialog"><button class="btn primary">OK</button></form>
     </div>
   </dialog>
 

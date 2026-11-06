@@ -36,6 +36,12 @@ and a hazard sign plus a red strip along your lane make that easy to read.
   negative** (you're in debt, shown as a negative amount) and your next winnings pay it off first. The results screen appears
   once the scene ends. Reloading skips the scene.
 
+**Debt and collateral.** The first time your cash goes negative, a pop-up warns you: pay it off within a week or your car
+is taken as collateral. The week starts the day you go below $0 (and resets if you climb back above $0). If you are still
+below $0 when it ends, the car you are driving is sold (never the starter Rusty Hatchback): your balance goes back to exactly
+$0, a "Thank you for your donation! We are now equal. 😊" pop-up appears, and you drive the most valuable car you have left.
+The warning pop-up only shows once, ever; the end screen always shows how many days are left.
+
 ## Scoring
 Each question has ONE fixed ranking, set by the order I wrote its answers (`public/lib/bank.js` turns it into a strict
 1, 2, 3... order with no ties). Player answers are still counted, but they never move an answer up or down, so the

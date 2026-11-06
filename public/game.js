@@ -385,6 +385,7 @@ function finish() {
     state.wallet.hits = 0;
     today.bill = { owed, paid, hits: dmg, each };
     save();
+    syncDebt();
     holdWallet = before;
   }
   updateStreak();
@@ -657,7 +658,11 @@ async function playFinale(fresh, dmg) {
   const showDebt = () => { // repairs can push your cash below zero: say so plainly
     const debt = balance() < 0;
     debtEl.hidden = !debt;
-    if (debt) { debtEl.textContent = `💸 You're ${money(-balance())} in debt. Your next winnings pay it off first.`; debtEl.classList.add("in"); }
+    if (debt) {
+      const left = debtDaysLeft(), rusty = carById(state.wallet.car).id === "rusty";
+      debtEl.textContent = `💸 You're ${money(-balance())} in debt. Your next winnings pay it off first.${rusty ? "" : ` ${left} day${left === 1 ? "" : "s"} left before your car is taken.`}`;
+      debtEl.classList.add("in");
+    }
   };
 
   // Not a fresh finish (reload), or reduced motion: just show where things ended up.
@@ -729,6 +734,7 @@ async function playFinale(fresh, dmg) {
   holdWallet = null; renderWallet();
   after.classList.remove("pending");
   finaleOn = false; syncHeaderButtons();
+  maybeWarnAboutDebt(); // the first time your cash goes below zero
 }
 
 // ---------- results ----------
@@ -1231,13 +1237,50 @@ syncMute();
 
 $("htp-secs").textContent = String(SECONDS);
 
+// ---------- debt and collateral ----------
+// Going below $0 starts a one-week clock. If you are still below $0 when it runs out, the car you are driving is taken as
+// collateral (never the starter car): your balance goes back to exactly $0 and you drive the best car you have left.
+const DEBT_DAYS = 7;
+const daysBetween = (a, b) => Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000);
+const debtDaysLeft = () => (state.debtSince ? Math.max(0, DEBT_DAYS - daysBetween(state.debtSince, day)) : DEBT_DAYS);
+function showDebtDialog(face, title, body) {
+  $("debt-face").textContent = face; $("debt-title").textContent = title; $("debt-body").textContent = body;
+  openDialog($("debt-dialog"));
+}
+// Starts or clears the clock, and takes the car when the week is up. Returns { sold, back } if a car was taken.
+function syncDebt() {
+  if (balance() >= 0) { if (state.debtSince) { delete state.debtSince; save(); } return null; }
+  if (!state.debtSince) { state.debtSince = day; save(); return null; }
+  if (daysBetween(state.debtSince, day) < DEBT_DAYS) return null;
+  const w = state.wallet, car = carById(w.car);
+  if (car.id === "rusty") return null; // the starter car can't be taken
+  w.owned = w.owned.filter((id) => id !== car.id);
+  const back = w.owned.map(carById).sort((a, b) => b.price - a.price)[0] || carById("rusty");
+  w.car = back.id;
+  w.spent = lifetimeEarned(); // balance back to exactly $0
+  delete state.debtSince;
+  save();
+  return { sold: car, back };
+}
+function maybeWarnAboutDebt() { // the very first time cash goes negative
+  if (balance() >= 0 || state.debtWarned) return;
+  state.debtWarned = true; save();
+  const due = new Date(Date.parse(day + "T12:00:00Z") + DEBT_DAYS * 86400000).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
+  const safe = carById(state.wallet.car).id === "rusty" ? " Your starter car can't be taken." : "";
+  showDebtDialog("💸", "You owe money", `If you don't pay it off in the next week, your car will be taken as collateral. Get your cash back above $0 by ${due}.${safe}`);
+}
+
 if (resetNotice) { const n = $("reset-notice"); n.hidden = false; n.textContent = "Today's game was reset so everyone can play it again with the new features. Your cars and cash from earlier days are untouched."; }
 applyPlanet();
+const seized = syncDebt();
+if (seized) scene.setCar(state.wallet.car);
 grantDailyReward();
 updateStreak();
 renderWallet();
 renderReward();
 syncRepair();
+if (seized) showDebtDialog("😊", "Thank you for your donation!", `We are now equal. We took your ${seized.sold.name} to cover what you owed, and your balance is back to $0. You're back in your ${seized.back.name}.`);
+else maybeWarnAboutDebt();
 $("intro-day").textContent = `Game #${gameNo} · ${new Date(day + "T00:00:00Z").toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })}${state.planet > 1 ? ` · 🪐 ${planetInfo(state.planet).name}` : ""}`;
 setInterval(countdown, 1000);
 countdown();

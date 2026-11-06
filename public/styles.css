@@ -487,3 +487,6 @@ main { padding-bottom: 24px; }
 #wallet.neg, .finale-amt.neg { color: #e0503f; }
 .chip.wallet #wallet.neg { color: #b3261e; }
 #total.neg, .finale-amt .neg { color: #e0503f; }
+.debt-body { text-align: center; }
+.debt-face { font-size: 64px; line-height: 1; margin-bottom: 4px; }
+.debt-body p { margin: 0 0 6px; line-height: 1.45; }
