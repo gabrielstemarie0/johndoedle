@@ -4,6 +4,7 @@ import fancy from "./lib/fancy.js";
 import { rejectReason, REJECT_TEXT } from "./lib/rules.js";
 import { planetInfo, planetPct, PLANET_BONUS } from "./lib/planets.js";
 import { standing, BUCKETS } from "./lib/standing.js";
+import { ROASTS, POOL } from "./lib/roasts.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, levelForRank, judgeLocal } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, PRESTIGE_GAMES, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
@@ -569,8 +570,10 @@ function buildChart(host, st) {
     <defs><clipPath id="chart-clip"><rect id="chart-clip-rect" x="0" y="0" width="${L}" height="170"/></clipPath>
       <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset="1" stop-color="#fff" stop-opacity=".06"/></linearGradient>
       <linearGradient id="chart-hit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5dffb0" stop-opacity=".7"/><stop offset="1" stop-color="#2f9e63" stop-opacity=".15"/></linearGradient></defs>
+    <g id="chart-body">
     <path d="${area}" fill="url(#chart-fill)" stroke="rgba(255,255,255,.75)" stroke-width="1.5"/>
     <path d="${area}" fill="url(#chart-hit)" clip-path="url(#chart-clip)"/>
+    </g>
     <path d="M${L} ${base} H${R}" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
     <g font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="rgba(255,255,255,.85)" text-anchor="middle"><text x="${L}" y="144">$0</text><text x="${(L + R) / 2}" y="144">${money(st.max / 2)}</text><text x="${R}" y="144">${money(st.max)}</text></g>
     <g id="chart-line" transform="translate(${L} 0)">
@@ -583,7 +586,7 @@ function buildChart(host, st) {
     host.querySelector("#chart-clip-rect").setAttribute("width", String(x));
     host.querySelector("#chart-bubble-text").textContent = `${pct}%`;
     const bubble = host.querySelector("#chart-bubble");
-    bubble.setAttribute("transform", `translate(${Math.max(-L + 30, Math.min(320 - x - 30, 0))} 12)`);
+    bubble.setAttribute("transform", `translate(${x < 33 ? 33 - x : x > 287 ? 287 - x : 0} 12)`); // keep the label inside the graph
   } };
 }
 function slideLine(chart, pct, ms) {
@@ -608,12 +611,14 @@ async function morphToGraph(st, animate = true) {
   const chart = buildChart(host, st);
   box.hidden = false;
   box.classList.add("graphing");
-  host.classList.add("show"); // the graph fades in while the car fades out
+  svg.classList.add("ghost"); // 1. the car turns see-through
+  if (animate) await sleep(800);
+  host.classList.add("show"); // 2. it flattens into the road line while the graph rises out of it
   svg.classList.add("fading");
   $("finale-label").textContent = animate ? $("finale-label").textContent : $("finale-label").textContent;
   if (!animate) { chart.setX(chart.target, st.pct); setStanding(status, st); return; }
   status.textContent = "📊 Where did you rank?";
-  await sleep(1100); // let the cross-fade finish
+  await sleep(1400); // let the morph finish
   sfx.whoosh(2);
   await slideLine(chart, st.pct, 2000);
   sfx.ding();
@@ -649,7 +654,7 @@ async function playFinale(fresh, dmg) {
     steps.forEach((st) => addPill(st, true));
     costEl.hidden = !bill.paid; costEl.textContent = costText;
     carBox.hidden = !bill.owed;
-    if (bill.owed) { showCar(0); status.textContent = "✨ Repaired and good as new"; }
+    if (bill.owed) { showCar(0); $("finale-car-svg").classList.add("in"); status.textContent = "✨ Repaired and good as new"; }
     after.classList.remove("pending");
     holdWallet = null; renderWallet(); scene.setDamage(0);
     finaleOn = false; syncHeaderButtons();
@@ -716,16 +721,8 @@ function renderResults(fresh = false, dmg = 0) {
   show("results");
   const t = total();
   scene.setPhase(7);
-  const crashes = today.crashes || 0;
-  $("fuel-note").textContent = `Wallet: ${money(balance())}.${crashes ? ` Crashed ${crashes} time${crashes > 1 ? "s" : ""}.` : " No crashes."}`;
-  renderRepairNote();
   $("res-day").textContent = `John Doedle #${gameNo}${state.planet > 1 ? ` · 🪐 ${planetInfo(state.planet).name}` : ""}`;
-  $("verdict").textContent =
-    t >= MAX_DAY * 0.93 ? "Peak John Doe. Perfectly ordinary."
-    : t >= MAX_DAY * 0.71 ? "Very relatable. You'd blend into any crowd."
-    : t >= MAX_DAY * 0.43 ? "Pretty average, which is the goal."
-    : t >= MAX_DAY * 0.21 ? "A bit quirky. Maybe too quirky."
-    : "You march to your own drum. Not great for this game.";
+  $("verdict").textContent = ROASTS[day] || POOL[dayIndex(day) % POOL.length]; // a new line about how average you are, every day
   const list = $("breakdown");
   list.replaceChildren();
   today.answers.forEach((a, i) => {
@@ -1204,13 +1201,6 @@ function repairCar() {
   save();
   renderWallet();
   syncRepair();
-  if (today.done) renderRepairNote();
-}
-function renderRepairNote() {
-  const bill = today.bill;
-  $("repair-note").textContent = bill && bill.owed
-    ? `Repairs: ${bill.hits} hit${bill.hits > 1 ? "s" : ""} × ${money(REPAIR_COST)} = ${money(bill.owed)}, taken from your cash.${bill.paid < bill.owed ? ` You only had ${money(bill.paid)}, so the garage wrote off the rest.` : ""}`
-    : "No damage, no repair bill.";
 }
 function syncRepair() {
   // Only an old unrepaired car (from before repairs became automatic) still needs fixing at the start of a game.

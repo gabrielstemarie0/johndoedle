@@ -462,3 +462,11 @@ main { padding-bottom: 24px; }
 .finale-status small { display: block; font: 600 11.5px system-ui, sans-serif; opacity: .8; margin-top: 1px; }
 .finale-label { padding-right: 36px; }
 .reset-notice { margin: 0 0 12px; padding: 9px 12px; border-radius: 12px; background: color-mix(in srgb, var(--accent) 20%, var(--card)); border: 1px solid var(--accent); font: 600 13.5px/1.35 system-ui, sans-serif; }
+
+/* the car turns see-through, then flattens while the graph rises out of the same spot */
+.finale-car-svg.ghost { opacity: .32 !important; filter: saturate(.4) brightness(1.15); transition: opacity .8s, filter .8s; }
+.finale-car-svg.fading { opacity: 0 !important; filter: blur(5px) saturate(.4); transform: translateY(18%) scale(1.04, .08) !important; transform-origin: 50% 100%; transition: opacity 1.3s .1s, transform 1.3s cubic-bezier(.6, 0, .35, 1), filter 1.3s; }
+#chart-body { transform-box: view-box; transform-origin: 160px 128px; transform: scaleY(.02); opacity: 0; transition: transform 1.3s cubic-bezier(.2, .8, .3, 1), opacity 1s; }
+.finale-chart.show #chart-body { transform: scaleY(1); opacity: 1; }
+.finale-chart { transition: opacity .5s; }
+@media (prefers-reduced-motion: reduce) { #chart-body { transition: none; } .finale-car-svg.ghost, .finale-car-svg.fading { transition: none; } }

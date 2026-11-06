@@ -5,6 +5,7 @@ import fancy from "../public/lib/fancy.js";
 import schedule from "../public/lib/schedule.js";
 import { normalize } from "../public/lib/text.js";
 import { usesQuestionWord } from "../public/lib/rules.js";
+import { ROASTS, POOL } from "../public/lib/roasts.js";
 
 const problems = [];
 const bad = (id, msg) => problems.push(`${id}: ${msg}`);
@@ -58,6 +59,11 @@ for (const day of Object.keys(schedule).sort()) for (const id of schedule[day]) 
 // From Nov 9, 2026 on, a day may only use questions written after the original 70 (those were all used up in the first 7 days).
 const oldIds = new Set(bank.slice(0, BASE_COUNT).map((q) => q.id));
 for (const [day, list] of Object.entries(schedule)) if (day >= "2026-11-09") for (const id of list) if (oldIds.has(id)) bad(day, `${id} is one of the original 70 questions, already used. Use a new question`);
+// The end-screen roast lines: unique, short, one per day.
+const lines = [...POOL, ...Object.values(ROASTS)];
+if (new Set(lines.map((l) => l.toLowerCase())).size !== lines.length) bad("roasts", "a roast line appears twice");
+for (const l of lines) if (l.length > 120) bad("roasts", `too long (${l.length}): ${l}`);
+for (const d of Object.keys(ROASTS)) if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) bad("roasts", `bad date ${d}`);
 console.log(`${bank.length} questions, ${Object.keys(schedule).length} scheduled days`);
 if (problems.length) { console.error("PROBLEMS:\n" + problems.join("\n")); process.exit(1); }
 console.log("all good");
