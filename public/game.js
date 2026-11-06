@@ -11,7 +11,7 @@ import { createScene } from "./scene.js";
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
 const SECONDS = 25; // the obstacle on the road reaches your bumper when this runs out
-const PER_DAY = 10;
+const PER_DAY = 7;
 const MAX_DAY = PER_DAY * 100; // a perfect day: every answer a John Doe
 const STORE_KEY = "jd:v3";
 
@@ -39,7 +39,7 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-// Everyone gets the same 10 questions on a given date. Each cycle walks the whole bank in a
+// Everyone gets the same 7 questions on a given date. Each cycle walks the whole bank in a
 // fresh shuffled order, so questions don't repeat until the bank is used up.
 function pickCards(bank, day) {
   // A day written by the nightly question writer uses exactly the questions listed for it.
@@ -326,6 +326,7 @@ function finish() {
   let fresh = false, dmg = 0;
   if (!today.done) {
     fresh = true;
+    if (today.answers.length > PER_DAY) today.answers.length = PER_DAY; // a game saved when days had 10 questions
     today.done = true;
     const yesterday = prevDay(day);
     const s = state.streak;
@@ -342,7 +343,7 @@ function finish() {
     today.carBonus = Math.round(((base + today.bonus) * today.carPct) / 100);
     today.planetPct = planetPct(state.planet); // +25% for every planet you've reached
     today.planetBonus = Math.round(((base + today.bonus + today.carBonus) * today.planetPct) / 100);
-    // A perfect game (10 of 10 John Does) counts toward the next planet once you own the Midnight Monster Tractor.
+    // A perfect game (7 of 7 John Does) counts toward the next planet once you own the Midnight Monster Tractor.
     if (state.wallet.owned.includes("monster") && today.answers.length >= PER_DAY && today.answers.every((a) => a.level === "johndoe")) {
       state.wallet.perfect = Math.min(PRESTIGE_GAMES, (state.wallet.perfect || 0) + 1);
       today.perfectCounted = true;
@@ -666,7 +667,7 @@ function renderResults(fresh = false, dmg = 0) {
 
 // Messaging apps remember a link's preview picture for a long time. Bump this number whenever the preview image changes
 // so shared links look new to them and fetch the current picture.
-const SHARE_V = 3;
+const SHARE_V = 4;
 const shareText = () =>
   `John Doedle #${gameNo} ${money(total())} of ${money(MAX_DAY)}\n${today.answers.map(emojiOf).join("")}\n${location.origin}${location.pathname}?v=${SHARE_V}`;
 
@@ -961,7 +962,7 @@ function carRow(car) {
     fill.style.width = `${owned ? (done / PRESTIGE_GAMES) * 100 : 0}%`;
     track.append(fill);
     const how = document.createElement("small");
-    how.textContent = "A perfect game is 10 out of 10 John Doe answers. Finish 10 to unlock the planet reset.";
+    how.textContent = "A perfect game is 7 out of 7 John Doe answers. Finish 10 perfect games to unlock the planet reset.";
     pr.append(lab, track, how);
     info.append(pr);
   }

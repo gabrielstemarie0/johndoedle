@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>John Doedle</title>
-  <meta name="description" content="A daily game of 10 questions. Decode a fancy-worded question and type the answer most people would give before the obstacle hits you. Earn cash and buy better cars.">
+  <meta name="description" content="A daily game of 7 questions. Decode a fancy-worded question and type the answer most people would give before the obstacle hits you. Earn cash and buy better cars.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="theme-color" content="#f2b632">
@@ -15,14 +15,14 @@
   <meta property="og:title" content="John Doedle: think like everyone else">
   <meta property="og:description" content="A daily game. You get a question, you type the answer most people would give. Answer before the obstacle hits you, earn cash, and buy better cars.">
   <meta property="og:url" content="https://thedailystation.com/johndoedle/">
-  <meta property="og:image" content="https://thedailystation.com/johndoedle/og-image-v3.png">
+  <meta property="og:image" content="https://thedailystation.com/johndoedle/og-image-v4.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="A car driving down a road toward an obstacle, with an exit sign asking, in fancy vocabulary, for a fragrant bloom given as a gift">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="John Doedle: think like everyone else">
   <meta name="twitter:description" content="A daily game. You get a question, you type the answer most people would give. Answer before the obstacle hits you, earn cash, and buy better cars.">
-  <meta name="twitter:image" content="https://thedailystation.com/johndoedle/og-image-v3.png">
+  <meta name="twitter:image" content="https://thedailystation.com/johndoedle/og-image-v4.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -69,7 +69,7 @@
     <!-- PLAY -->
     <section id="play" class="card" hidden>
       <div class="meta">
-        <span id="qnum">Question 1 of 10</span>
+        <span id="qnum">Question 1 of 7</span>
         <span id="running">$0 today</span>
       </div>
       <div class="timer" aria-hidden="true"><div class="timer-bar" id="timer-bar"></div></div>
@@ -100,7 +100,7 @@
         <div class="finale-won">
           <small id="finale-label">You won</small>
           <div class="finale-amt" id="finale-amt"><span id="total">$0</span></div>
-          <div class="finale-sub" id="finale-sub">of $1,000 possible</div>
+          <div class="finale-sub" id="finale-sub">of $700 possible</div>
           <div class="finale-pills" id="finale-pills"></div>
         </div>
         <div class="finale-car" id="finale-car" hidden>
@@ -137,10 +137,10 @@
         <li><b>Score anything and you swerve clear.</b> Run out of time, or give an answer that doesn't fit, and you crash into it. Every crash costs $25. When your run ends you watch your winnings roll in, then your car is repaired automatically and the repair bill is taken out of your total.</li>
         <li><b>The more popular your answer, the more cash you earn.</b> Only the #1 answer (<em>pepperoni</em>) is a John Doe: $100. The next 3 are Average Joes ($85), the next 5 Neighbors ($60), the next 10 Strangers ($30). Any other real answer is an Alien: $10.</li>
         <li><b>Your cash adds up every day.</b> Spend it in the <b>Shop</b> (top right) on better cars. Cars are sorted by answer level: cheap starters are Aliens, and the absurd Midnight Monster Tractor is a John Doe.</li>
-        <li><b>Every car boosts your winnings.</b> The car you have equipped adds a bonus to your total at the end of each round, from +1% for the first car up to +20,000% for the Big Green Tractor. The Midnight Monster Tractor gives no bonus: own it, finish 10 perfect games (10 out of 10 John Does) and you can reset to a new planet, keeping only the planet. Each planet adds +25% to all your winnings for good.</li>
+        <li><b>Every car boosts your winnings.</b> The car you have equipped adds a bonus to your total at the end of each round, from +1% for the first car up to +20,000% for the Big Green Tractor. The Midnight Monster Tractor gives no bonus: own it, finish 10 perfect games (7 out of 7 John Does) and you can reset to a new planet, keeping only the planet. Each planet adds +25% to all your winnings for good.</li>
         <li><b>Keep a streak.</b> Play two or more days in a row and each day starts with a cash bonus for that day's earnings (it grows every day, up to +50%) and a mystery box. A box holds a puzzle piece for one level of cars; collect enough pieces for a car and it's yours for free. Pricier levels have rarer pieces.</li>
       </ol>
-      <p class="modal-note">Ten questions a day, with a new set at midnight Eastern time. A perfect day is $1,000.</p>
+      <p class="modal-note">Seven questions a day, with a new set at midnight Eastern time. A perfect day is $700.</p>
       <form method="dialog"><button class="btn primary" id="help-ok">Let's drive</button></form>
     </div>
   </dialog>

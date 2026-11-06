@@ -48,7 +48,7 @@ for (let i = 70; i < bank.length; i++) {
 }
 for (const [day, list] of Object.entries(schedule)) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) bad(day, "schedule date must be YYYY-MM-DD");
-  if (list.length !== 10) bad(day, `schedule needs exactly 10 questions (has ${list.length})`);
+  if (list.length !== 7) bad(day, `schedule needs exactly 7 questions (has ${list.length})`);
   if (new Set(list).size !== list.length) bad(day, "schedule repeats a question");
   for (const id of list) if (!ids.has(id)) bad(day, `schedule uses unknown question ${id}`);
 }

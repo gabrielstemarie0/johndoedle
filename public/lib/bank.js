@@ -1,7 +1,7 @@
 // The full question bank: the original questions plus the compact extras.
 // Each question gets ONE fixed ranking: answers are ordered by their starting weight (ties keep the order they are
-// written in), then re-numbered 1000, 999, 998... so no two answers ever tie. Rank 1 is the John Doe, ranks 2-6 are
-// Average Joes, 7-16 Neighbors, 17-36 Strangers, and anything else that is a real answer is an Alien.
+// written in), then re-numbered 1000, 999, 998... so no two answers ever tie. Rank 1 is the John Doe, ranks 2-4 are
+// Average Joes, 5-9 Neighbors, 10-19 Strangers, and anything else that is a real answer is an Alien.
 import base from "./questions.js";
 import more from "./questions2.js";
 import daily from "./daily-questions.js";

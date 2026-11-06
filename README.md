@@ -1,6 +1,6 @@
 # John Doedle
 
-A daily game of 10 questions. Each question asks for something in fancy vocabulary (a pizza topping becomes "a savory garnish strewn atop a baked, saucy disc of cheesy dough"; `public/lib/fancy.js`) and you type the
+A daily game of 7 questions. Each question asks for something in fancy vocabulary (a pizza topping becomes "a savory garnish strewn atop a baked, saucy disc of cheesy dough"; `public/lib/fancy.js`) and you type the
 answer **most people would give**. The more popular your answer, the more points you earn
 and the further your car drives. Plain HTML/JS front end plus one Cloudflare Worker, with D1 for answer counts and
 Workers AI for checking unfamiliar answers. No build step.
@@ -49,7 +49,7 @@ John Doe for a question is always the same answer. An answer's **rank** sets its
 | ⬛ Nothing | 0 | timed out with nothing real typed |
 
 The amounts are Krillion's points (10/30/60/85/100, as listed by fan sites; check krillion.io if exact figures matter),
-flipped so the most common answer is best, and counted in **dollars**. A perfect day is $1,000. 
+flipped so the most common answer is best, and counted in **dollars**. A perfect day is $700. 
 
 Because tiers are by rank, a question needs at least 20 ranked answers for every level to be reachable (each of the
 70 questions has 38 to 55). An answer that isn't on a question's list is never ranked, however many players give it,
@@ -78,7 +78,7 @@ Every `/api/answer` call is counted in the `rate_limits` D1 table:
 | per player id, per day | 30 |
 | everyone, per day | 3000 |
 
-A real player makes 10 calls a day. When a limit is hit the API returns `429` with `Retry-After`, and the page shows a
+A real player makes 7 calls a day. When a limit is hit the API returns `429` with `Retry-After`, and the page shows a
 message and lets the player try again while time remains. Counters reset each UTC hour/day. Change the numbers in `LIMITS`.
 
 ## Cash, the car shop and puzzle pieces
@@ -110,8 +110,8 @@ Work Pickup +8%, Street Coupe +17%, Muscle Machine +35%, Rally Beast +70%, Luxe 
 Hypercar +1,194%, Rocket Car +2,424%, Golden Phantom +4,924%, Hover Car +10,000%. The Rusty Hatchback and the Big Green Tractor
 give none. At the end of a round the order is: your answers, streak bonus, car bonus, planet bonus, then repairs.
 
-**Planets.** The tractor is the prestige car. Once you own it, every perfect game (10/10 John Doe) fills a 10-game bar in the
-shop. At 10/10 a Reset button appears: it sends you back to day 1 with no money and only the starter car, on the next planet
+**Planets.** The tractor is the prestige car. Once you own it, every perfect game (7/7 John Doe) fills a 10-game bar in the
+shop. At 10/10 games a Reset button appears: it sends you back to day 1 with no money and only the starter car, on the next planet
 (Mars, the Moon, Venus...). The planet number is the only thing kept. Each planet gives a new look to the road and +25% on all
 winnings, permanently. Prices, bonuses and planets are in `public/cars.js` and `public/lib/planets.js`.
 
@@ -131,7 +131,7 @@ real economy to protect. Prices live in `public/cars.js`.
   buttons (including the shop) are disabled while a question is being timed, so they can't be used to stall the clock.
 - **Stats** dialog (the chart button): games played, average, best, streak, a bar chart of the last 14 games and how
   often the player got each level, plus lifetime earnings and crashes. Computed from this browser's saved games only.
-- **Link previews**: Open Graph and Twitter tags in `public/index.html` plus `public/og-image-v3.png` (1200x630, a staged
+- **Link previews**: Open Graph and Twitter tags in `public/index.html` plus `public/og-image-v4.png` (1200x630, a staged
   screenshot of the game). The tag URLs are absolute, so update them if you add a custom domain.
 - The scene is hidden from screen readers (the numeric countdown and the result text carry the same
   information). With reduced motion the road stops scrolling and there is no shake, smoke or boost; the obstacle
@@ -153,8 +153,8 @@ This is a **Workers** project (not Pages). `wrangler.toml` describes everything,
 Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then `npx wrangler dev --local`.
 
 ## Daily questions
-Based on the US Eastern date (the day rolls over at midnight in New York, EST or EDT). Everyone gets the same 10. The bank is shuffled in cycles, so 70 questions give 7 days with no
-repeats. To add a question, add it to `public/lib/questions2.js` (compact `build("q57", "Name a ...", "answer|alias,answer,...")`, most popular first; or append to `questions.js` as `[answer, weight, [aliases]]`) with the next id (`q57`, ...): a prompt such as
+Based on the US Eastern date (the day rolls over at midnight in New York, EST or EDT). Everyone gets the same 7. The original 70 questions were used once over the first days (Nov 2-8, 2026); from Nov 9 every day has 7 brand-new
+questions written the night before (`public/lib/schedule.js`, `daily-questions.js`, checked by `node scripts/check-questions.mjs`), so nothing repeats. To add a question, add it to `public/lib/questions2.js` (compact `build("q57", "Name a ...", "answer|alias,answer,...")`, most popular first; or append to `questions.js` as `[answer, weight, [aliases]]`) with the next id (`q57`, ...): a prompt such as
 "Name a ..." and at least 40 answers as `[answer, weight, [aliases]]`, listed from most to least popular (the most
 popular is 100; the weights only set the order). Fewer than 20 answers means the Stranger tier can't be filled.
 Game #1 is `LAUNCH_DAY` in `public/game.js`.

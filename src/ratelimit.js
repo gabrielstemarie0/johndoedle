@@ -1,5 +1,5 @@
 // Rate limits, counted in D1. Each judgement costs AI usage, so cap it per network address,
-// per player id, and globally. A real player makes about 10 judgements a day.
+// per player id, and globally. A real player makes about 7 judgements a day.
 export const LIMITS = {
   ipHour: 60, // per network address, per hour (shared wifi: a whole household or classroom)
   ipDay: 300, // per network address, per day
