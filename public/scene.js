@@ -22,7 +22,7 @@ const PHASES = [
 const SUN = [[0.1, 0.42], [0.24, 0.26], [0.4, 0.14], [0.56, 0.08], [0.72, 0.14], [0.84, 0.26], [0.9, 0.4], [0.74, 0.12]]; // [x, y as share of sky]
 
 const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-const toHex = (a) => "#" + a.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
+const toHex = (a) => "#" + a.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
 const mixHex = (a, b, t) => { const A = rgb(a), B = rgb(b); return toHex(A.map((v, i) => v + (B[i] - v) * t)); };
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const ease = (t) => t * t * (3 - 2 * t);

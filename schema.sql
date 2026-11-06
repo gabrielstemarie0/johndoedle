@@ -26,3 +26,12 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   count  INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (key, bucket)
 );
+
+-- One row per player per day: the day's answer total (before car, streak and planet bonuses), used for "you beat X% of players".
+CREATE TABLE IF NOT EXISTS daily_scores (
+  day    TEXT NOT NULL,
+  player TEXT NOT NULL,
+  score  INTEGER NOT NULL,
+  PRIMARY KEY (day, player)
+);
+CREATE INDEX IF NOT EXISTS daily_scores_day ON daily_scores (day);

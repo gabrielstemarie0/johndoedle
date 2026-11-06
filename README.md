@@ -115,6 +115,12 @@ shop. At 10/10 games a Reset button appears: it sends you back to day 1 with no 
 (Mars, the Moon, Venus...). The planet number is the only thing kept. Each planet gives a new look to the road and +25% on all
 winnings, permanently. Prices, bonuses and planets are in `public/cars.js` and `public/lib/planets.js`.
 
+**Where you ranked.** After the repair, the end-of-game car fades into a see-through graph of the day's scores, and a line slides
+across to where your score falls ("You beat 72% of players today"), with a whoosh sound. Each player's day total (answers only,
+before car, streak and planet bonuses) is stored once in the `daily_scores` table through `POST /api/score`; the first score a
+player sends for a day is the one kept. Until many people play, the real scores are blended with an estimated "typical player"
+distribution (`public/lib/standing.js`), and the screen says so.
+
 **Streak rewards.** Finish a game and come back the next day (a one-day streak doesn't count) and the day starts with two
 rewards: a **cash bonus** on that day's earnings (+10% on day 2, +5% more each day, up to +50%) and a **mystery box**. A box
 holds one puzzle piece of a random *level*, not of a particular car; put it toward any car of that level in the shop. The

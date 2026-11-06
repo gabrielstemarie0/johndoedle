@@ -446,3 +446,18 @@ main { padding-bottom: 24px; }
 .htp { padding-left: 22px; margin: 0 0 10px; }
 .htp li { margin: 8px 0; }
 .htp-note { color: var(--muted); margin: 6px 0 14px; }
+
+/* the car turns into a see-through graph of how you ranked */
+.finale-car { transition: background .8s; }
+.finale-car.graphing { background: linear-gradient(rgba(16, 22, 40, .62), rgba(16, 22, 40, .62)), linear-gradient(#cfe7ff, #e8f3ff 55%, #8e949f 55%, #6e7480); }
+.finale-car-svg { transition: opacity 1s, filter 1s, transform .6s; }
+.finale-car-svg.fading { opacity: 0 !important; filter: blur(6px); transform: scale(.96) !important; }
+.finale-chart { position: absolute; left: 8px; right: 8px; top: 8px; opacity: 0; transition: opacity 1s .2s; pointer-events: none; }
+.finale-chart.show { opacity: 1; }
+.finale-chart svg { display: block; overflow: visible; }
+.finale-chart.done #chart-bubble-bg { fill: #5dffb0; }
+.finale-car.graphing .finale-status { color: #fff; }
+@media (prefers-reduced-motion: reduce) { .finale-car-svg, .finale-chart, .finale-car { transition: none; } }
+.finale-car.graphing .finale-car-svg { height: 166px; }
+.finale-status small { display: block; font: 600 11.5px system-ui, sans-serif; opacity: .8; margin-top: 1px; }
+.finale-label { padding-right: 36px; }

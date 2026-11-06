@@ -3,6 +3,7 @@ import schedule from "./lib/schedule.js";
 import fancy from "./lib/fancy.js";
 import { rejectReason, REJECT_TEXT } from "./lib/rules.js";
 import { planetInfo, planetPct, PLANET_BONUS } from "./lib/planets.js";
+import { standing, BUCKETS } from "./lib/standing.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
 import { LEVELS, IMPOSTER, NOTHING, levelById, levelForRank, judgeLocal } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, PRESTIGE_GAMES, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
@@ -437,6 +438,18 @@ const sfx = {
   poof() { noise(0.4, { vol: 0.28, freq: 700, type: "lowpass" }); tone(240, 0.3, { vol: 0.22, slide: 0.35 }); },
   ding() { tone(1318, 0.5, { vol: 0.2 }); tone(1760, 0.8, { vol: 0.18, at: 0.12 }); },
   tada() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.4, { type: "triangle", vol: 0.16, at: i * 0.09 })); },
+  whoosh(dur = 1.8) { // a rising swoosh while the score line slides across the graph
+    if (!actx || muted) return;
+    const t = actx.currentTime, len = Math.floor(actx.sampleRate * dur);
+    const buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+    src.buffer = buf; f.type = "bandpass"; f.Q.value = 3;
+    f.frequency.setValueAtTime(350, t); f.frequency.exponentialRampToValueAtTime(3200, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.28, t + dur * 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g).connect(actx.destination); src.start(t);
+    tone(180, dur, { type: "sine", vol: 0.07, slide: 5 });
+  },
   cash() { tone(1568, 0.1, { type: "square", vol: 0.08 }); tone(2093, 0.4, { type: "square", vol: 0.08, at: 0.09 }); },
 };
 const FIGHT = [["CLANG!", "clank"], ["BONK!", "bonk"], ["ZZZT!", "zap"], ["TINK!", "clank"], ["WHACK!", "bonk"], ["BRRRR!", "drill"], ["CLUNK!", "bonk"], ["CLICK-CLICK!", "ratchet"]];
@@ -497,6 +510,94 @@ async function repairScuffle(host, layers, box, showClean) {
   host.classList.remove("fighting");
 }
 
+// ---------- the "where you rank" graph that the car morphs into ----------
+async function loadStanding() {
+  try {
+    const res = await fetch("/api/score", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ player: state.player, day, score: total() }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const mine = Number.isInteger(data.score) ? data.score : total(); // the server keeps your first score for the day
+    const st = standing(mine, data.counts, PER_DAY);
+    st.score = mine;
+    st.pct = Math.min(99, st.pct); // never claim you beat literally everyone
+    today.pct = st.pct;
+    save();
+    return st;
+  } catch { return null; }
+}
+// smooth curve through the bar tops
+function curvePath(pts) {
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    d += ` C${p1[0] + (p2[0] - p0[0]) / 6} ${p1[1] + (p2[1] - p0[1]) / 6}, ${p2[0] - (p3[0] - p1[0]) / 6} ${p2[1] - (p3[1] - p1[1]) / 6}, ${p2[0]} ${p2[1]}`;
+  }
+  return d;
+}
+function buildChart(host, st) {
+  const L = 16, R = 304, W = R - L, base = 128, top = 26;
+  const maxBar = Math.max(...st.bars);
+  const pts = st.bars.map((v, i) => [L + ((i + 0.5) / BUCKETS) * W, base - (v / maxBar) * (base - top)]);
+  const curve = curvePath([[L, base], ...pts, [R, base]]);
+  const area = `${curve} L${R} ${base} L${L} ${base} Z`;
+  const target = L + ((st.score ?? total()) / st.max) * W;
+  host.innerHTML = `<svg viewBox="0 0 320 170" width="100%">
+    <defs><clipPath id="chart-clip"><rect id="chart-clip-rect" x="0" y="0" width="${L}" height="170"/></clipPath>
+      <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset="1" stop-color="#fff" stop-opacity=".06"/></linearGradient>
+      <linearGradient id="chart-hit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5dffb0" stop-opacity=".7"/><stop offset="1" stop-color="#2f9e63" stop-opacity=".15"/></linearGradient></defs>
+    <path d="${area}" fill="url(#chart-fill)" stroke="rgba(255,255,255,.75)" stroke-width="1.5"/>
+    <path d="${area}" fill="url(#chart-hit)" clip-path="url(#chart-clip)"/>
+    <path d="M${L} ${base} H${R}" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+    <g font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="rgba(255,255,255,.85)" text-anchor="middle"><text x="${L}" y="144">$0</text><text x="${(L + R) / 2}" y="144">${money(st.max / 2)}</text><text x="${R}" y="144">${money(st.max)}</text></g>
+    <g id="chart-line" transform="translate(${L} 0)">
+      <line x1="0" y1="14" x2="0" y2="${base}" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="0" cy="14" r="5" fill="#ffd23f" stroke="#fff" stroke-width="2"/>
+      <g id="chart-bubble"><rect id="chart-bubble-bg" x="-30" y="-14" width="60" height="19" rx="9" fill="#ffd23f"/><text id="chart-bubble-text" x="0" y="-1" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="900" fill="#1d2433">0%</text></g>
+    </g></svg>`;
+  return { L, R, target, setX(x, pct) {
+    host.querySelector("#chart-line").setAttribute("transform", `translate(${x} 0)`);
+    host.querySelector("#chart-clip-rect").setAttribute("width", String(x));
+    host.querySelector("#chart-bubble-text").textContent = `${pct}%`;
+    const bubble = host.querySelector("#chart-bubble");
+    bubble.setAttribute("transform", `translate(${Math.max(-L + 30, Math.min(320 - x - 30, 0))} 12)`);
+  } };
+}
+function slideLine(chart, pct, ms) {
+  return new Promise((res) => {
+    const t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / ms), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; // ease in and out
+      chart.setX(chart.L + (chart.target - chart.L) * e, Math.round(pct * e));
+      if (k < 1) requestAnimationFrame(step); else res();
+    };
+    requestAnimationFrame(step);
+  });
+}
+const standingNote = (st) => st.players < 30 ? `${st.players} real player${st.players === 1 ? "" : "s"} so far, plus typical players` : `out of ${st.players} players`;
+const setStanding = (el, st) => { el.innerHTML = ""; el.append(document.createTextNode(`📊 You beat ${st.pct}% of players today`)); const sm = document.createElement("small"); sm.textContent = standingNote(st); el.append(sm); };
+async function morphToGraph(st, animate = true) {
+  const box = $("finale-car"), svg = $("finale-car-svg"), host = $("finale-chart"), status = $("finale-status");
+  const chart = buildChart(host, st);
+  box.hidden = false;
+  box.classList.add("graphing");
+  host.classList.add("show"); // the graph fades in while the car fades out
+  svg.classList.add("fading");
+  $("finale-label").textContent = animate ? $("finale-label").textContent : $("finale-label").textContent;
+  if (!animate) { chart.setX(chart.target, st.pct); setStanding(status, st); return; }
+  status.textContent = "📊 Where did you rank?";
+  await sleep(1100); // let the cross-fade finish
+  sfx.whoosh(2);
+  await slideLine(chart, st.pct, 2000);
+  sfx.ding();
+  host.classList.add("done");
+  setStanding(status, st);
+  await sleep(1400);
+}
+
 async function playFinale(fresh, dmg) {
   const t = total(), bill = today.bill || { owed: 0, paid: 0, hits: 0 };
   // Everything that adds to today's total, in the order it is applied.
@@ -520,7 +621,7 @@ async function playFinale(fresh, dmg) {
   // Not a fresh finish (reload), or reduced motion: just show where things ended up.
   if (!fresh || reduceMotion()) {
     amt.textContent = money(net);
-    $("finale-label").textContent = bill.paid ? "Cash earned today (after repairs)" : "You won";
+    $("finale-label").textContent = bill.paid ? "Earned today, after repairs" : "You won";
     steps.forEach((st) => addPill(st, true));
     costEl.hidden = !bill.paid; costEl.textContent = costText;
     carBox.hidden = !bill.owed;
@@ -528,9 +629,11 @@ async function playFinale(fresh, dmg) {
     after.classList.remove("pending");
     holdWallet = null; renderWallet(); scene.setDamage(0);
     finaleOn = false; syncHeaderButtons();
+    loadStanding().then((st) => { if (st) morphToGraph(st, false); });
     return;
   }
 
+  const standingPromise = loadStanding();
   finaleOn = true; syncHeaderButtons();
   after.classList.add("pending");
   amt.textContent = "$0";
@@ -568,11 +671,14 @@ async function playFinale(fresh, dmg) {
     await sleep(600);
     sfx.cash();
     costEl.hidden = false; costEl.textContent = costText; costEl.classList.add("in");
-    $("finale-label").textContent = "Cash earned today (after repairs)";
+    $("finale-label").textContent = "Earned today, after repairs";
     amt.classList.add("down");
     await countTo(amt, win, net, 1200);
     await sleep(500);
   }
+  // 5. the car morphs into a see-through graph of today's scores, and a line slides to where you ranked
+  const st = await Promise.race([standingPromise, sleep(4500).then(() => null)]);
+  if (st) await morphToGraph(st);
   holdWallet = null; renderWallet();
   after.classList.remove("pending");
   finaleOn = false; syncHeaderButtons();
