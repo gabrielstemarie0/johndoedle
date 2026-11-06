@@ -832,19 +832,9 @@ function countdown() {
 }
 
 // ---------- dialogs: how to play, stats, shop ----------
-const helpSeen = () => { try { return localStorage.getItem("jd:help") === "1"; } catch { return true; } };
 function openDialog(d) { if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", ""); }
-let afterHelp = null;
-function openHelp(then = null) {
-  afterHelp = then;
-  $("help-ok").textContent = then ? "Let's drive" : "Got it";
-  openDialog($("help-dialog"));
-}
-$("help-dialog").addEventListener("close", () => {
-  try { localStorage.setItem("jd:help", "1"); } catch {}
-  const next = afterHelp; afterHelp = null;
-  if (next) next();
-});
+// The how-to-play dialog only opens from the "?" button; the start screen already explains the game.
+function openHelp() { openDialog($("help-dialog")); }
 // Don't let the stats/help/shop buttons be used to stall the clock during a timed question.
 function syncHeaderButtons() {
   const timing = !views.play.hidden && !locked && $("feedback").hidden;
@@ -1217,8 +1207,7 @@ function syncRepair() {
 }
 $("start").addEventListener("click", () => {
   if (state.wallet.hits) repairCar();
-  if (!helpSeen()) openHelp(showCard); // first visit: explain the game, then start
-  else showCard();
+  showCard();
 });
 $("share").addEventListener("click", copyShare);
 const syncMute = () => { $("mute-btn").textContent = muted ? "🔇" : "🔊"; $("mute-btn").setAttribute("aria-pressed", String(muted)); };
