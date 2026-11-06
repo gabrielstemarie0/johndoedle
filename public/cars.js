@@ -1,5 +1,5 @@
 // The garage: every car you can buy, drawn from behind (third person, like you're the driver looking ahead).
-// Prices run from a free starter to an absurdly expensive tractor. Art is inline SVG, no image files.
+// Prices run from a free starter to an absurdly expensive monster tractor. Art is inline SVG, no image files.
 
 export const CARS = [
   { id: "rusty", name: "Rusty Hatchback", price: 0, level: "alien", pieces: 2, blurb: "Gets you there. Mostly.", shape: "hatch", color: "#a9733c", rust: true },
@@ -17,7 +17,8 @@ export const CARS = [
   { id: "rocket", name: "Rocket Car", price: 6500000, level: "joe", pieces: 6, blurb: "Technically a missile with seats.", shape: "rocket", color: "#c9d1dc", accent: "#e8453c" },
   { id: "gold", name: "Golden Phantom", price: 30000000, level: "joe", pieces: 6, blurb: "Solid gold. Do not park in the rain.", shape: "super", color: "#ffcf40", gold: true, spoiler: "wing", exhaust: 4, light: "led" },
   { id: "hover", name: "Hover Car", price: 150000000, level: "johndoe", pieces: 6, blurb: "Roads are for people who can't float.", shape: "hover", color: "#e9fbff", neon: "#38f0ff" },
-  { id: "tractor", name: "Big Green Tractor", price: 1000000000, level: "johndoe", pieces: 7, blurb: "No bonus. Own it, then pull off 10 perfect games to move to the next planet.", shape: "tractor", color: "#2f8f3a", accent: "#f2c230" },
+  { id: "tractor", name: "Big Green Tractor", price: 1000000000, level: "johndoe", pieces: 7, blurb: "Plows through the competition.", shape: "tractor", color: "#2f8f3a", accent: "#f4f4f2" },
+  { id: "monster", name: "Midnight Monster Tractor", price: 5000000000, level: "johndoe", pieces: 8, blurb: "No bonus. Own it, then pull off 10 perfect games to move to the next planet.", shape: "monster", color: "#1f2329", accent: "#d9a520" },
 ];
 // Cars are sorted into the five answer levels. Alien holds the cheap starters, John Doe the most expensive cars.
 // `pieces` is how many puzzle pieces of that level unlock the car without paying (cheaper cars need fewer).
@@ -26,10 +27,10 @@ export const carsOfLevel = (level) => CARS.filter((c) => c.level === level);
 // Mystery box odds (percent): the pricier the level's cars, the rarer its puzzle pieces.
 export const PIECE_ODDS = { alien: 50, stranger: 28, neighbor: 14, joe: 6, johndoe: 2 };
 // Winnings bonus (percent) for the equipped car, added at the end of every round. Evenly spaced from +1% to +10,000%.
-// The Rusty Hatchback and the prestige Big Green Tractor give none.
-const MULT = { commuter: 1, zippy: 2, wagon: 4, pickup: 8, coupe: 17, muscle: 35, rally: 70, luxe: 143, sports: 289, super: 588, hyper: 1194, rocket: 2424, gold: 4924, hover: 10000 };
+// The Rusty Hatchback and the prestige Midnight Monster Tractor give none.
+const MULT = { commuter: 1, zippy: 2, wagon: 4, pickup: 8, coupe: 17, muscle: 35, rally: 70, luxe: 143, sports: 289, super: 588, hyper: 1194, rocket: 2424, gold: 4924, hover: 10000, tractor: 20000 };
 CARS.forEach((c) => { c.mult = MULT[c.id] || 0; });
-export const PRESTIGE_GAMES = 10; // perfect games (10/10 John Doe) with the tractor needed to reset to the next planet
+export const PRESTIGE_GAMES = 10; // perfect games (10/10 John Doe) with the monster tractor needed to reset to the next planet
 export const carById = (id) => CARS.find((c) => c.id === id) || CARS[0];
 
 // "$1,240", "$6.5M", "$1B"
@@ -194,11 +195,29 @@ function tractor(car, damage) {
     ${damageMarks({ bx: 50, bt: 66, bb: 96, ct: 36 }, damage)}`;
 }
 
+// Lifted monster tractor from behind: giant gold-rimmed tires, roll bar, twin stacks.
+function monster(car, damage) {
+  const c = car.color, y = car.accent;
+  const tire = (x) => `<rect x="${x}" y="30" width="46" height="92" rx="16" fill="#0d0f13"/>
+    ${[40, 52, 64, 76, 88, 100, 112].map((yy) => `<rect x="${x + 3}" y="${yy}" width="40" height="5" rx="2" fill="#2b2f3a"/>`).join("")}
+    <circle cx="${x + 23}" cy="76" r="13" fill="${y}"/><circle cx="${x + 23}" cy="76" r="5" fill="${dark(y, 0.45)}"/>`;
+  return `<rect x="70" y="4" width="8" height="30" rx="3" fill="${y}"/><rect x="122" y="4" width="8" height="30" rx="3" fill="${y}"/>
+    <rect x="68" y="2" width="12" height="5" rx="2" fill="#14161c"/><rect x="120" y="2" width="12" height="5" rx="2" fill="#14161c"/>
+    <path d="M66 24 V16 Q66 10 72 10 H128 Q134 10 134 16 V24" stroke="${dark(y, 0.2)}" stroke-width="5" fill="none"/>
+    <rect x="64" y="22" width="72" height="40" rx="6" fill="${c}"/><rect x="72" y="28" width="56" height="26" rx="4" fill="#9fe3ff" opacity=".8"/>
+    <rect x="98" y="28" width="4" height="26" fill="${dark(c, 0.3)}"/>
+    <rect x="46" y="56" width="108" height="30" rx="6" fill="${c}"/><rect x="46" y="76" width="108" height="5" fill="${y}"/>
+    <rect x="86" y="86" width="28" height="22" fill="#2b2f3a"/><rect x="70" y="100" width="60" height="6" rx="3" fill="#3a3f4b"/>
+    ${tire(4)}${tire(150)}
+    <rect x="58" y="62" width="10" height="9" rx="2" fill="${damage >= 2 ? "#4a1818" : "#ff3b3b"}"/><rect x="132" y="62" width="10" height="9" rx="2" fill="#ff3b3b"/>
+    ${damageMarks({ bx: 46, bt: 56, bb: 86, ct: 28 }, damage)}`;
+}
+
 // The car as an SVG string. damage 0..4 adds cracks, scorch and a dead tail light.
 export function carSVG(car, { damage = 0 } = {}) {
   const c = typeof car === "string" ? carById(car) : car;
   const d = Math.max(0, Math.min(4, damage | 0));
-  const inner = c.shape === "pickup" ? pickup(c, d) : c.shape === "rocket" ? rocket(c, d) : c.shape === "hover" ? hover(c, d) : c.shape === "tractor" ? tractor(c, d) : normalCar(c, d);
+  const inner = c.shape === "pickup" ? pickup(c, d) : c.shape === "rocket" ? rocket(c, d) : c.shape === "hover" ? hover(c, d) : c.shape === "tractor" ? tractor(c, d) : c.shape === "monster" ? monster(c, d) : normalCar(c, d);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 128" width="200" height="128">${inner}</svg>`;
 }
 export const carDataURI = (car, opts) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(carSVG(car, opts));
@@ -247,6 +266,14 @@ export function carSideSVG(car, { damage = 0 } = {}) {
       <path d="M150 44 H214 Q222 44 222 52 V66 H150 Z" fill="${c.color}"/><rect x="150" y="62" width="74" height="6" fill="${c.accent}"/>
       <circle cx="82" cy="62" r="30" fill="#14161c"/><circle cx="82" cy="62" r="18" fill="${c.accent}"/><circle cx="82" cy="62" r="6" fill="${dark(c.accent, 0.4)}"/>
       <circle cx="196" cy="74" r="16" fill="#14161c"/><circle cx="196" cy="74" r="8" fill="${c.accent}"/>${sideDamage(224, d)}`;
+  } else if (c.shape === "monster") {
+    const big = (x) => `<circle cx="${x}" cy="68" r="27" fill="#0d0f13"/><circle cx="${x}" cy="68" r="21" fill="none" stroke="#2b2f3a" stroke-width="4" stroke-dasharray="5 4"/><circle cx="${x}" cy="68" r="12" fill="${c.accent}"/><circle cx="${x}" cy="68" r="4" fill="${dark(c.accent, 0.45)}"/>`;
+    inner = `<rect x="70" y="2" width="7" height="22" rx="3" fill="${c.accent}"/>
+      <path d="M96 14 V8 Q96 4 100 4 H150 Q154 4 154 8 V14" stroke="${dark(c.accent, 0.2)}" stroke-width="4" fill="none"/>
+      <rect x="94" y="12" width="64" height="26" rx="4" fill="${c.color}"/><rect x="100" y="17" width="22" height="16" rx="2" fill="#9fe3ff" opacity=".85"/><rect x="126" y="17" width="26" height="16" rx="2" fill="#9fe3ff" opacity=".85"/>
+      <path d="M40 36 H214 Q224 36 224 46 V52 H40 Z" fill="${c.color}"/><rect x="40" y="48" width="186" height="4" fill="${c.accent}"/>
+      <rect x="56" y="52" width="150" height="6" fill="#2b2f3a"/>
+      <rect x="216" y="40" width="8" height="6" rx="2" fill="#fff6c8"/>${big(70)}${big(190)}${sideDamage(224, d)}`;
   } else {
     const s = SIDE[c.shape] || SIDE.sedan;
     const body = c.shape === "pickup"

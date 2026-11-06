@@ -334,8 +334,8 @@ function finish() {
     today.carBonus = Math.round(((base + today.bonus) * today.carPct) / 100);
     today.planetPct = planetPct(state.planet); // +25% for every planet you've reached
     today.planetBonus = Math.round(((base + today.bonus + today.carBonus) * today.planetPct) / 100);
-    // A perfect game (10 of 10 John Does) counts toward the next planet once you own the Big Green Tractor.
-    if (state.wallet.owned.includes("tractor") && today.answers.length >= PER_DAY && today.answers.every((a) => a.level === "johndoe")) {
+    // A perfect game (10 of 10 John Does) counts toward the next planet once you own the Midnight Monster Tractor.
+    if (state.wallet.owned.includes("monster") && today.answers.length >= PER_DAY && today.answers.every((a) => a.level === "johndoe")) {
       state.wallet.perfect = Math.min(PRESTIGE_GAMES, (state.wallet.perfect || 0) + 1);
       today.perfectCounted = true;
     }
@@ -940,13 +940,13 @@ function carRow(car) {
   mult.className = "shop-mult";
   mult.textContent = car.mult ? `💰 +${car.mult.toLocaleString("en-US")}% on your winnings` : "No winnings bonus";
   info.append(name, blurb, price, mult);
-  if (car.id === "tractor") {
+  if (car.id === "monster") {
     const done = w.perfect || 0;
     const pr = document.createElement("div");
     pr.className = "prestige" + (owned ? "" : " locked");
     const lab = document.createElement("div");
     lab.className = "prestige-label";
-    lab.textContent = owned ? `🪐 Perfect games: ${done}/${PRESTIGE_GAMES}` : `🔒 Perfect games: 0/${PRESTIGE_GAMES} (own the tractor to start)`;
+    lab.textContent = owned ? `🪐 Perfect games: ${done}/${PRESTIGE_GAMES}` : `🔒 Perfect games: 0/${PRESTIGE_GAMES} (own the Monster Tractor to start)`;
     const track = document.createElement("div");
     track.className = "prestige-track";
     const fill = document.createElement("i");
@@ -973,7 +973,7 @@ function carRow(car) {
     if (fn) b.addEventListener("click", fn);
     acts.append(b);
   };
-  if (car.id === "tractor" && owned && (w.perfect || 0) >= PRESTIGE_GAMES) mk(`🪐 Reset to ${planetInfo((state.planet || 1) + 1).name}`, "primary", resetToNextPlanet);
+  if (car.id === "monster" && owned && (w.perfect || 0) >= PRESTIGE_GAMES) mk(`🪐 Reset to ${planetInfo((state.planet || 1) + 1).name}`, "primary", resetToNextPlanet);
   if (equipped) mk("Equipped", "", null, true);
   else if (owned) mk("Equip", "", () => equip(car));
   else {
@@ -1026,7 +1026,7 @@ function renderShopCta() {
   if (w.boxes) bits.push(`🎁 ${w.boxes} mystery box${w.boxes > 1 ? "es" : ""} to open`);
   if (canBuy) bits.push(`You can afford the ${next.name}!`);
   else if (next) bits.push(`Next car: ${next.name} (${money(next.price)})`);
-  const resetReady = w.owned.includes("tractor") && (w.perfect || 0) >= PRESTIGE_GAMES;
+  const resetReady = w.owned.includes("monster") && (w.perfect || 0) >= PRESTIGE_GAMES;
   if (resetReady) bits.unshift("🪐 Planet reset ready!");
   const hot = canBuy || resetReady || w.boxes > 0 || LEVEL_ORDER.some((l) => w.pieces[l] > 0);
   document.querySelectorAll("[data-shop-cta]").forEach((b) => {
