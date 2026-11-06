@@ -1,4 +1,5 @@
-import questions from "./lib/bank.js";
+import questions, { BASE_COUNT } from "./lib/bank.js";
+import schedule from "./lib/schedule.js";
 import fancy from "./lib/fancy.js";
 import { rejectReason, REJECT_TEXT } from "./lib/rules.js";
 import { planetInfo, planetPct, PLANET_BONUS } from "./lib/planets.js";
@@ -41,6 +42,13 @@ function mulberry32(seed) {
 // Everyone gets the same 10 questions on a given date. Each cycle walks the whole bank in a
 // fresh shuffled order, so questions don't repeat until the bank is used up.
 function pickCards(bank, day) {
+  // A day written by the nightly question writer uses exactly the questions listed for it.
+  const planned = schedule[day];
+  if (planned) {
+    const picked = planned.map((id) => bank.find((q) => q.id === id)).filter(Boolean);
+    if (picked.length === PER_DAY) return picked;
+  }
+  bank = bank.slice(0, BASE_COUNT); // otherwise rotate through the original questions, so newer ones never reshuffle other days
   const idx = dayIndex(day);
   const daysPerCycle = Math.max(1, Math.floor(bank.length / PER_DAY));
   const rand = mulberry32(Math.floor(idx / daysPerCycle) + 1);

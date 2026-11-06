@@ -4,6 +4,7 @@
 // Average Joes, 7-16 Neighbors, 17-36 Strangers, and anything else that is a real answer is an Alien.
 import base from "./questions.js";
 import more from "./questions2.js";
+import daily from "./daily-questions.js";
 
 const fix = (q) => ({
   ...q,
@@ -13,4 +14,5 @@ const fix = (q) => ({
     .map(([a], i) => (a[2] ? [a[0], 1000 - i, a[2]] : [a[0], 1000 - i])),
 });
 
-export default [...base, ...more].map(fix);
+export const BASE_COUNT = 70; // the original rotation; questions after these only appear on days listed in schedule.js
+export default [...base, ...more, ...daily].map(fix);

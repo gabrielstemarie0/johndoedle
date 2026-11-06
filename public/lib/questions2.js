@@ -1,7 +1,7 @@
 // More daily questions, written compactly. Each list is ordered from most to least popular answer;
 // "label|alias|alias" gives extra accepted spellings or names. Weights decay with rank (the order is what scores).
 import { normalize } from "./text.js";
-const build = (id, prompt, list) => {
+export const build = (id, prompt, list) => {
   const seen = new Set(); // a name can only belong to one answer
   const answers = [];
   for (const raw of list.split(",")) {
