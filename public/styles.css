@@ -470,3 +470,13 @@ main { padding-bottom: 24px; }
 .finale-chart.show #chart-body { transform: scaleY(1); opacity: 1; }
 .finale-chart { transition: opacity .5s; }
 @media (prefers-reduced-motion: reduce) { #chart-body { transition: none; } .finale-car-svg.ghost, .finale-car-svg.fading { transition: none; } }
+
+/* end screen: back to The Daily Station, top left where the logo normally is */
+.home-btn { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 4px 8px; border-radius: 9px; background: #fff; color: #1d2433; text-decoration: none; border: 2px solid #1d2433; box-shadow: 0 4px 10px rgba(0, 0, 0, .25); font: 900 8.5px/1.1 system-ui, -apple-system, sans-serif; letter-spacing: .05em; white-space: nowrap; }
+.home-btn span + span { font-size: 10px; letter-spacing: .06em; }
+.home-btn[hidden] { display: none; }
+.home-btn:hover, .home-btn:focus-visible { background: var(--accent); }
+@media (prefers-color-scheme: dark) { .home-btn { background: #f1eee6; } }
+@media (max-width: 430px) { body.on-results .shop-word { display: none; } }
+@media (max-width: 380px) { body.on-results .chips { gap: 4px; } body.on-results .chip { padding-left: 7px; padding-right: 7px; } body.on-results .chip-btn { min-width: 30px; } }
+@media (max-width: 340px) { body.on-results #streak-chip { display: none; } }

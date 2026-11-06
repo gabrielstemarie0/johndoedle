@@ -167,7 +167,13 @@ async function judge(question, answer) {
 }
 
 // ---------- UI helpers ----------
-const show = (name) => { for (const [k, el] of Object.entries(views)) el.hidden = k !== name; };
+const show = (name) => {
+  for (const [k, el] of Object.entries(views)) el.hidden = k !== name;
+  // on the end screen the logo makes way for a button back to The Daily Station
+  $("home-btn").hidden = name !== "results";
+  document.body.classList.toggle("on-results", name === "results");
+  document.querySelector(".brand").hidden = name === "results";
+};
 const fmt = (p) => (p > 0 ? `+${money(p)}` : "$0");
 function updateStreak() {
   const yesterday = prevDay(day);
