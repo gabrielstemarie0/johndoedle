@@ -30,16 +30,21 @@ export const PIECE_ODDS = { alien: 50, stranger: 28, neighbor: 14, joe: 6, johnd
 // The Rusty Hatchback and the prestige Midnight Monster Tractor give none.
 const MULT = { commuter: 1, zippy: 2, wagon: 4, pickup: 8, coupe: 17, muscle: 35, rally: 70, luxe: 143, sports: 289, super: 588, hyper: 1194, rocket: 2424, gold: 4924, hover: 10000, tractor: 20000 };
 CARS.forEach((c) => { c.mult = MULT[c.id] || 0; });
+// What one crash costs in repairs with this car: a steady climb (about +68% per car) from $25 to $100,000.
+// If a repair costs more than your cash, your cash goes negative (you're in debt).
+const REPAIR = { rusty: 25, commuter: 42, zippy: 71, wagon: 118, pickup: 199, coupe: 334, muscle: 561, rally: 942, luxe: 1581, sports: 2655, super: 4459, hyper: 7488, rocket: 12574, gold: 21116, hover: 35460, tractor: 59549, monster: 100000 };
+CARS.forEach((c) => { c.repair = REPAIR[c.id] || 25; });
 export const PRESTIGE_GAMES = 10; // perfect games (10/10 John Doe) with the monster tractor needed to reset to the next planet
 export const carById = (id) => CARS.find((c) => c.id === id) || CARS[0];
 
 // "$1,240", "$6.5M", "$1B"
 export function money(n) {
-  const v = Math.round(n);
-  if (v >= 999.95e6) return `$${+(v / 1e9).toFixed(1)}B`;
-  if (v >= 1e7) return `$${+(v / 1e6).toFixed(1)}M`;
-  if (v >= 1e6) return `$${+(v / 1e6).toFixed(2)}M`;
-  return "$" + v.toLocaleString("en-US");
+  const v = Math.round(Math.abs(n));
+  const sign = n < 0 && v > 0 ? "-" : ""; // cash can go negative after an expensive repair
+  if (v >= 999.95e6) return `${sign}$${+(v / 1e9).toFixed(1)}B`;
+  if (v >= 1e7) return `${sign}$${+(v / 1e6).toFixed(1)}M`;
+  if (v >= 1e6) return `${sign}$${+(v / 1e6).toFixed(2)}M`;
+  return sign + "$" + v.toLocaleString("en-US");
 }
 
 // ---- drawing ----

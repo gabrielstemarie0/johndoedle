@@ -69,7 +69,7 @@ function uid() {
   crypto.getRandomValues(a);
   return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
 }
-const REPAIR_COST = 25; // dollars per hit
+const repairCost = () => carById(state.wallet.car).repair || 25; // dollars per crash: depends on the car you drive (see cars.js)
 const zeroPieces = () => Object.fromEntries(LEVEL_ORDER.map((l) => [l, 0]));
 // hits = unrepaired crashes, boxes = unopened mystery boxes, pieces = loose puzzle pieces per level, progress = pieces put toward each car
 const newWallet = () => ({ spent: 0, owned: ["rusty"], car: "rusty", hits: 0, boxes: 0, pieces: zeroPieces(), progress: {}, perfect: 0 });
@@ -139,7 +139,7 @@ const lifetimeEarned = () => Object.values(state.days).reduce((n, d) => n + cash
 const balance = () => lifetimeEarned() - state.wallet.spent;
 let finaleOn = false; // true while the end-of-game scene plays
 let holdWallet = null; // while the end-of-game scene plays, the header keeps showing your cash from before it
-const renderWallet = () => { $("wallet").textContent = money(holdWallet !== null ? holdWallet : balance()); if (typeof renderShopCta === "function") renderShopCta(); };
+const renderWallet = () => { const shown = holdWallet !== null ? holdWallet : balance(); $("wallet").textContent = money(shown); $("wallet").classList.toggle("neg", shown < 0); if (typeof renderShopCta === "function") renderShopCta(); };
 
 scene.setCar(state.wallet.car);
 scene.setDamage(state.wallet.hits || 0);
@@ -376,13 +376,14 @@ function finish() {
       state.wallet.perfect = Math.min(PRESTIGE_GAMES, (state.wallet.perfect || 0) + 1);
       today.perfectCounted = true;
     }
-    // The car is repaired automatically and the bill comes out of your cash. If you can't cover it, the garage takes what you have.
+    // The car is repaired automatically and the full bill comes out of your cash. If it is more than you have, your cash goes negative.
     dmg = state.wallet.hits || 0;
-    const owed = dmg * REPAIR_COST;
-    const paid = Math.min(owed, Math.max(0, balance()));
+    const each = repairCost();
+    const owed = dmg * each;
+    const paid = owed;
     state.wallet.spent += paid;
     state.wallet.hits = 0;
-    today.bill = { owed, paid, hits: dmg };
+    today.bill = { owed, paid, hits: dmg, each };
     save();
     holdWallet = before;
   }
@@ -651,14 +652,22 @@ async function playFinale(fresh, dmg) {
   const net = win - bill.paid;
   const car = carById(state.wallet.car);
   const showCar = (damage) => { $("finale-car-svg").innerHTML = carSideSVG(car, { damage }); };
-  const costText = `🔧 Repairs: −${money(bill.paid)}${bill.paid < bill.owed ? ` (the garage wrote off ${money(bill.owed - bill.paid)})` : ""}`;
+  const costText = `🔧 Repairs: −${money(bill.paid)}${bill.each && bill.hits > 1 ? ` (${bill.hits} × ${money(bill.each)})` : ""}`;
+  const debtEl = $("finale-debt");
+  const showDebt = () => { // repairs can push your cash below zero: say so plainly
+    const debt = balance() < 0;
+    debtEl.hidden = !debt;
+    if (debt) { debtEl.textContent = `💸 You're ${money(-balance())} in debt. Your next winnings pay it off first.`; debtEl.classList.add("in"); }
+  };
 
   // Not a fresh finish (reload), or reduced motion: just show where things ended up.
   if (!fresh || reduceMotion()) {
     amt.textContent = money(net);
+    amt.classList.toggle("neg", net < 0);
     $("finale-label").textContent = bill.paid ? "Earned today, after repairs" : "You won";
     steps.forEach((st) => addPill(st, true));
     costEl.hidden = !bill.paid; costEl.textContent = costText;
+    showDebt();
     carBox.hidden = !bill.owed;
     if (bill.owed) { showCar(0); $("finale-car-svg").classList.add("in"); status.textContent = "✨ Repaired and good as new"; }
     after.classList.remove("pending");
@@ -673,7 +682,7 @@ async function playFinale(fresh, dmg) {
   after.classList.add("pending");
   amt.textContent = "$0";
   $("finale-label").textContent = "You won";
-  costEl.hidden = true; carBox.hidden = true;
+  costEl.hidden = true; debtEl.hidden = true; carBox.hidden = true;
   // 1. the winnings
   $("finale").classList.add("flash");
   await countTo(amt, 0, t, 1500);
@@ -709,7 +718,10 @@ async function playFinale(fresh, dmg) {
     $("finale-label").textContent = "Earned today, after repairs";
     amt.classList.add("down");
     await countTo(amt, win, net, 1200);
+    amt.classList.toggle("neg", net < 0);
     await sleep(500);
+    showDebt();
+    if (!debtEl.hidden) await sleep(900);
   }
   // 5. the car morphs into a see-through graph of today's scores, and a line slides to where you ranked
   const st = await Promise.race([standingPromise, sleep(4500).then(() => null)]);
@@ -1068,10 +1080,13 @@ function carRow(car) {
   const name = document.createElement("div"); name.className = "shop-name"; name.textContent = car.name;
   const blurb = document.createElement("div"); blurb.className = "shop-blurb"; blurb.textContent = car.blurb;
   const price = document.createElement("div"); price.className = "shop-price"; price.textContent = car.price ? money(car.price) : "Free";
+  const rep = document.createElement("div");
+  rep.className = "shop-repair";
+  rep.textContent = `🔧 Repair: ${money(car.repair)} per crash`;
   const mult = document.createElement("div");
   mult.className = "shop-mult";
   mult.textContent = car.mult ? `💰 +${car.mult.toLocaleString("en-US")}% on your winnings` : "No winnings bonus";
-  info.append(name, blurb, price, mult);
+  info.append(name, blurb, price, mult, rep);
   if (car.id === "monster") {
     const done = w.perfect || 0;
     const pr = document.createElement("div");
@@ -1186,14 +1201,14 @@ $("answer").addEventListener("input", () => {
   $("answer").removeAttribute("aria-invalid");
 });
 $("next").addEventListener("click", showCard);
-const repairDue = () => (state.wallet.hits || 0) * REPAIR_COST;
-// Pay for the repair (only now does money leave your cash). If you can't cover it, the garage takes what you have.
+const repairDue = () => (state.wallet.hits || 0) * repairCost();
+// Old unrepaired damage from before repairs became automatic: paid in full when the next game starts (cash can go negative).
 function repairCar() {
   const owed = repairDue();
-  const paid = Math.min(owed, Math.max(0, balance()));
+  const paid = owed;
   state.wallet.spent += paid;
   state.wallet.hits = 0;
-  if (today.done && owed) today.bill = { owed, paid };
+  if (today.done && owed) today.bill = { owed, paid, hits: 0 };
   save();
   renderWallet();
   syncRepair();

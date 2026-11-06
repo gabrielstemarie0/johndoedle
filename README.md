@@ -28,10 +28,13 @@ and a hazard sign plus a red strip along your lane make that easy to read.
 - **Score nothing** (an answer that doesn't fit) or **run out of time** and you **crash**: the car takes damage that
   stays for the rest of the day (cracked rear window, a dead tail light, smoke, a hanging bumper) and you earn $0. An
   unsubmitted answer doesn't count when time runs out.
-- Crashes cost $25 each. When the last question is answered, an end-of-game scene plays on its own: your winnings (plus any
-  streak bonus) count up with a flourish, a side view of your car shows its damage, a cartoon scuffle cloud full of tools and a mechanic's arms and boots (with tool sounds, mute button on the card) repairs the car, and
-  crashes × $25 comes off your total. If you have less cash than the bill, the garage takes what you have and writes off the
-  rest, so you never get stuck. The results screen appears once the scene ends. Reloading skips the scene.
+- Crashes cost a repair bill that depends on the car you drive, climbing steadily from $25 (Rusty Hatchback) to $100,000
+  (Midnight Monster Tractor); the prices are in `public/cars.js` and shown on every shop card. When the last question is answered,
+  an end-of-game scene plays on its own: your winnings (plus any streak bonus) count up, a side view of your car shows its
+  damage, a cartoon scuffle cloud of tools and a mechanic's arms and boots (with tool sounds, mute button on the card) repairs
+  the car, and crashes × the repair price comes off your total. If the bill is bigger than your cash, **your cash goes
+  negative** (you're in debt, shown as a negative amount) and your next winnings pay it off first. The results screen appears
+  once the scene ends. Reloading skips the scene.
 
 ## Scoring
 Each question has ONE fixed ranking, set by the order I wrote its answers (`public/lib/bank.js` turns it into a strict

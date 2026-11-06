@@ -480,3 +480,10 @@ main { padding-bottom: 24px; }
 @media (max-width: 430px) { body.on-results .shop-word { display: none; } }
 @media (max-width: 380px) { body.on-results .chips { gap: 4px; } body.on-results .chip { padding-left: 7px; padding-right: 7px; } body.on-results .chip-btn { min-width: 30px; } }
 @media (max-width: 340px) { body.on-results #streak-chip { display: none; } }
+
+/* repair prices and debt */
+.shop-repair { margin-top: 1px; font: 700 12.5px system-ui, sans-serif; color: #b83a2b; }
+@media (prefers-color-scheme: dark) { .shop-repair { color: #ff8f80; } }
+#wallet.neg, .finale-amt.neg { color: #e0503f; }
+.chip.wallet #wallet.neg { color: #b3261e; }
+#total.neg, .finale-amt .neg { color: #e0503f; }
