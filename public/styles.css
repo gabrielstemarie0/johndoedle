@@ -461,3 +461,4 @@ main { padding-bottom: 24px; }
 .finale-car.graphing .finale-car-svg { height: 166px; }
 .finale-status small { display: block; font: 600 11.5px system-ui, sans-serif; opacity: .8; margin-top: 1px; }
 .finale-label { padding-right: 36px; }
+.reset-notice { margin: 0 0 12px; padding: 9px 12px; border-radius: 12px; background: color-mix(in srgb, var(--accent) 20%, var(--card)); border: 1px solid var(--accent); font: 600 13.5px/1.35 system-ui, sans-serif; }

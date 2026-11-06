@@ -94,18 +94,38 @@ const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)
 
 const day = todayET();
 const gameNo = dayIndex(day) + 1;
-// Visit /?reset=today to wipe today's game in this browser (answers, bonus, repair bill) and play it again.
-if (new URLSearchParams(location.search).get("reset") === "today") {
-  const old = state.days[day];
-  if (old) {
-    if (old.bill) state.wallet.spent = Math.max(0, state.wallet.spent - old.bill.paid); // give back what repairs cost
-    else state.wallet.hits = Math.max(0, (state.wallet.hits || 0) - (old.crashes || 0));
-    if (old.perfectCounted) state.wallet.perfect = Math.max(0, (state.wallet.perfect || 0) - 1);
-    delete state.days[day];
-    if (old.done && state.streak.last === day) { state.streak.last = null; state.streak.count = Math.max(0, state.streak.count - 1); }
-    save();
+// Wipes one day of this browser's saved game (answers, bonuses, repair bill) so it can be played again.
+// Money earned that day goes away; cars already bought are kept (cash never goes below zero).
+function wipeDay(dayKey) {
+  const old = state.days[dayKey];
+  if (!old) return false;
+  if (old.bill) state.wallet.spent = Math.max(0, state.wallet.spent - old.bill.paid); // give back what repairs cost
+  else state.wallet.hits = Math.max(0, (state.wallet.hits || 0) - (old.crashes || 0));
+  if (old.perfectCounted) state.wallet.perfect = Math.max(0, (state.wallet.perfect || 0) - 1);
+  // keep the streak reward already handed out, so the same day doesn't give a second mystery box
+  state.days[dayKey] = { answers: [], startedAt: null, ...(old.reward ? { reward: old.reward } : {}) };
+  if (old.done && state.streak.last === dayKey) {
+    if (state.streak.count > 1) { state.streak.count -= 1; state.streak.last = prevDay(dayKey); }
+    else { state.streak.count = 0; state.streak.last = null; }
   }
+  const earned = Object.values(state.days).reduce((n, d) => n + (d.answers || []).reduce((m, a) => m + (a.pts || 0), 0) + (d.bonus || 0) + (d.carBonus || 0) + (d.planetBonus || 0), 0);
+  if (state.wallet.spent > earned) state.wallet.spent = earned;
+  save();
+  return true;
+}
+// Visit /?reset=today to wipe today's game in this browser and play it again.
+if (new URLSearchParams(location.search).get("reset") === "today") {
+  wipeDay(day);
   history.replaceState(null, "", location.pathname);
+}
+// A one-off reset for everybody: when a day gets a new version of the game, set the day and bump the id. The first time a
+// browser opens the game on that day, that day's game is wiped (once) so people can replay it with the new features.
+const GLOBAL_RESET = { day: "2026-11-06", id: 1 };
+let resetNotice = false;
+if (GLOBAL_RESET.day === day && state.resetSeen !== GLOBAL_RESET.id) {
+  resetNotice = wipeDay(day) && (state.days[day].answers || []).length === 0;
+  state.resetSeen = GLOBAL_RESET.id;
+  save();
 }
 const today = (state.days[day] ||= { answers: [], startedAt: null });
 const todaysQs = pickCards(questions, day);
@@ -1211,6 +1231,7 @@ syncMute();
 
 $("htp-secs").textContent = String(SECONDS);
 
+if (resetNotice) { const n = $("reset-notice"); n.hidden = false; n.textContent = "Today's game was reset so everyone can play it again with the new features. Your cars and cash from earlier days are untouched."; }
 applyPlanet();
 grantDailyReward();
 updateStreak();
