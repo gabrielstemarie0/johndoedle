@@ -38,8 +38,10 @@ and a hazard sign plus a red strip along your lane make that easy to read.
 
 **Debt and collateral.** The first time your cash goes negative, a pop-up warns you: pay it off within a week or your car
 is taken as collateral. The week starts the day you go below $0 (and resets if you climb back above $0). If you are still
-below $0 when it ends, the car you are driving is sold (never the starter Rusty Hatchback): your balance goes back to exactly
-$0, a "Thank you for your donation! We are now equal. 😊" pop-up appears, and you drive the most valuable car you have left.
+below $0 when it ends, your most valuable car is sold (never the starter Rusty Hatchback, and it doesn't matter which car
+you are driving, so switching to the starter car doesn't dodge it): your balance goes back to exactly $0, a "Thank you for
+your donation! We are now equal. 😊" pop-up appears, and you keep playing in the car you were driving, or the most valuable
+one you have left if the car taken was the one you were driving.
 The warning pop-up only shows once, ever; the end screen always shows how many days are left.
 
 ## Scoring
