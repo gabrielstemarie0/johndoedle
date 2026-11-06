@@ -1,6 +1,6 @@
 // Checks every question in the bank (and the day schedule). Run: node scripts/check-questions.mjs
 // Exits with an error if anything is wrong. Used by the nightly question writer before it publishes.
-import bank from "../public/lib/bank.js";
+import bank, { BASE_COUNT } from "../public/lib/bank.js";
 import fancy from "../public/lib/fancy.js";
 import schedule from "../public/lib/schedule.js";
 import { normalize } from "../public/lib/text.js";
@@ -36,12 +36,28 @@ for (const q of bank) {
   const labels = new Set(q.answers.map((a) => normalize(a[0])));
   if (labels.size !== q.answers.length) bad(q.id, "repeated answer label");
 }
+// New questions (after the original 70) must not be too similar to any other question: no near-duplicate topics.
+const top = (q) => new Set(q.answers.slice(0, 15).map((a) => normalize(a[0])));
+for (let i = 70; i < bank.length; i++) {
+  const a = top(bank[i]);
+  for (let j = 0; j < bank.length; j++) {
+    if (j === i) continue;
+    const shared = [...top(bank[j])].filter((x) => a.has(x));
+    if (shared.length >= 7) bad(bank[i].id, `too similar to ${bank[j].id} ("${bank[j].prompt}"): top answers overlap (${shared.slice(0, 5).join(", ")}...). Pick a different topic`);
+  }
+}
 for (const [day, list] of Object.entries(schedule)) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) bad(day, "schedule date must be YYYY-MM-DD");
   if (list.length !== 10) bad(day, `schedule needs exactly 10 questions (has ${list.length})`);
   if (new Set(list).size !== list.length) bad(day, "schedule repeats a question");
   for (const id of list) if (!ids.has(id)) bad(day, `schedule uses unknown question ${id}`);
 }
+// No question may be scheduled twice, ever.
+const used = new Map();
+for (const day of Object.keys(schedule).sort()) for (const id of schedule[day]) { if (used.has(id)) bad(day, `${id} was already used on ${used.get(id)}`); used.set(id, day); }
+// From Nov 9, 2026 on, a day may only use questions written after the original 70 (those were all used up in the first 7 days).
+const oldIds = new Set(bank.slice(0, BASE_COUNT).map((q) => q.id));
+for (const [day, list] of Object.entries(schedule)) if (day >= "2026-11-09") for (const id of list) if (oldIds.has(id)) bad(day, `${id} is one of the original 70 questions, already used. Use a new question`);
 console.log(`${bank.length} questions, ${Object.keys(schedule).length} scheduled days`);
 if (problems.length) { console.error("PROBLEMS:\n" + problems.join("\n")); process.exit(1); }
 console.log("all good");

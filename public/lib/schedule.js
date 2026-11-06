@@ -1,19 +1,8 @@
 // Questions for a specific game day (US Eastern date): "YYYY-MM-DD": ["qNN", ... ten ids].
-// Days that are not listed here use the normal rotation through the original 70 questions.
-// Fill more days with: node scripts/plan-schedule.mjs [days]
+// The original 70 questions are used exactly once over the first 7 days (Nov 2-8, 2026); from Nov 9 every day gets brand-new
+// questions written the night before, so nothing repeats. (A day that is missing here falls back to the old 70-question
+// rotation, which would repeat questions, so the nightly writer must always add tomorrow's day.)
 export default {
-  "2026-11-07": ["q61", "q67", "q28", "q58", "q46", "q66", "q29", "q01", "q21", "q27"],
-  "2026-11-08": ["q40", "q09", "q36", "q14", "q44", "q19", "q04", "q64", "q62", "q24"],
-  "2026-11-09": ["q06", "q16", "q12", "q49", "q33", "q69", "q41", "q59", "q48", "q37"],
-  "2026-11-10": ["q18", "q51", "q45", "q54", "q26", "q30", "q34", "q47", "q22", "q57"],
-  "2026-11-11": ["q39", "q70", "q07", "q20", "q53", "q32", "q50", "q56", "q02", "q65"],
-  "2026-11-12": ["q35", "q17", "q31", "q11", "q05", "q25", "q08", "q43", "q38", "q42"],
-  "2026-11-13": ["q15", "q63", "q52", "q68", "q55", "q60", "q10", "q23", "q03", "q13"],
-  "2026-11-14": ["q58", "q67", "q28", "q66", "q46", "q01", "q61", "q29", "q27", "q21"],
-  "2026-11-15": ["q19", "q40", "q04", "q64", "q24", "q44", "q14", "q09", "q62", "q36"],
-  "2026-11-16": ["q41", "q69", "q16", "q59", "q49", "q33", "q12", "q37", "q06", "q48"],
-  "2026-11-17": ["q26", "q30", "q34", "q57", "q51", "q22", "q18", "q47", "q45", "q54"],
-  "2026-11-18": ["q07", "q20", "q65", "q53", "q32", "q70", "q50", "q02", "q39", "q56"],
-  "2026-11-19": ["q43", "q42", "q38", "q08", "q25", "q11", "q35", "q31", "q17", "q05"],
-  "2026-11-20": ["q15", "q52", "q03", "q63", "q10", "q23", "q60", "q55", "q68", "q13"],
+  "2026-11-07": ["q67", "q21", "q04", "q62", "q58", "q14", "q24", "q09", "q29", "q28"],
+  "2026-11-08": ["q61", "q27", "q46", "q40", "q19", "q64", "q66", "q36", "q01", "q44"],
 };
