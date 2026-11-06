@@ -170,6 +170,27 @@
     </div>
   </dialog>
 
-  <script type="module" src="game.js"></script>
+  <!-- Browsers keep script files for hours, which can mix an old game.js with new files and leave the page blank.
+       The import map and the ?v on game.js make every browser fetch fresh copies once; the Worker now sends no-cache. -->
+  <script type="importmap">
+{
+  "imports": {
+    "./cars.js": "./cars.js?v=20261106b",
+    "./scene.js": "./scene.js?v=20261106b",
+    "./lib/bank.js": "./lib/bank.js?v=20261106b",
+    "./lib/daily-questions.js": "./lib/daily-questions.js?v=20261106b",
+    "./lib/fancy.js": "./lib/fancy.js?v=20261106b",
+    "./lib/planets.js": "./lib/planets.js?v=20261106b",
+    "./lib/questions.js": "./lib/questions.js?v=20261106b",
+    "./lib/questions2.js": "./lib/questions2.js?v=20261106b",
+    "./lib/rules.js": "./lib/rules.js?v=20261106b",
+    "./lib/schedule.js": "./lib/schedule.js?v=20261106b",
+    "./lib/scoring.js": "./lib/scoring.js?v=20261106b",
+    "./lib/standing.js": "./lib/standing.js?v=20261106b",
+    "./lib/text.js": "./lib/text.js?v=20261106b"
+  }
+}
+  </script>
+  <script type="module" src="game.js?v=20261106b"></script>
 </body>
 </html>

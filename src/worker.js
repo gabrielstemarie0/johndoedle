@@ -33,7 +33,12 @@ export default {
       if (request.method !== "POST") return reply({ error: "POST only" }, 405, { allow: "POST" });
       return handleScore(request, env);
     }
-    return env.ASSETS.fetch(request); // everything else is the static game
+    // everything else is the static game. "no-cache" makes browsers check for a newer copy every time (cheap, 304),
+    // so an update can never leave someone running an old game.js with new helper files.
+    const asset = await env.ASSETS.fetch(request);
+    const headers = new Headers(asset.headers);
+    headers.set("cache-control", "no-cache");
+    return new Response(asset.body, { status: asset.status, statusText: asset.statusText, headers });
   },
 };
 
