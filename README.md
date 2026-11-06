@@ -41,9 +41,9 @@ John Doe for a question is always the same answer. An answer's **rank** sets its
 | Level | Cash | Rank |
 |---|---|---|
 | 🟩 John Doe | 100 | #1 (only one answer) |
-| 🟨 Average Joe | 85 | #2 to #6 (5 answers) |
-| 🟧 Neighbor | 60 | #7 to #16 (10 answers) |
-| 🟪 Stranger | 30 | #17 to #36 (20 answers) |
+| 🟨 Average Joe | 85 | #2 to #4 (3 answers) |
+| 🟧 Neighbor | 60 | #5 to #9 (5 answers) |
+| 🟪 Stranger | 30 | #10 to #19 (10 answers) |
 | 👽 Alien | 10 | any other real answer |
 | ❌ Imposter | 0 | the answer doesn't fit the question |
 | ⬛ Nothing | 0 | timed out with nothing real typed |
@@ -51,7 +51,7 @@ John Doe for a question is always the same answer. An answer's **rank** sets its
 The amounts are Krillion's points (10/30/60/85/100, as listed by fan sites; check krillion.io if exact figures matter),
 flipped so the most common answer is best, and counted in **dollars**. A perfect day is $1,000. 
 
-Because tiers are by rank, a question needs at least 37 ranked answers for every level to be reachable (each of the
+Because tiers are by rank, a question needs at least 20 ranked answers for every level to be reachable (each of the
 70 questions has 38 to 55). An answer that isn't on a question's list is never ranked, however many players give it,
 so friends can't make up a "popular" answer: a real unlisted answer is an Alien. Blank, symbol-only and one-character answers can't be
 submitted (the field shakes and the timer keeps running).
@@ -156,7 +156,7 @@ Local test: `npx wrangler d1 execute johndoedle --local --file=schema.sql`, then
 Based on the US Eastern date (the day rolls over at midnight in New York, EST or EDT). Everyone gets the same 10. The bank is shuffled in cycles, so 70 questions give 7 days with no
 repeats. To add a question, add it to `public/lib/questions2.js` (compact `build("q57", "Name a ...", "answer|alias,answer,...")`, most popular first; or append to `questions.js` as `[answer, weight, [aliases]]`) with the next id (`q57`, ...): a prompt such as
 "Name a ..." and at least 40 answers as `[answer, weight, [aliases]]`, listed from most to least popular (the most
-popular is 100; the weights only set the order). Fewer than 37 answers means the Stranger tier can't be filled.
+popular is 100; the weights only set the order). Fewer than 20 answers means the Stranger tier can't be filled.
 Game #1 is `LAUNCH_DAY` in `public/game.js`.
 
 ## Known limits

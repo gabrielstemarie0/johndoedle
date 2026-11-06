@@ -5,13 +5,13 @@ import { normalize, distance, allowedTypos } from "./text.js";
 // ---------- levels ----------
 // Krillion's points, flipped: the most common answer earns the most. `spaces` is how far the car drives
 // for the answer (like Krillion's dive depth); seven John Does would be 35 spaces, the finish line.
-// Levels are by RANK among a question's answers: 1 John Doe, 5 Average Joes, 10 Neighbors, 20 Strangers,
+// Levels are by RANK among a question's answers: 1 John Doe, 3 Average Joes, 5 Neighbors, 10 Strangers,
 // and every other real answer is an Alien.
 export const LEVELS = [
   { id: "johndoe", name: "John Doe", pts: 100, spaces: 5, emoji: "🟩", note: "the #1 answer", ranks: 1 },
-  { id: "joe", name: "Average Joe", pts: 85, spaces: 4, emoji: "🟨", note: "a top 6 answer", ranks: 5 },
-  { id: "neighbor", name: "Neighbor", pts: 60, spaces: 3, emoji: "🟧", note: "a top 16 answer", ranks: 10 },
-  { id: "stranger", name: "Stranger", pts: 30, spaces: 2, emoji: "🟪", note: "a top 36 answer", ranks: 20 },
+  { id: "joe", name: "Average Joe", pts: 85, spaces: 4, emoji: "🟨", note: "a top 4 answer", ranks: 3 },
+  { id: "neighbor", name: "Neighbor", pts: 60, spaces: 3, emoji: "🟧", note: "a top 9 answer", ranks: 5 },
+  { id: "stranger", name: "Stranger", pts: 30, spaces: 2, emoji: "🟪", note: "a top 19 answer", ranks: 10 },
   { id: "alien", name: "Alien", pts: 10, spaces: 1, emoji: "👽", note: "any other real answer", ranks: Infinity },
 ];
 export const IMPOSTER = { id: "imposter", name: "Imposter", pts: 0, spaces: 0, emoji: "💥", note: "that doesn't answer the question" };
