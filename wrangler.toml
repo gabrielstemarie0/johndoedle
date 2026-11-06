@@ -18,3 +18,7 @@ database_id = "e5eedb67-193f-401f-82e4-f17ad0602d90"
 # Without it the game falls back to simple word matching.
 [ai]
 binding = "AI"
+
+# The id of the running deployment; the Worker puts it in the page so browsers fetch fresh script files after every deploy.
+[version_metadata]
+binding = "CF_VERSION_METADATA"

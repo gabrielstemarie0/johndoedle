@@ -33,12 +33,21 @@ export default {
       if (request.method !== "POST") return reply({ error: "POST only" }, 405, { allow: "POST" });
       return handleScore(request, env);
     }
-    // everything else is the static game. "no-cache" makes browsers check for a newer copy every time (cheap, 304),
-    // so an update can never leave someone running an old game.js with new helper files.
+    // everything else is the static game
     const asset = await env.ASSETS.fetch(request);
-    const headers = new Headers(asset.headers);
-    headers.set("cache-control", "no-cache");
-    return new Response(asset.body, { status: asset.status, statusText: asset.statusText, headers });
+    const type = asset.headers.get("content-type") || "";
+    if (type.includes("text/html")) {
+      // Browsers keep script files for hours, so after an update they could run an old game.js with new helper files.
+      // The page asks for every script with ?v=<this deployment's id>, so each deploy makes browsers fetch fresh copies.
+      const version = (env.CF_VERSION_METADATA && env.CF_VERSION_METADATA.id ? String(env.CF_VERSION_METADATA.id).slice(0, 8) : new Date().toISOString().slice(0, 10).replace(/-/g, "")).replace(/[^a-z0-9]/gi, "");
+      const html = (await asset.text()).replace(/__V__/g, version);
+      const headers = new Headers(asset.headers);
+      headers.delete("content-length");
+      headers.delete("etag"); // the body changes with every deploy
+      headers.set("cache-control", "no-cache");
+      return new Response(html, { status: asset.status, statusText: asset.statusText, headers });
+    }
+    return asset;
   },
 };
 
