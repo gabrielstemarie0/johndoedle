@@ -26,9 +26,9 @@ export function usesQuestionWord(answer, questionText) {
 export function looksLikeWord(input) {
   const s = String(input ?? "").trim();
   if (!isValidAnswer(s)) return false;
-  if (!/^[\p{L}\p{N}\s'’.\-&!,:+]+$/u.test(s)) return false; // e.g. "hamedr]"
+  if (!/^[\p{L}\p{N}\s'’.\-&!,:+/*$#]+$/u.test(s)) return false; // e.g. "hamedr]" is not allowed, but "AC/DC" and "A$AP Rocky" are
   for (const w of s.toLowerCase().split(/[\s\-.,:+&!]+/)) {
-    if (/^[a-z]{4,}$/.test(w) && !/[aeiouy]/.test(w)) return false; // "qwrtp"
+    if (/^[a-z]{5,}$/.test(w) && !/[aeiouy]/.test(w)) return false; // "qwrtp" (short ones like "TMNT" or "RHCP" are fine)
   }
   return true;
 }
