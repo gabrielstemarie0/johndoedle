@@ -2,6 +2,7 @@
 // Days listed in ROASTS (written by the nightly task, one per day) win; any other day takes the next line of POOL,
 // so the lines keep changing even if a night is missed. Keep each line under 120 characters.
 export const ROASTS = {
+  "2026-11-07": "You're the human version of a handshake: firm, polite, and exactly like the last one.",
 };
 
 export const POOL = [
