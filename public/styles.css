@@ -316,6 +316,12 @@ main { padding-bottom: 24px; }
 .shop-puzzle { margin-top: 3px; font-size: 13px; letter-spacing: 1px; }
 .shop-actions { display: grid; gap: 6px; }
 .modal .shop-btn.piece { border-color: var(--l-stranger); color: var(--l-stranger); }
+/* the "Use a ... piece" button wears the colour of the piece's rarity */
+.modal .shop-btn.pc-alien { border-color: var(--l-alien); color: var(--l-alien); }
+.modal .shop-btn.pc-stranger { border-color: var(--l-stranger); color: var(--l-stranger); }
+.modal .shop-btn.pc-neighbor { border-color: var(--l-neighbor); color: var(--l-neighbor); }
+.modal .shop-btn.pc-joe { border-color: var(--l-joe); color: var(--l-joe); }
+.modal .shop-btn.pc-johndoe { border-color: var(--l-johndoe); color: var(--l-johndoe); }
 @media (max-width: 420px) { .shop-item .shop-actions { grid-column: 1 / -1; } }
 @media (max-width: 350px) { .chip.wallet .shop-word { display: none; } }
 

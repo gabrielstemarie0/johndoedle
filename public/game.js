@@ -1133,7 +1133,7 @@ function carRow(car) {
     if (balance() >= car.price) mk(`Buy ${money(car.price)}`, "primary", () => buy(car));
     else mk(`Need ${money(car.price - balance())}`, "", null, true);
     const have = w.pieces[car.level];
-    mk(have ? `Use a ${levelName(car.level)} piece` : `No ${levelName(car.level)} pieces`, have ? "piece" : "", have ? () => usePiece(car) : null, !have);
+    mk(have ? `Use a ${levelName(car.level)} piece` : `No ${levelName(car.level)} pieces`, have ? `piece pc-${car.level}` : "", have ? () => usePiece(car) : null, !have);
   }
   li.append(pic, info, acts);
   return li;
