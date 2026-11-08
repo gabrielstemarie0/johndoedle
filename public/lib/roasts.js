@@ -3,6 +3,7 @@
 // so the lines keep changing even if a night is missed. Keep each line under 120 characters.
 export const ROASTS = {
   "2026-11-07": "You're the human version of a handshake: firm, polite, and exactly like the last one.",
+  "2026-11-08": "Your hot takes arrive already cooled to room temperature.",
 };
 
 export const POOL = [
