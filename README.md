@@ -19,6 +19,15 @@ src/ratelimit.js                  per-IP / per-player / global request limits
 schema.sql, wrangler.toml         D1 tables, bindings (DB, AI, ASSETS) and Worker config
 ```
 
+## STANDING RULE: never disturb player progress (set by the owner, Nov 9, 2026)
+
+Any update, by anyone or any scheduled task, must leave player engagement untouched:
+- A player who already played today keeps that day's score, answers and result. Never reset, replay or rescore a finished day.
+- A player's streak, cash balance (including debt) and owned cars/pieces/boxes must be identical before and after an update.
+- Do not change saved-state keys or formats (localStorage state, `daily_scores`, `plays`) in a way that loses or alters them. Any change needs a migration that preserves values.
+- Do not change today's already-scheduled questions or their answers or ranks mid-day (it would alter a game in progress).
+- If a change WOULD alter a streak, a dollar value, or owned cars (for example a new economy rule), STOP and tell the owner first. Only proceed after they approve.
+
 ## How a round plays
 You see the road from behind your car (third person, as if you were the driver). When a question starts, an
 **obstacle** appears on the horizon. **Its distance is the timer**: it reaches your bumper when the 25 seconds are up,
