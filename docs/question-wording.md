@@ -10,7 +10,7 @@ an average adult gets it within about 5-10 seconds, with no niche knowledge.
 
 ## How to disguise a category
 
-1. **Never use the category noun or its obvious relatives.** For "NBA player" that means no *basketball, hoops, court, league,
+1. **Never use the category noun or its obvious relatives** (there is no banned-word list: judge each wording against these rules). For "NBA player" that means no *basketball, hoops, court, league,
    NBA, player, team, dunk*. For "US president" no *president, White House, Oval Office, election*. For "country in Asia" no
    *Asia, continent names, famous capitals*.
 2. **No proper nouns that name the field** (Beijing, Tokyo, Springfield, Hollywood...). They hand over the answer.
@@ -36,6 +36,10 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 | Name a type of cheese | a variety of dairy curd product that is aged, melted or crumbled | a pungent or creamy product of pressed, ripened milk curds (fine as it is: no key word is named) |
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
+
+- **2026-11-09, Name a type of vehicle, second try:** "a conveyance that travels" was too simple. Neutral does not mean trivial:
+  keep the wording free of hints toward the #1 answer (no "passengers", "cargo", "wheels"), but still disguise the category with
+  an indirect description so the player has to think.
 
 - **2026-11-09, Name a Taylor Swift song (Nov 10):** "an earworm by the star whose multi-era world tour broke every box-office
   record" gave the player no way to know it was about Taylor Swift. When the answers all belong to ONE specific person, brand or

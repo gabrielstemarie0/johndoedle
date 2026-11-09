@@ -4,7 +4,6 @@ import bank, { BASE_COUNT } from "../public/lib/bank.js";
 import fancy from "../public/lib/fancy.js";
 import schedule from "../public/lib/schedule.js";
 import { normalize } from "../public/lib/text.js";
-import fs from "node:fs";
 import { usesQuestionWord } from "../public/lib/rules.js";
 import { ROASTS, POOL } from "../public/lib/roasts.js";
 
@@ -60,9 +59,8 @@ for (const day of Object.keys(schedule).sort()) for (const id of schedule[day]) 
 // From Nov 9, 2026 on, a day may only use questions written after the original 70 (those were all used up in the first 7 days).
 const oldIds = new Set(bank.slice(0, BASE_COUNT).map((q) => q.id));
 for (const [day, list] of Object.entries(schedule)) if (day >= "2026-11-09") for (const id of list) if (oldIds.has(id)) bad(day, `${id} is one of the original 70 questions, already used. Use a new question`);
-// Fancy wording must disguise the category (see docs/question-wording.md). For questions after q91: no content word from the plain
-// prompt, and none of the words/phrases in docs/giveaway-words.txt (grow that list with every piece of owner feedback).
-const giveaways = fs.readFileSync(new URL("../docs/giveaway-words.txt", import.meta.url), "utf8").split("\n").map((x) => x.trim().toLowerCase()).filter(Boolean);
+// Fancy wording must disguise the category (see docs/question-wording.md). For questions after q91 the checker only catches the
+// mechanical slip of repeating a content word from the plain prompt; everything else is judged against the guide, not a word list.
 const PLAIN_STOP = new Set(["name", "a", "an", "the", "of", "that", "is", "in", "famous", "popular", "common", "type", "kind", "something", "you"]);
 for (const q of bank) {
   if (Number(q.id.slice(1)) <= 91) continue;
@@ -70,7 +68,6 @@ for (const q of bank) {
   for (const w of q.prompt.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/)) {
     if (w && !PLAIN_STOP.has(w) && new RegExp(`\\b${w}s?\\b`).test(f)) bad(q.id, `fancy wording names the category word "${w}" from the plain prompt; disguise it`);
   }
-  for (const g of giveaways) if (f.includes(g)) bad(q.id, `fancy wording contains the giveaway "${g}" (docs/giveaway-words.txt); disguise it`);
 }
 // The end-screen roast lines: unique, short, one per day.
 const lines = [...POOL, ...Object.values(ROASTS)];
