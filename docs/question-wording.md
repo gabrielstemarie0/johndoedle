@@ -1,0 +1,41 @@
+# How to write the fancy wording (read this before writing any question)
+
+Every question has a plain prompt ("Name an NBA player") and a **fancy wording** that players actually see. The fancy wording
+is the game: the player must **decode** it. If someone can read it and instantly know the category, it has failed.
+
+## The rule
+
+**Describe the category without naming it.** A player should need a few seconds of thinking, not zero. Medium difficulty:
+an average adult gets it within about 5-10 seconds, with no niche knowledge.
+
+## How to disguise a category
+
+1. **Never use the category noun or its obvious relatives.** For "NBA player" that means no *basketball, hoops, court, league,
+   NBA, player, team, dunk*. For "US president" no *president, White House, Oval Office, election*. For "country in Asia" no
+   *Asia, continent names, famous capitals*.
+2. **No proper nouns that name the field** (Beijing, Tokyo, Springfield, Hollywood...). They hand over the answer.
+3. **Describe it from an indirect angle** instead: what it does, what it looks like, what it is made of, where you meet it, what
+   people do with it, what it replaced, or how it feels. Use a synonym ladder: swap each key word for a rarer description
+   (a ball -> "a sphere", a sport -> "a contest", a singer -> "a vocalist", a movie -> "a motion picture").
+4. **Keep it solvable.** A clever disguise, not a riddle that needs trivia. The plain question is shown after answering.
+5. **Mechanical rules (the checker enforces these):** starts with Name / Cite / Identify / Specify, max 120 characters, and no
+   word in the wording may appear in any listed answer (the game rejects answers using a word from the question).
+
+## Self-test before you save
+
+Read ONLY the fancy wording. Ask: "Which category did I just say out loud?" If a word in it names the field, the sport, the
+media or the answer type, rewrite it. Then ask: would a smart player still get it? If not, make it a little clearer.
+
+## Examples
+
+| Plain | Too obvious (don't) | Better |
+|---|---|---|
+| Name an NBA player | a professional basketball star who has played in the sport's top American league | a towering athlete famed for lofting an orange sphere through a suspended ring of netting |
+| Name a US president | a former occupant of the White House's highest elected office | a past leader who swore an oath on the Capitol steps and then ran the republic |
+| Name a country in Asia | a sovereign nation on the world's largest continent, home to Beijing and Tokyo | a sovereign nation within the largest of Earth's great landmasses |
+| Name a type of cheese | a variety of dairy curd product that is aged, melted or crumbled | a pungent or creamy product of pressed, ripened milk curds (fine as it is: no key word is named) |
+
+## Lessons from the owner (newest first). Add every new piece of feedback here.
+
+- **2026-11-09, Name an NBA player:** the wording said "professional basketball star ... top American league", so the category
+  was obvious and nothing was coded. Never name the sport or the field; describe the thing indirectly.
