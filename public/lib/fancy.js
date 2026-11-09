@@ -90,6 +90,6 @@ export default {
   q87: "Name a sovereign nation situated on the world's largest continent, home to Beijing and Tokyo.",
   q88: "Name a style of choreographed movement performed to rhythm and music.",
   q89: "Name a deity from the pantheon of ancient Olympus.",
-  q90: "Name a conveyance that carries passengers or cargo along roads, rails, waters or skies.",
+  q90: "Name an engineered contraption that whisks a traveler between destinations.",
   q91: "Name a former occupant of the White House's highest elected office.",
 };
