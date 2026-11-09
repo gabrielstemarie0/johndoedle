@@ -2,6 +2,7 @@
 //   POST /api/score   { player, day, score } -> the day's score counts, for the "you beat X%" chart
 //   POST /api/answer  { player, day, q, answer }
 //     -> { valid, level, pts, label, top: [most popular answers] }
+//     or { rejected: "notword" | "inquestion" | "notlisted" } when the answer can't be used (the player just tries again)
 import questions from "../public/lib/bank.js";
 import { isValidAnswer } from "../public/lib/text.js";
 import { scoreAnswer } from "./answer-server.js";
