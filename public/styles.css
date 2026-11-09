@@ -498,4 +498,4 @@ main { padding-bottom: 24px; }
 .debt-body p { margin: 0 0 6px; line-height: 1.45; }
 
 /* the streak reminder under "How to play" on the start screen */
-.streak-line { margin: -8px 0 12px; padding: 7px 6px; border-radius: 10px; background: color-mix(in srgb, #e0803a 16%, var(--card)); border: 1px solid #e0803a; font: 900 clamp(7.6px, 2.5vw, 12.5px)/1.25 system-ui, -apple-system, sans-serif; letter-spacing: .02em; text-align: center; white-space: nowrap; overflow: hidden; }
+.streak-line { margin: 8px 0 16px; padding: 7px 6px; border-radius: 10px; background: color-mix(in srgb, #e0803a 16%, var(--card)); border: 1px solid #e0803a; font: 900 clamp(7.6px, 2.5vw, 12.5px)/1.25 system-ui, -apple-system, sans-serif; letter-spacing: .02em; text-align: center; white-space: nowrap; overflow: hidden; }

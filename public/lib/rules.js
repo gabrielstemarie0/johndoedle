@@ -36,6 +36,7 @@ export function looksLikeWord(input) {
 export const REJECT_TEXT = {
   notword: "🚫 Not a word",
   inquestion: "🚫 Can't use a word from the question",
+  notlisted: "🚫 Not one of the answers",
 };
 // Returns "notword", "inquestion" or null.
 export function rejectReason(input, questionText) {

@@ -54,3 +54,10 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 - **2026-11-09, Name an NBA player:** the wording said "professional basketball star ... top American league", so the category
   was obvious and nothing was coded. Never name the sport or the field; describe the thing indirectly.
+
+
+## Answer lists must be thorough (since Nov 9, 2026)
+
+The game now accepts ONLY answers on a question's list (plus aliases and small typos). Anything else just shakes off. So a
+missing answer is a frustrated player. For every question include every common answer, nicknames, abbreviations and alternate
+spellings as aliases (for example "ac/dc|acdc"), and aim for well over 38 answers (50-60 where the topic allows).

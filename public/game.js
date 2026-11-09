@@ -6,7 +6,7 @@ import { planetInfo, planetPct, PLANET_BONUS } from "./lib/planets.js";
 import { standing, BUCKETS } from "./lib/standing.js";
 import { ROASTS, POOL } from "./lib/roasts.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
-import { LEVELS, IMPOSTER, NOTHING, levelById, levelForRank, judgeLocal } from "./lib/scoring.js";
+import { LEVELS, NOTHING, levelById, levelForRank, judgeLocal, isListed } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, PRESTIGE_GAMES, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 
@@ -246,8 +246,12 @@ function shakeOff(reason) {
 }
 function trySubmit() {
   if (locked) return;
-  const reason = rejectReason($("answer").value, shownText(todaysQs[cur]));
+  const value = $("answer").value;
+  const reason = rejectReason(value, shownText(todaysQs[cur]));
   if (reason) return shakeOff(reason);
+  // Only answers on the question's list count. Anything else shakes off and the clock keeps running, so running out of time
+  // is the only way to score nothing.
+  if (!isListed(todaysQs[cur], value)) return shakeOff("notlisted");
   return lockIn();
 }
 
@@ -329,17 +333,15 @@ async function lockIn(timedOut = false) {
   $("fb-pts").textContent = fmt(result.pts);
   $("fb-pts").className = `pts lvl-${lvl.id}`;
   $("fb-level").textContent = crashed
-    ? `💥 Crash · ${timedOut ? "out of time" : "no cash"}`
+    ? `💥 Crash · ${timedOut ? "out of time" : "couldn't be scored"}`
     : `${lvl.emoji} ${lvl.name}`;
   $("fb-text").textContent = timedOut
     ? `You ran out of time and hit the obstacle.`
     : result.limited
       ? "Too many requests, so this answer couldn't be scored. You hit the obstacle."
-      : result.level === "imposter"
-        ? `That doesn't answer "${q.prompt}". You hit the obstacle.`
-        : result.level === "johndoe"
-          ? `"${result.label}" is the #1 answer. You swerved clear!`
-          : `"${result.label}" is ${lvl.note}. You swerved clear.`;
+      : result.level === "johndoe"
+        ? `"${result.label}" is the #1 answer. You swerved clear!`
+        : `"${result.label}" is ${lvl.note}. You swerved clear.`;
   $("fb-plain").textContent = `In plain English: ${q.prompt}`;
   $("next").textContent = today.answers.length >= PER_DAY ? "See results" : "Next question";
   $("feedback").hidden = false;
@@ -793,7 +795,7 @@ function renderResults(fresh = false, dmg = 0) {
       }
       const L = levelById(id);
       note.textContent = id === "alien"
-        ? `${L.name} (${money(L.pts)}): the answers listed here, plus any other real answer.`
+        ? `${L.name} (${money(L.pts)}): the rest of the answers on the list.`
         : `${L.name} (${money(L.pts)}): ${L.note}.`;
     };
     for (const L of LEVELS) {
@@ -866,7 +868,7 @@ function computeStats() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([d, v]) => ({ day: d, total: earnedIn(v), answers: v.answers, crashes: v.crashes || 0 }));
   const scores = games.map((g) => g.total);
-  const byLevel = Object.fromEntries([...LEVELS, IMPOSTER, NOTHING].map((l) => [l.id, 0]));
+  const byLevel = Object.fromEntries([...LEVELS, NOTHING].map((l) => [l.id, 0]));
   let answered = 0;
   for (const g of games) for (const a of g.answers) { byLevel[a.level] = (byLevel[a.level] || 0) + 1; answered++; }
   return {
@@ -929,7 +931,7 @@ function renderStats() {
 
   const h2 = document.createElement("h3"); h2.textContent = "Your answers"; box.append(h2);
   const dist = document.createElement("ul"); dist.className = "stat-dist";
-  for (const l of [...LEVELS, IMPOSTER, NOTHING]) {
+  for (const l of [...LEVELS, NOTHING]) {
     const n = st.byLevel[l.id] || 0;
     const li = document.createElement("li");
     const name = document.createElement("span"); name.textContent = `${l.emoji} ${l.name}`; name.className = `lvl-${l.id}`;

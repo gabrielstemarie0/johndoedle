@@ -12,7 +12,7 @@ export const LEVELS = [
   { id: "joe", name: "Average Joe", pts: 85, spaces: 4, emoji: "🟨", note: "a top 4 answer", ranks: 3 },
   { id: "neighbor", name: "Neighbor", pts: 60, spaces: 3, emoji: "🟧", note: "a top 9 answer", ranks: 5 },
   { id: "stranger", name: "Stranger", pts: 30, spaces: 2, emoji: "🟪", note: "a top 19 answer", ranks: 10 },
-  { id: "alien", name: "Alien", pts: 10, spaces: 1, emoji: "👽", note: "any other real answer", ranks: Infinity },
+  { id: "alien", name: "Alien", pts: 10, spaces: 1, emoji: "👽", note: "further down the list", ranks: Infinity },
 ];
 export const IMPOSTER = { id: "imposter", name: "Imposter", pts: 0, spaces: 0, emoji: "💥", note: "that doesn't answer the question" };
 export const NOTHING = { id: "nothing", name: "Nothing", pts: 0, spaces: 0, emoji: "💥", note: "no answer entered" };
@@ -54,7 +54,7 @@ export function ranked(rows) {
     .sort((a, b) => share.get(b.key) - share.get(a.key) || (b.seedw || 0) - (a.seedw || 0) || (a.key < b.key ? -1 : 1));
 }
 
-// An unknown answer has no rank: if it is a real answer it is an Alien.
+// An answer that is not on the question's list has no rank: it is not accepted at all (see isListed).
 export function levelFor(rows, key) {
   const i = ranked(rows).findIndex((r) => r.key === key);
   return i < 0 ? LEVELS[LEVELS.length - 1] : levelForRank(i + 1);
@@ -96,10 +96,15 @@ export function resolveKey(index, raw) {
 export function seedRows(question) {
   return question.answers.map(([label, seedw]) => ({ key: normalize(label), label, seedw, count: 0 }));
 }
+// Only answers on a question's list (or a typo of one, or one of its aliases) are accepted. Anything else is shaken off.
+export function isListed(question, raw) {
+  return resolveKey(buildIndex(question, []), raw) !== null;
+}
 export function judgeLocal(question, raw) {
   const rows = seedRows(question);
   const key = resolveKey(buildIndex(question, rows), raw);
-  const lvl = key ? levelFor(rows, key) : LEVELS[LEVELS.length - 1]; // can't check unknown answers offline
+  if (!key) return { rejected: "notlisted" };
+  const lvl = levelFor(rows, key);
   const row = rows.find((r) => r.key === key);
   return { valid: true, level: lvl.id, pts: lvl.pts, label: row ? row.label : String(raw).trim(), top: topLabels(rows) };
 }

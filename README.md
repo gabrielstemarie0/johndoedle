@@ -3,7 +3,7 @@
 A daily game of 7 questions. Each question asks for something in fancy vocabulary (a pizza topping becomes "a savory garnish strewn atop a baked, saucy disc of cheesy dough"; `public/lib/fancy.js`) and you type the
 answer **most people would give**. The more popular your answer, the more points you earn
 and the further your car drives. Plain HTML/JS front end plus one Cloudflare Worker, with D1 for answer counts and
-Workers AI for checking unfamiliar answers. No build step.
+No build step.
 
 ```
 public/                           the static game (served as Workers assets)
@@ -14,7 +14,7 @@ public/                           the static game (served as Workers assets)
   lib/scoring.js                  levels, ranking, answer matching (shared by browser and server)
   lib/text.js                     normalising, typo tolerance, "is this a real answer"
 src/worker.js                     routes POST /api/answer; everything else is served from public/
-src/answer-server.js              D1 counts + Workers AI checks
+src/answer-server.js              D1 counts; accepts only listed answers
 src/ratelimit.js                  per-IP / per-player / global request limits
 schema.sql, wrangler.toml         D1 tables, bindings (DB, AI, ASSETS) and Worker config
 ```
@@ -25,7 +25,7 @@ You see the road from behind your car (third person, as if you were the driver).
 and a hazard sign plus a red strip along your lane make that easy to read.
 - **Score any dollars** and the car **swerves around** the obstacle with no damage. The harder you scored, the harder you
   boost (and the more nitro).
-- **Score nothing** (an answer that doesn't fit) or **run out of time** and you **crash**: the car takes damage that
+- **Run out of time** and you **crash** (an answer that isn't on the question's list never scores or crashes: it just shakes off and you keep trying): the car takes damage that
   stays for the rest of the day (cracked rear window, a dead tail light, smoke, a hanging bumper) and you earn $0. An
   unsubmitted answer doesn't count when time runs out.
 - Crashes cost a repair bill that depends on the car you drive, climbing steadily from $25 (Rusty Hatchback) to $100,000
@@ -55,8 +55,7 @@ John Doe for a question is always the same answer. An answer's **rank** sets its
 | 🟨 Average Joe | 85 | #2 to #4 (3 answers) |
 | 🟧 Neighbor | 60 | #5 to #9 (5 answers) |
 | 🟪 Stranger | 30 | #10 to #19 (10 answers) |
-| 👽 Alien | 10 | any other real answer |
-| ❌ Imposter | 0 | the answer doesn't fit the question |
+| 👽 Alien | 10 | every other answer on the list (#20 and down) |
 | ⬛ Nothing | 0 | timed out with nothing real typed |
 
 The amounts are Krillion's points (10/30/60/85/100, as listed by fan sites; check krillion.io if exact figures matter),
@@ -64,20 +63,20 @@ flipped so the most common answer is best, and counted in **dollars**. A perfect
 
 Because tiers are by rank, a question needs at least 20 ranked answers for every level to be reachable (each of the
 70 questions has 38 to 55). An answer that isn't on a question's list is never ranked, however many players give it,
-so friends can't make up a "popular" answer: a real unlisted answer is an Alien. Blank, symbol-only and one-character answers can't be
+so friends can't make up a "popular" answer: an unlisted answer is simply not accepted. Blank, symbol-only and one-character answers can't be
 submitted (the field shakes and the timer keeps running).
 
 ## How an answer is scored (`/api/answer`)
-1. The answer is normalised (case, punctuation, plurals) and matched against the question's known answers and aliases.
-   Typos are forgiven: 1 edit for answers of 4-7 letters, 2 for 8+, none for 3 or fewer. Known answers never touch the AI.
-2. If it isn't known, a chat model (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, falling back to
-   `llama-3.1-8b-instruct-fast`) says whether it is a real answer to the question and gives it a short canonical name,
-   so "extra cheese" and "cheese" merge. Not valid = Imposter (0). Valid but new = Alien (10).
-3. Valid answers are counted once per player per question per day (`plays` table). If the AI is down, the answer is
-   accepted but not counted.
+Only answers on a question's list are accepted, so the only way to score nothing is to run out of time.
+1. The browser first rejects things that can't be an answer (symbols, gibberish with no vowels, a word from the question) and
+   anything that isn't on the question's list: the box clears, the bar shakes, a small label says why, and the clock keeps running.
+2. The answer is normalised (case, punctuation, plurals) and matched against the question's answers and aliases. Typos are
+   forgiven: 1 edit for answers of 4-7 letters, 2 for 8+, none for 3 or fewer.
+3. The server repeats the same check (an unlisted answer returns `{"rejected":"notlisted"}`), finds the answer's fixed rank and
+   level, and counts it once per player per question per day (`plays` table). No AI is used to judge answers any more.
 
-Without an AI binding (local dev) unfamiliar answers are accepted as written. If the API is unreachable the browser
-scores offline against the seed answers only.
+Because nothing outside the list is accepted, **every question's answer list needs to be thorough**: all the common answers,
+alternative names and spellings (as aliases).
 
 ## Rate limits (`src/ratelimit.js`)
 Every `/api/answer` call is counted in the `rate_limits` D1 table:

@@ -4,7 +4,7 @@
 //     -> { valid, level, pts, label, top: [most popular answers] }
 import questions from "../public/lib/bank.js";
 import { isValidAnswer } from "../public/lib/text.js";
-import { scoreAnswer, makeAI } from "./answer-server.js";
+import { scoreAnswer } from "./answer-server.js";
 import fancy from "../public/lib/fancy.js";
 import { rejectReason } from "../public/lib/rules.js";
 import { checkLimits } from "./ratelimit.js";
@@ -83,7 +83,7 @@ async function handleAnswer(request, env) {
   try {
     const bad = rejectReason(answer, fancy[question.id] || question.prompt); // not a word, or uses a word from the question
     if (bad) return reply({ rejected: bad });
-    return reply(await scoreAnswer({ db: env.DB, ai: makeAI(env.AI), question, answer: answer.trim(), player, day }));
+    return reply(await scoreAnswer({ db: env.DB, question, answer: answer.trim(), player, day }));
   } catch (e) {
     console.error("score failed", e && e.message);
     return reply({ error: "score failed" }, 502);
