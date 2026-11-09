@@ -17,7 +17,7 @@ an average adult gets it within about 5-10 seconds, with no niche knowledge.
 3. **Describe it from an indirect angle** instead: what it does, what it looks like, what it is made of, where you meet it, what
    people do with it, what it replaced, or how it feels. Use a synonym ladder: swap each key word for a rarer description
    (a ball -> "a sphere", a sport -> "a contest", a singer -> "a vocalist", a movie -> "a motion picture").
-4. **Keep it solvable.** A clever disguise, not a riddle that needs trivia. The plain question is shown after answering.
+4. **Keep it solvable, and don't lean toward the #1 answer.** A clever disguise, not a riddle that needs trivia. The plain question is shown after answering.
 5. **Mechanical rules (the checker enforces these):** starts with Name / Cite / Identify / Specify, max 120 characters, and no
    word in the wording may appear in any listed answer (the game rejects answers using a word from the question).
 
@@ -36,6 +36,17 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 | Name a type of cheese | a variety of dairy curd product that is aged, melted or crumbled | a pungent or creamy product of pressed, ripened milk curds (fine as it is: no key word is named) |
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
+
+- **2026-11-09, Name a Taylor Swift song (Nov 10):** "an earworm by the star whose multi-era world tour broke every box-office
+  record" gave the player no way to know it was about Taylor Swift. When the answers all belong to ONE specific person, brand or
+  franchise, the wording must carry a **well-known fact that points to them without being too obvious** (not their name, and not
+  a vague "famous star"). Test: would most people who know that person think of them from the clue alone?
+- **2026-11-09, Name a type of dinosaur (Nov 11):** "prehistoric", "giant", "reptile" and "bones in stone" are each an easy hint
+  to dinosaurs, and together they hand it over. **One era or anatomy word that maps straight to the answer set is already a
+  giveaway; never stack them.** Use an indirect angle instead (for example a famous film or a cultural fact).
+- **2026-11-09, Name a type of vehicle (Nov 11):** "passengers or cargo" points straight at the most common answer (car), so
+  everyone says car. **Check the likely #1 answer: the wording must not push toward it.** Don't list uses or examples; keep a
+  broad topic's wording short and neutral, like "a conveyance that travels".
 
 - **2026-11-09, Name an NBA player:** the wording said "professional basketball star ... top American league", so the category
   was obvious and nothing was coded. Never name the sport or the field; describe the thing indirectly.
