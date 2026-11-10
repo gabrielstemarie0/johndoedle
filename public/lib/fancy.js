@@ -92,4 +92,11 @@ export default {
   q89: "Name a deity from the pantheon of ancient Olympus.",
   q90: "Name an engineered contraption that whisks a traveler between destinations.",
   q91: "Name a former occupant of the White House's highest elected office.",
+  q92: "Name a royal heroine from the animated fairy tales of the House of the Mouse.",
+  q93: "Name a tiny, stain-prone morsel of sweetness picked from a bramble or a bush.",
+  q94: "Name a tune by the mop-topped Liverpool quartet whose arrival sparked a transatlantic 'invasion'.",
+  q95: "Name a discipline contested every four years beneath five interlocking rings.",
+  q96: "Name a creature hauled up from the deep on a hook or in a net, then served as a fillet.",
+  q97: "Name an incantation shouted by the bespectacled orphan with a lightning-bolt scar.",
+  q98: "Name a vast tract of preserved wilderness, patrolled by rangers in flat-brimmed hats.",
 };
