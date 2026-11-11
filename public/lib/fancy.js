@@ -99,4 +99,11 @@ export default {
   q96: "Name a creature hauled up from the deep on a hook or in a net, then served as a fillet.",
   q97: "Name an incantation shouted by the bespectacled orphan with a lightning-bolt scar.",
   q98: "Name a vast tract of preserved wilderness, patrolled by rangers in flat-brimmed hats.",
+  q99: "Name a liquid-based dish that arrives steaming in a bowl, with crackers alongside.",
+  q100: "Name a resident of the sitcom town where a donut-loving nuclear plant operator lives.",
+  q101: "Name a seat of national power in a country west of the Urals.",
+  q102: "Name a garment that sits atop the skull.",
+  q103: "Name a specific nameplate, not the maker, that rolls off an assembly line.",
+  q104: "Name a system of speech and writing shared by a community of people.",
+  q105: "Name a way to work up a sweat on purpose.",
 };
