@@ -3,8 +3,9 @@
 // draw(ctx, kind, x, y, h, { fear }): puts the feet at (x, y) and scales the animal to h pixels tall.
 // fear = true is the last second before it gets hit: wide eyes, raised brows, an open mouth and a sweat drop.
 export const ANIMALS = ["chicken", "turkey", "goat", "sheep", "pig", "horse", "cow"];
-// How big each animal is drawn next to the others (1 = the biggest), roughly following their real sizes.
-export const SIZE = { chicken: 0.34, turkey: 0.46, goat: 0.6, sheep: 0.66, pig: 0.7, horse: 0.96, cow: 1 };
+// How tall each animal really is (metres, to the top of the head, ears or horns). The scene draws them to the same scale as
+// the player's car (about 1.8 m wide), so a chicken is knee-high next to it and a horse stands taller than the roof.
+export const HEIGHT_M = { chicken: 0.45, turkey: 0.95, goat: 0.95, sheep: 0.95, pig: 0.95, horse: 1.8, cow: 1.55 };
 const O = "#2a2630";
 
 // Where each animal's eyes and mouth are, so the scared face can be drawn over the calm one: eyes [x, y, radius], mouth [x, y, rx, ry].

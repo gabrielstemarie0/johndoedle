@@ -4,7 +4,7 @@
 // nothing) and you hit it. Drawn on a canvas, no image files. The scene only reacts to what the game tells
 // it; it has no game logic of its own.
 import { carDataURI, carById } from "./cars.js";
-import { ANIMALS, SIZE, draw as drawAnimal } from "./animals.js";
+import { ANIMALS, HEIGHT_M, draw as drawAnimal } from "./animals.js";
 
 const REDUCED = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MAX_SPACES = 35;
@@ -50,6 +50,8 @@ const Z_FAR = 70;
 
 // the obstacle is a farm animal, a bigger one with each question: chicken, turkey, goat, sheep, pig, horse, cow
 const OBSTACLES = ANIMALS;
+// The car is drawn 1.84 half-lane-units wide (0.92 of a lane) and its body is 72% of that image, which is a real 1.8 m: so 1 m = 0.736 u.
+const M_PER_U = 0.736;
 
 export function createScene(root, fuelEl) {
   const rand = rng(11);
@@ -267,7 +269,7 @@ export function createScene(root, fuelEl) {
     const left = (o.held ? o.heldFrac : o.frac ?? 1) * (o.durationMs || 25000) / 1000;
     const fear = o.mode === "hit" || (o.mode === "timer" && left <= 1);
     if (fear && !REDUCED) ctx.translate(Math.sin(S.t * 70) * u * 0.05, 0); // trembling
-    drawAnimal(ctx, o.kind, 0, 0, u * (0.6 + 2.6 * (SIZE[o.kind] ?? 0.6)), { fear });
+    drawAnimal(ctx, o.kind, 0, 0, u * M_PER_U * (HEIGHT_M[o.kind] ?? 1), { fear }); // true to scale with the car
     ctx.restore();
   }
 

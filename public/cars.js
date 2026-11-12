@@ -32,8 +32,9 @@ const MULT = { commuter: 1, zippy: 2, wagon: 4, pickup: 8, coupe: 17, muscle: 35
 CARS.forEach((c) => { c.mult = MULT[c.id] || 0; });
 // What one crash costs in repairs with this car: a steady climb (about +68% per car) from $25 to $100,000.
 // If a repair costs more than your cash, your cash goes negative (you're in debt).
-const REPAIR = { rusty: 25, commuter: 42, zippy: 71, wagon: 118, pickup: 199, coupe: 334, muscle: 561, rally: 942, luxe: 1581, sports: 2655, super: 4459, hyper: 7488, rocket: 12574, gold: 21116, hover: 35460, tractor: 59549, monster: 100000 };
-CARS.forEach((c) => { c.repair = REPAIR[c.id] || 25; });
+// Every car in a tier pays the same repair bill: the price of the cheapest car in that tier (set Nov 12, 2026).
+const TIER_REPAIR = { alien: 25, stranger: 199, neighbor: 1581, joe: 7488, johndoe: 35460 };
+CARS.forEach((c) => { c.repair = TIER_REPAIR[c.level] || 25; });
 export const PRESTIGE_GAMES = 10; // perfect games (10/10 John Doe) with the monster tractor needed to reset to the next planet
 export const carById = (id) => CARS.find((c) => c.id === id) || CARS[0];
 
