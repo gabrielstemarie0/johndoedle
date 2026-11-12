@@ -106,4 +106,11 @@ export default {
   q103: "Name a specific nameplate, not the maker, that rolls off an assembly line.",
   q104: "Name a system of speech and writing shared by a community of people.",
   q105: "Name a way to work up a sweat on purpose.",
+  q106: "Name a boxed grain item poured into milk, often fronted by a cartoon mascot.",
+  q107: "Name a tiny creature whose body is divided into head, thorax and abdomen.",
+  q108: "Name a town housing a governor's mansion and the lawmakers' dome.",
+  q109: "Name a zany cartoon star who signs off with 'That's all, folks!'",
+  q110: "Name a barista-made order that tastes of roasted beans.",
+  q111: "Name a scheming wrongdoer from a Burbank studio's animated fairy tales.",
+  q112: "Name a floating craft that rides the waves.",
 };
