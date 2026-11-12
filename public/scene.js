@@ -416,21 +416,13 @@ export function createScene(root, fuelEl) {
       else if (e.c) { ctx.globalAlpha = e.c.fade ? Math.max(0, e.c.fade) : 1; drawSprite(trafficImg(e.c.color, e.c.van), e.c.lane * 0.667, e.z, 0.8); ctx.globalAlpha = 1; }
       else drawObstacle(e.o, e.z);
     }
-    // the countdown, made easy to read: a danger strip down the lane that deepens as time runs out,
-    // and a pulsing hazard sign over the obstacle (it is only a dot when it is far away)
+    // the countdown, made easy to read: a danger strip down the lane that deepens as time runs out
+    // (the pulsing hazard sign over the obstacle was removed: it was too distracting)
     const wo = S.obs;
     if (wo && wo.mode === "timer" && wo.z > Z_CAR + 0.2) {
       const frac = wo.frac ?? 1, a = 0.07 + 0.3 * (1 - frac);
       ctx.fillStyle = `rgba(255,60,40,${a})`;
       ctx.beginPath(); ctx.moveTo(X(-0.28, Z_CAR + 0.1), Y(Z_CAR + 0.1)); ctx.lineTo(X(0.28, Z_CAR + 0.1), Y(Z_CAR + 0.1)); ctx.lineTo(X(0.28, wo.z), Y(wo.z)); ctx.lineTo(X(-0.28, wo.z), Y(wo.z)); ctx.closePath(); ctx.fill();
-      if (wo.z > 2.2) {
-        const ox = X(0, wo.z), oy = Y(wo.z) - (rw / wo.z / 3) * 1.4 - 14, pulse = 0.5 + 0.5 * Math.sin(S.t * (4 + (1 - frac) * 10)), r = 11 + pulse * 3;
-        ctx.save(); ctx.translate(ox, oy);
-        ctx.fillStyle = `rgba(255,${200 - pulse * 120},30,0.96)`; ctx.strokeStyle = "rgba(10,12,24,.9)"; ctx.lineWidth = 2.5; ctx.lineJoin = "round";
-        ctx.beginPath(); ctx.moveTo(0, -r); ctx.lineTo(r * 1.1, r * 0.8); ctx.lineTo(-r * 1.1, r * 0.8); ctx.closePath(); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = "#14161c"; ctx.fillRect(-1.4, -r * 0.4, 2.8, r * 0.6); ctx.beginPath(); ctx.arc(0, r * 0.52, 1.6, 0, 7); ctx.fill();
-        ctx.restore();
-      }
     }
     // dusk and night darken everything except the car
     if (p.amb > 0.01) { ctx.fillStyle = `rgba(4,8,34,${p.amb})`; ctx.fillRect(0, 0, W, H); }

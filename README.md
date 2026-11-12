@@ -31,7 +31,7 @@ Any update, by anyone or any scheduled task, must leave player engagement untouc
 ## How a round plays
 You see the road from behind your car (third person, as if you were the driver). When a question starts, an
 **obstacle** appears on the horizon. **Its distance is the timer**: it reaches your bumper when the 25 seconds are up,
-and a hazard sign plus a red strip along your lane make that easy to read.
+and a red strip along your lane makes that easy to read.
 - **Score any dollars** and the car **swerves around** the obstacle with no damage. The harder you scored, the harder you
   boost (and the more nitro).
 - **Run out of time** and you **crash** (an answer that isn't on the question's list never scores or crashes: it just shakes off and you keep trying): the car takes damage that
