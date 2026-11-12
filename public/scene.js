@@ -365,7 +365,7 @@ export function createScene(root, fuelEl) {
     }
 
     // damage smoke
-    if (S.damage >= 2 && motion && Math.random() < 0.18 * S.damage) { const sp = carPos(); if (sp) emit(sp.x, sp.y - sp.h * 0.7, "smoke", 1); }
+    if (S.damage >= 2 && motion && Math.random() < 0.18 * Math.min(4, S.damage)) { const sp = carPos(); if (sp) emit(sp.x, sp.y - sp.h * 0.7, "smoke", 1); }
     for (const p of S.particles) { p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.type === "spark" || p.type === "blood") p.vy += 700 * dt; }
     S.particles = S.particles.filter((p) => p.life < p.max);
   }
@@ -445,7 +445,7 @@ export function createScene(root, fuelEl) {
     setPhase(i) { S.phase = clamp(i, 0, PHASES.length - 1); S.sunI = S.phase; root.classList.toggle("night", S.phase >= 7); },
     setCar(id) { S.car = carById(id); img(S.car, { damage: S.damage }); },
     // cumulative crashes today (0..4 shows more damage); resets overnight
-    setDamage(n) { S.damage = clamp(n | 0, 0, 4); img(S.car, { damage: S.damage }); },
+    setDamage(n) { S.damage = clamp(n | 0, 0, 7); img(S.car, { damage: S.damage }); },
     // A question has started: put an obstacle on the horizon. It reaches the car when the time is up.
     beginQuestion({ startedAt, durationMs, index = 0 }) {
       S.obs = { kind: OBSTACLES[index % OBSTACLES.length], mode: "timer", z: Z_START, startedAt, durationMs, held: false, frac: 1 };
@@ -457,7 +457,7 @@ export function createScene(root, fuelEl) {
     // The result is in. ok = the answer scored: swerve around the obstacle. Otherwise hit it.
     resolve(ok, { spaces = 1, damage = S.damage } = {}) {
       const o = S.obs;
-      if (!o) { if (!ok) S.damage = clamp(damage, 0, 4); return; }
+      if (!o) { if (!ok) S.damage = clamp(damage, 0, 7); return; }
       o.mode = ok ? "pass" : "hit"; o.t0 = S.t; o.zFrom = o.z; o.held = false;
       if (ok) {
         const dir = Math.random() < 0.5 ? -1 : 1;
@@ -466,7 +466,7 @@ export function createScene(root, fuelEl) {
         if (REDUCED) S.px = S.targetX; // calm: swerve instantly, no speed boost or flames
         else { S.boost = Math.max(S.boost, 0.12 + spaces * 0.085); S.flame = spaces >= 4 ? 1 : 0; }
       } else {
-        o.pendingDamage = clamp(damage, 0, 4); // the splat shows up on the car when it actually hits
+        o.pendingDamage = clamp(damage, 0, 7); // the splat shows up on the car when it actually hits
         if (REDUCED) { impact(o); }
       }
     },

@@ -523,10 +523,13 @@ async function repairScuffle(host, layers, box, showClean) {
   sfx.poof();
   await sleep(380);
   let n = layers;
+  const blood = box.querySelectorAll(".blood");
+  blood.forEach((b) => { b.style.transition = "opacity .25s"; });
   for (let step = 0; step < 12; step++) {
     const [word, sound] = FIGHT[(step * 3 + Math.floor(Math.random() * 3)) % FIGHT.length];
     sfx[sound]();
     comicWord(sc, word);
+    blood.forEach((b) => { b.style.opacity = String(Math.max(0, 1 - (step + 1) / 10)); }); // the red gets scrubbed away
     if (step % 2 === 1 && n >= 1) { // a bit of the damage disappears inside the cloud
       box.querySelectorAll(`.d${n}`).forEach((g) => { g.style.transition = "opacity .3s"; g.style.opacity = "0"; });
       n--;
@@ -704,7 +707,7 @@ async function playFinale(fresh, dmg) {
   }
   // 3. the car and its damage
   carBox.hidden = false;
-  showCar(Math.min(4, dmg));
+  showCar(Math.min(7, dmg));
   $("finale-car-svg").classList.add("in");
   status.textContent = dmg ? `💥 Your car took ${dmg} hit${dmg > 1 ? "s" : ""}` : "✨ Not a scratch on it";
   scene.setDamage(dmg);
