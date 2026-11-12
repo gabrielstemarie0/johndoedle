@@ -113,4 +113,6 @@ export default {
   q110: "Name a barista-made order that tastes of roasted beans.",
   q111: "Name a scheming wrongdoer from a Burbank studio's animated fairy tales.",
   q112: "Name a floating craft that rides the waves.",
+  q113: "Name a celebrated virtuoso of the plucked, six-stringed axe, known for blistering solos.",
+  q114: "Name a theatrical production in which the cast sings and dances, staged nightly beneath marquee lights in Manhattan.",
 };

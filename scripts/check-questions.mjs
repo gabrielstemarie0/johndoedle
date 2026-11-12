@@ -83,6 +83,15 @@ for (const q of bank) {
   if (a.toLowerCase() !== b.toLowerCase()) bad(q.id, `the bracket differs: plain "(${a})" vs fancy "(${b})"`);
   if (!/spotify streams|most (iconic|influential|impactful|famous)|best known/i.test(a)) bad(q.id, `bracket "(${a})" must say "Spotify streams" or name another basis (most iconic, most influential, most impactful, most famous, best known)`);
 }
+// Every game day from Nov 13, 2026 must include at least one music question (owner rule, Nov 12): a song, singer, band, rapper,
+// instrument, genre, musician, album, composer or Broadway musical. Judged from the plain prompt.
+const MUSIC = /\b(songs?|singers?|bands?|musicians?|guitarists?|drummers?|pianists?|albums?|instruments?|rappers?|music|musicals?|artists?|composers?|carols?|anthems?|tunes?)\b/i;
+const isMusic = (q) => MUSIC.test(q.prompt.replace(/looney tunes|merrie melodies/gi, ""));
+const byId = new Map(bank.map((q) => [q.id, q]));
+for (const [day, ids] of Object.entries(schedule)) {
+  if (day < "2026-11-13") continue;
+  if (!ids.some((id) => byId.get(id) && isMusic(byId.get(id)))) bad(day, "no music question in this day's 7: add one (a song, singer, band, instrument, genre, musician or musical)");
+}
 // The end-screen roast lines: unique, short, one per day.
 const lines = [...POOL, ...Object.values(ROASTS)];
 if (new Set(lines.map((l) => l.toLowerCase())).size !== lines.length) bad("roasts", "a roast line appears twice");

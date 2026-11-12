@@ -31,6 +31,13 @@ an average adult gets it within about 5-10 seconds, with no niche knowledge.
 5. **Mechanical rules (the checker enforces these):** starts with Name / Cite / Identify / Specify, max 120 characters, and no
    word in the wording may appear in any listed answer (the game rejects answers using a word from the question).
 
+## Every day needs a music question (owner rule, Nov 12, 2026)
+
+Each set of 7 must include **at least one music question**: a song (ranked by Spotify streams, see below), a singer, band, rapper,
+guitarist or other musician, an instrument, a genre, an album, a composer or a Broadway musical. The checker fails any day from
+Nov 13, 2026 on that has none. Nov 13 got q113 (guitarist) and Nov 14 got q114 (Broadway musical) in place of the car-model and
+boat questions (q103, q112); those two are unused leftovers that a later night may schedule.
+
 ## Song questions: always say what the order is based on (owner rule, Nov 12, 2026)
 
 Any question that asks for a song, track, single, tune, hit, carol or anthem **must state its ranking basis in brackets at the end of
