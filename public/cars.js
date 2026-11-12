@@ -126,21 +126,46 @@ function bloodCover(id, level, from, box) {
     + `<g class="blood"${level < 7 ? ` mask="url(#bm${n})"` : ""}><use href="#${id}" xlink:href="#${id}" filter="url(#bf${n})"/></g>`;
 }
 
-// Cracks, scorch marks and a dead tail light, getting worse with each crash (damage 1 to 4).
+// A blood splat centred on (x, y): an irregular blob, thin spray streaks and a few drips running down. The shape is drawn from
+// the position, so every splat is a little different but always the same for the same spot (the car image is cached).
+function splat(x, y, r) {
+  r *= 1.2;
+  let seed = (Math.round(x * 73 + y * 131 + r * 17) >>> 0) || 7;
+  const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+  const f = (n) => n.toFixed(1);
+  const n = 11, pts = [];
+  for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2, k = r * (0.62 + rnd() * 0.78); pts.push([x + Math.cos(a) * k, y + Math.sin(a) * k * 0.82]); }
+  const mid = (p, q) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+  let d = `M${f(mid(pts[n - 1], pts[0])[0])} ${f(mid(pts[n - 1], pts[0])[1])}`;
+  for (let i = 0; i < n; i++) { const m = mid(pts[i], pts[(i + 1) % n]); d += ` Q${f(pts[i][0])} ${f(pts[i][1])} ${f(m[0])} ${f(m[1])}`; }
+  let sprays = "", drips = "";
+  for (let i = 0; i < 6; i++) { const a = rnd() * Math.PI * 2, r0 = r * (1.2 + rnd() * 0.25), r1 = r0 + r * (0.14 + rnd() * 0.18); // short flecks, detached from the blob
+    sprays += `M${f(x + Math.cos(a) * r0)} ${f(y + Math.sin(a) * r0 * 0.82)} L${f(x + Math.cos(a) * r1)} ${f(y + Math.sin(a) * r1 * 0.82)}`; }
+  for (let i = 0; i < 3; i++) { const dx = (i - 1) * r * 0.5 + (rnd() - 0.5) * r * 0.3, w = r * (0.1 + rnd() * 0.07), len = r * (0.9 + rnd() * 1.4), y0 = y + r * 0.3;
+    drips += `M${f(x + dx - w)} ${f(y0)} L${f(x + dx + w)} ${f(y0)} L${f(x + dx + w * 0.45)} ${f(y0 + len)} L${f(x + dx - w * 0.45)} ${f(y0 + len)}Z`; }
+  return `<g fill="#a80f1a" stroke="#6e0a11" stroke-width=".7" stroke-linejoin="round"><path d="${drips}"/><path d="${d}Z"/></g>`
+    + `<path d="${sprays}" stroke="#a80f1a" stroke-width="${f(r * 0.2)}" stroke-linecap="round" fill="none"/>`
+    + `<ellipse cx="${f(x + r * 0.05)}" cy="${f(y + r * 0.08)}" rx="${f(r * 0.5)}" ry="${f(r * 0.36)}" fill="#7d0b14" opacity=".75"/>`
+    + `<ellipse cx="${f(x - r * 0.28)}" cy="${f(y - r * 0.3)}" rx="${f(r * 0.3)}" ry="${f(r * 0.13)}" fill="#e0323c" opacity=".8" transform="rotate(-25 ${f(x - r * 0.28)} ${f(y - r * 0.3)})"/>`;
+}
+
+// Cracks, scorch marks, blood splats and a dead tail light, getting worse with each crash (damage 1 to 4).
 function damageMarks(s, damage) {
   if (damage < 1) return "";
   const cx = 100, wy = s.ct + 6;
-  let out = `<g stroke="#ffffff" stroke-opacity=".85" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M${cx - 6} ${wy} L${cx + 2} ${wy + 12} L${cx - 3} ${wy + 20} M${cx + 2} ${wy + 12} L${cx + 16} ${wy + 8}"/></g>`;
+  let out = `<g stroke="#ffffff" stroke-opacity=".85" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M${cx - 6} ${wy} L${cx + 2} ${wy + 12} L${cx - 3} ${wy + 20} M${cx + 2} ${wy + 12} L${cx + 16} ${wy + 8}"/></g>` + splat(cx - 14, wy + 8, 12);
   if (damage >= 2) {
+    out += splat(cx + 24, s.bt + 22, 10);
     out += `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none" stroke-linecap="round"><path d="M${cx - 26} ${wy + 2} L${cx - 14} ${wy + 14} L${cx - 20} ${wy + 22} M${cx + 22} ${wy + 4} L${cx + 12} ${wy + 16}"/></g>`;
     out += `<polygon points="${100 + s.bx - 26},${s.bt + 16} ${100 + s.bx - 4},${s.bt + 12} ${100 + s.bx - 8},${s.bb - 4} ${100 + s.bx - 30},${s.bb - 6}" fill="#000" fill-opacity=".35"/>`;
     out += `<path d="M${100 - s.bx + 14} ${s.bt + 22} l14 6 M${100 - s.bx + 18} ${s.bt + 30} l16 4" stroke="#000" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>`;
   }
   if (damage >= 3) {
+    out += splat(cx - 4, s.bb - 18, 11);
     out += `<rect x="${100 - s.bx + 8}" y="${s.bb - 11}" width="${2 * s.bx - 16}" height="9" rx="2" fill="#2b2d33" transform="rotate(3 100 ${s.bb})"/>`;
     out += `<ellipse cx="100" cy="${s.bt + 10}" rx="${s.bx - 18}" ry="9" fill="#000" fill-opacity=".38"/>`;
   }
-  if (damage >= 4) out += `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none"><path d="M${cx - 34} ${wy + 8} L${cx - 20} ${wy + 24} M${cx + 30} ${wy + 6} L${cx + 18} ${wy + 24}"/></g><polygon points="${100 - s.bx},${s.bb - 20} ${100 - s.bx + 18},${s.bb - 26} ${100 - s.bx + 14},${s.bb - 2} ${100 - s.bx},${s.bb}" fill="#000" fill-opacity=".4"/>`;
+  if (damage >= 4) out += splat(cx + 4, wy + 14, 16) + `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none"><path d="M${cx - 34} ${wy + 8} L${cx - 20} ${wy + 24} M${cx + 30} ${wy + 6} L${cx + 18} ${wy + 24}"/></g><polygon points="${100 - s.bx},${s.bb - 20} ${100 - s.bx + 18},${s.bb - 26} ${100 - s.bx + 14},${s.bb - 2} ${100 - s.bx},${s.bb}" fill="#000" fill-opacity=".4"/>`;
   return out;
 }
 
@@ -240,10 +265,9 @@ function monster(car, damage) {
 // The car as an SVG string. damage 0..4 adds cracks, scorch and a dead tail light.
 export function carSVG(car, { damage = 0 } = {}) {
   const c = typeof car === "string" ? carById(car) : car;
-  const d = Math.max(0, Math.min(4, damage | 0)), blood = Math.max(0, Math.min(7, damage | 0)); // cracks stop at 4, the red goes to 7
+  const d = Math.max(0, Math.min(4, damage | 0)); // the car on the road keeps its cracks and splats, up to 4
   const inner = c.shape === "pickup" ? pickup(c, d) : c.shape === "rocket" ? rocket(c, d) : c.shape === "hover" ? hover(c, d) : c.shape === "tractor" ? tractor(c, d) : c.shape === "monster" ? monster(c, d) : normalCar(c, d);
-  const id = "car" + (++bloodN);
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 128" width="200" height="128"><g id="${id}">${inner}</g>${bloodCover(id, blood, "top", [0, 16, 200, 112])}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 128" width="200" height="128">${inner}</svg>`;
 }
 export const carDataURI = (car, opts) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(carSVG(car, opts));
 
