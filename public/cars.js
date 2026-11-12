@@ -108,21 +108,38 @@ function spoiler(kind, s, c) {
   return "";
 }
 
-// The blood: a plain red cover over the car, growing from the front with every crash (levels 1 to 7; 7 is the whole car).
-// It is a red copy of the car's own outline, so it follows the shape of any car. `from` says where it starts:
-// "right" = the nose of the side view, "top" = the far end of the rear view (the part facing the animal).
+// The blood on the end-screen car: a red cover growing from the nose backwards with every crash (levels 1 to 7; 7 is the whole
+// car). It is a red copy of the car's own outline (so it follows any car's shape) shown through a mask: a wavy, curved front
+// edge with a few tongues reaching back, plus a spray of tiny specks and flecks on the part that is not covered yet.
 let bloodN = 0;
-function bloodCover(id, level, from, box) {
+function bloodCover(id, level) {
   if (level < 1) return "";
-  const n = ++bloodN, [x0, y0, x1, y1] = box;
+  const n = ++bloodN, X0 = 10, X1 = 232, f1 = (v) => v.toFixed(1);
   let mask = "";
   if (level < 7) {
-    const f = level / 7, soft = 0.012;
-    if (from === "right") { const xb = x1 - f * (x1 - x0 + 4), t = (xb - x0) / (x1 - x0); mask = `<linearGradient id="bg${n}" gradientUnits="userSpaceOnUse" x1="${x0}" y1="0" x2="${x1}" y2="0"><stop offset="${Math.max(0, t - soft).toFixed(3)}" stop-color="#000"/><stop offset="${Math.min(1, t + soft).toFixed(3)}" stop-color="#fff"/></linearGradient>`; }
-    else { const yb = y0 + f * (y1 - y0 + 4), t = (yb - y0) / (y1 - y0); mask = `<linearGradient id="bg${n}" gradientUnits="userSpaceOnUse" x1="0" y1="${y0}" x2="0" y2="${y1}"><stop offset="${Math.max(0, t - soft).toFixed(3)}" stop-color="#fff"/><stop offset="${Math.min(1, t + soft).toFixed(3)}" stop-color="#000"/></linearGradient>`; }
-    mask += `<mask id="bm${n}" maskUnits="userSpaceOnUse" x="${x0 - 10}" y="${y0 - 10}" width="${x1 - x0 + 20}" height="${y1 - y0 + 20}"><rect x="${x0 - 10}" y="${y0 - 10}" width="${x1 - x0 + 20}" height="${y1 - y0 + 20}" fill="url(#bg${n})"/></mask>`;
+    let seed = 4242 + level * 977;
+    const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+    const xb = X1 - (level / 7) * (X1 - X0 + 8), ph1 = rnd() * 6, ph2 = rnd() * 6;
+    const tongues = [0, 1, 2, 3].map(() => ({ yc: 8 + rnd() * 84, w: 5 + rnd() * 5, len: 10 + rnd() * 20 }));
+    const pts = [];
+    for (let y = -10; y <= 112; y += 4) {
+      let e = xb + 7 * Math.sin(y * 0.11 + ph1) + 4 * Math.sin(y * 0.29 + ph2);
+      for (const t of tongues) e -= t.len * Math.exp(-(((y - t.yc) / t.w) ** 2));
+      pts.push([Math.min(e, X1 + 6), y]);
+    }
+    let d = `M${X1 + 30} -10 L${f1(pts[0][0])} -10`;
+    for (let i = 1; i < pts.length; i++) { const m = [(pts[i - 1][0] + pts[i][0]) / 2, (pts[i - 1][1] + pts[i][1]) / 2]; d += ` Q${f1(pts[i - 1][0])} ${f1(pts[i - 1][1])} ${f1(m[0])} ${f1(m[1])}`; }
+    d += ` L${X1 + 30} 112Z`;
+    let spatter = "";
+    for (let i = 0; i < 90; i++) { // tiny specks, thick near the red and thinning out towards the back
+      const dist = -Math.log(1 - rnd()) * (14 + level * 4), x = xb - 4 - dist, y = rnd() * 100;
+      if (x < X0 - 6) continue;
+      const r = 0.55 + rnd() * rnd() * 1.6, big = i % 11 === 0 && dist < 22 ? 1.6 : 1;
+      spatter += `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(r * (1 + rnd() * 1.4) * big)}" ry="${f1(r * big)}" transform="rotate(${Math.round(rnd() * 60 - 30)} ${f1(x)} ${f1(y)})"/>`;
+    }
+    mask = `<mask id="bm${n}" maskUnits="userSpaceOnUse" x="-20" y="-20" width="290" height="140"><g fill="#fff"><path d="${d}"/>${spatter}</g></mask>`;
   }
-  return `<defs><filter id="bf${n}" x="-5%" y="-5%" width="110%" height="110%"><feFlood flood-color="#c4121e" flood-opacity=".84"/><feComposite in2="SourceAlpha" operator="in"/></filter>${mask}</defs>`
+  return `<defs><filter id="bf${n}" x="-5%" y="-5%" width="110%" height="110%"><feFlood flood-color="#c4121e" flood-opacity=".86"/><feComposite in2="SourceAlpha" operator="in"/></filter>${mask}</defs>`
     + `<g class="blood"${level < 7 ? ` mask="url(#bm${n})"` : ""}><use href="#${id}" xlink:href="#${id}" filter="url(#bf${n})"/></g>`;
 }
 
@@ -341,5 +358,5 @@ export function carSideSVG(car, { damage = 0 } = {}) {
       ${wheel(62)}${wheel(182)}${sideDamage(228, d)}`;
   }
   const id = "side" + (++bloodN), smoke = sideSmoke; sideSmoke = "";
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-4 0 240 100" class="side-car" role="img" aria-label="${c.name}, side view"><ellipse cx="120" cy="92" rx="104" ry="5" fill="#000" opacity=".25"/><g id="${id}">${inner}</g>${bloodCover(id, blood, "right", [10, 0, 232, 100])}${smoke}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-4 0 240 100" class="side-car" role="img" aria-label="${c.name}, side view"><ellipse cx="120" cy="92" rx="104" ry="5" fill="#000" opacity=".25"/><g id="${id}">${inner}</g>${bloodCover(id, blood)}${smoke}</svg>`;
 }
