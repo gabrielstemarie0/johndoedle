@@ -31,6 +31,23 @@ an average adult gets it within about 5-10 seconds, with no niche knowledge.
 5. **Mechanical rules (the checker enforces these):** starts with Name / Cite / Identify / Specify, max 120 characters, and no
    word in the wording may appear in any listed answer (the game rejects answers using a word from the question).
 
+## Song questions: always say what the order is based on (owner rule, Nov 12, 2026)
+
+Any question that asks for a song, track, single, tune, hit, carol or anthem **must state its ranking basis in brackets at the end of
+BOTH the plain prompt and the fancy wording**, with the same text in both:
+
+- **Default: order the answers by Spotify streams.** Rank the songs by their all-time Spotify stream counts (look them up each night,
+  for example kworb.net's Spotify "streams" pages, Spotify's own "popular" lists or a web search; do not rank from memory) and end
+  both texts with **(Spotify streams)**. Example plain prompt: `Name a Beatles song (Spotify streams)`; the fancy wording ends with the
+  same `(Spotify streams)` and must still fit in 120 characters.
+- **Or choose another basis on purpose** (for example "most iconic" or "most impactful" for a band whose biggest songs on Spotify are
+  not the ones everyone thinks of), and then say so in the brackets instead: `(most iconic)`, `(most influential)`,
+  `(most impactful)`, `(most famous)` or `(best known)`. Never leave the basis unstated.
+- The checker (`scripts/check-questions.mjs`) fails any song question after q94 that is missing the bracket, has different brackets, or
+  names no accepted basis. The bracket words are ignored by the "do not repeat the plain prompt's words" check.
+- Why: q94 (Name a Beatles song, Nov 12) put "Hey Jude" first on gut feel about impact, but it is not the Beatles' most-streamed song on
+  Spotify ("Here Comes the Sun" is). The ranking must be defensible, and the player must know which ranking is meant.
+
 ## Self-test before you save
 
 Read ONLY the fancy wording. Ask: "Which category did I just say out loud?" If a word in it names the field, the sport, the
@@ -46,6 +63,10 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 | Name a type of cheese | a variety of dairy curd product that is aged, melted or crumbled | a pungent or creamy product of pressed, ripened milk curds (fine as it is: no key word is named) |
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
+
+- **2026-11-12, Name a Beatles song (q94):** the #1 answer ("Hey Jude") was chosen by impact, not by Spotify streams, and nothing told
+  the player which ranking applied. From now on every song question orders its answers by Spotify streams and says **(Spotify
+  streams)** in brackets beside the question, or it names another basis in the brackets. See "Song questions" above.
 
 - **2026-11-09, Name a type of vehicle, second try:** "a conveyance that travels" was too simple. Neutral does not mean trivial:
   keep the wording free of hints toward the #1 answer (no "passengers", "cargo", "wheels"), but still disguise the category with

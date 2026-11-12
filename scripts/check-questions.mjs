@@ -65,9 +65,23 @@ const PLAIN_STOP = new Set(["name", "a", "an", "the", "of", "that", "is", "in", 
 for (const q of bank) {
   if (Number(q.id.slice(1)) <= 91) continue;
   const f = (fancy[q.id] || "").toLowerCase();
-  for (const w of q.prompt.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/)) {
+  const plain = q.prompt.replace(/\s*\([^)]*\)\s*$/, ""); // the bracket note at the end is not part of the category
+  for (const w of plain.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/)) {
     if (w && !PLAIN_STOP.has(w) && new RegExp(`\\b${w}s?\\b`).test(f)) bad(q.id, `fancy wording names the category word "${w}" from the plain prompt; disguise it`);
   }
+}
+// Song questions (since Nov 12, 2026, from q95): the owner wants the basis of the ranking stated in brackets at the end of BOTH the
+// plain prompt and the fancy wording: "(Spotify streams)" when the answers are ordered by Spotify streams, or another stated basis
+// such as "(most iconic)". See "Song questions" in docs/question-wording.md.
+for (const q of bank) {
+  if (Number(q.id.slice(1)) <= 94) continue;
+  const plain = q.prompt.replace(/\s*\([^)]*\)\s*$/, "");
+  if (!/\b(songs?|tracks?|singles?|tunes?|hits?|carols?|anthems?)\b/i.test(plain.replace(/looney tunes|merrie melodies/gi, ""))) continue; // "Looney Tunes" is a cartoon, not a song question
+  const tag = (t) => (t.match(/\(([^)]+)\)\s*[.?!]?\s*$/) || [])[1];
+  const a = tag(q.prompt), b = tag(fancy[q.id] || "");
+  if (!a || !b) { bad(q.id, "a song question must end with a bracket saying what the order is based on, in BOTH the plain prompt and the fancy wording, e.g. (Spotify streams)"); continue; }
+  if (a.toLowerCase() !== b.toLowerCase()) bad(q.id, `the bracket differs: plain "(${a})" vs fancy "(${b})"`);
+  if (!/spotify streams|most (iconic|influential|impactful|famous)|best known/i.test(a)) bad(q.id, `bracket "(${a})" must say "Spotify streams" or name another basis (most iconic, most influential, most impactful, most famous, best known)`);
 }
 // The end-screen roast lines: unique, short, one per day.
 const lines = [...POOL, ...Object.values(ROASTS)];
