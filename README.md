@@ -30,8 +30,8 @@ Any update, by anyone or any scheduled task, must leave player engagement untouc
 
 ## How a round plays
 You see the road from behind your car (third person, as if you were the driver). When a question starts, an
-**obstacle** appears on the horizon. **Its distance is the timer**: it reaches your bumper when the 25 seconds are up,
-and a red strip along your lane makes that easy to read.
+**farm animal** appears on the horizon (a bigger one each question: chicken, turkey, goat, sheep, pig, horse, cow). **Its distance is the timer**: it reaches your bumper when the 25 seconds are up,
+and a red strip along your lane makes that easy to read. In the last second the animal looks scared; if it reaches you, blood splats the car and the end-of-game scene cleans it off.
 - **Score any dollars** and the car **swerves around** the obstacle with no damage. The harder you scored, the harder you
   boost (and the more nitro).
 - **Run out of time** and you **crash** (an answer that isn't on the question's list never scores or crashes: it just shakes off and you keep trying): the car takes damage that
@@ -40,8 +40,8 @@ and a red strip along your lane makes that easy to read.
 - Crashes cost a repair bill that depends on the car you drive, climbing steadily from $25 (Rusty Hatchback) to $100,000
   (Midnight Monster Tractor); the prices are in `public/cars.js` and shown on every shop card. When the last question is answered,
   an end-of-game scene plays on its own: your winnings (plus any streak bonus) count up, a side view of your car shows its
-  damage, a cartoon scuffle cloud of tools and a mechanic's arms and boots (with tool sounds, mute button on the card) repairs
-  the car, and crashes × the repair price comes off your total. If the bill is bigger than your cash, **your cash goes
+  damage, a cartoon scuffle cloud of cleaning supplies and gloved arms (with squeegee, spray and scrub sounds, mute button on
+  the card) cleans the splats off and repairs the car, and crashes × the repair price comes off your total. If the bill is bigger than your cash, **your cash goes
   negative** (you're in debt, shown as a negative amount) and your next winnings pay it off first. The results screen appears
   once the scene ends. Reloading skips the scene.
 

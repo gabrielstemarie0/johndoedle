@@ -9,6 +9,7 @@ import { isValidAnswer, normalize } from "./lib/text.js";
 import { LEVELS, NOTHING, levelById, levelForRank, judgeLocal, isListed } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, PRESTIGE_GAMES, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
+import { ANIMALS } from "./animals.js";
 
 // ---------- settings ----------
 const LAUNCH_DAY = "2026-11-02"; // game #1
@@ -336,9 +337,9 @@ async function lockIn(timedOut = false) {
     ? `💥 Crash · ${timedOut ? "out of time" : "couldn't be scored"}`
     : `${lvl.emoji} ${lvl.name}`;
   $("fb-text").textContent = timedOut
-    ? `You ran out of time and hit the obstacle.`
+    ? `You ran out of time and hit the ${ANIMALS[cur % ANIMALS.length]}.`
     : result.limited
-      ? "Too many requests, so this answer couldn't be scored. You hit the obstacle."
+      ? `Too many requests, so this answer couldn't be scored. You hit the ${ANIMALS[cur % ANIMALS.length]}.`
       : result.level === "johndoe"
         ? `"${result.label}" is the #1 answer. You swerved clear!`
         : `"${result.label}" is ${lvl.note}. You swerved clear.`;
@@ -461,11 +462,12 @@ function noise(dur, { vol = 0.2, freq = 2000, q = 1, at = 0, type = "bandpass" }
   src.start(t);
 }
 const sfx = {
-  clank() { tone(1300 + Math.random() * 700, 0.25, { type: "square", vol: 0.07, slide: 0.6 }); tone(2100, 0.18, { type: "triangle", vol: 0.1 }); noise(0.05, { vol: 0.15, freq: 4000 }); },
-  bonk() { tone(150, 0.2, { vol: 0.4, slide: 0.35 }); noise(0.06, { vol: 0.2, freq: 500 }); },
-  ratchet() { for (let i = 0; i < 6; i++) noise(0.025, { vol: 0.14, freq: 3200, at: i * 0.045 }); },
-  drill() { tone(170, 0.45, { type: "sawtooth", vol: 0.09, slide: 1.8 }); tone(175, 0.45, { type: "square", vol: 0.04, slide: 1.8 }); },
-  zap() { noise(0.28, { vol: 0.1, freq: 5200, q: 0.4 }); tone(900, 0.2, { type: "sawtooth", vol: 0.04, slide: 0.5 }); },
+  // cleaning sounds for the end-of-game scene
+  squeak() { tone(2300 + Math.random() * 500, 0.09, { vol: 0.08, slide: 1.3 }); tone(2900, 0.07, { vol: 0.06, slide: 0.8, at: 0.1 }); noise(0.05, { vol: 0.06, freq: 6000, type: "highpass" }); },
+  squeegee() { [0, 0.09, 0.18].forEach((at, i) => tone(1700 + i * 140, 0.11, { type: "triangle", vol: 0.07, slide: 1.5, at })); noise(0.3, { vol: 0.09, freq: 5200, q: 5, type: "bandpass" }); },
+  spray() { tone(1200, 0.025, { type: "square", vol: 0.05 }); noise(0.38, { vol: 0.2, freq: 3800, type: "highpass", at: 0.02 }); noise(0.2, { vol: 0.12, freq: 6500, type: "highpass", at: 0.25 }); },
+  scrub() { for (let i = 0; i < 7; i++) noise(0.04, { vol: 0.13, freq: 1500 + (i % 2) * 500, q: 0.9, at: i * 0.05 }); },
+  swish() { noise(0.34, { vol: 0.2, freq: 1100, q: 0.6 }); tone(500, 0.3, { vol: 0.04, slide: 2.4 }); },
   poof() { noise(0.4, { vol: 0.28, freq: 700, type: "lowpass" }); tone(240, 0.3, { vol: 0.22, slide: 0.35 }); },
   ding() { tone(1318, 0.5, { vol: 0.2 }); tone(1760, 0.8, { vol: 0.18, at: 0.12 }); },
   tada() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.4, { type: "triangle", vol: 0.16, at: i * 0.09 })); },
@@ -483,23 +485,23 @@ const sfx = {
   },
   cash() { tone(1568, 0.1, { type: "square", vol: 0.08 }); tone(2093, 0.4, { type: "square", vol: 0.08, at: 0.09 }); },
 };
-const FIGHT = [["CLANG!", "clank"], ["BONK!", "bonk"], ["ZZZT!", "zap"], ["TINK!", "clank"], ["WHACK!", "bonk"], ["BRRRR!", "drill"], ["CLUNK!", "bonk"], ["CLICK-CLICK!", "ratchet"]];
+const FIGHT = [["SQUEAK!", "squeak"], ["PSSSHT!", "spray"], ["SCRUB!", "scrub"], ["SQUEEGEE!", "squeegee"], ["SPLASH!", "swish"], ["SPRITZ!", "spray"], ["SWISH!", "swish"], ["WIPE!", "squeegee"]];
 
-// A classic cartoon fight cloud, but the things flying out of it are tools and a mechanic's arms and boots.
+// A classic cartoon fight cloud, but the things flying out of it are cleaning supplies (sponge, spray bottle, broom, bucket, soap) held by gloved arms.
 function scuffleSVG() {
   const blobs = [[100, 70, 44], [68, 58, 28], [134, 56, 30], [62, 88, 27], [140, 90, 29], [100, 102, 30], [100, 40, 26], [84, 72, 26], [118, 72, 26]];
   const out = blobs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r + 1.5}" fill="#8c7357" stroke="#8c7357" stroke-width="4"/>`).join("");
   const fill = blobs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#ecd9bd"/>`).join("");
   const swirl = `<g fill="none" stroke="#c9ae8a" stroke-width="3" stroke-linecap="round"><path d="M70 62 q12 -16 28 -4"/><path d="M108 52 q18 -6 24 10"/><path d="M80 94 q14 10 30 2"/><path d="M118 88 q12 -2 16 -14"/><circle cx="100" cy="72" r="13"/></g>`;
-  const skin = "#f2c29a", ink = "#5b3d22";
-  const arm = (tool) => `<rect x="0" y="-5" width="24" height="10" rx="5" fill="${skin}" stroke="${ink}" stroke-width="1.5"/><rect x="0" y="-5.5" width="9" height="11" rx="3" fill="#e8742a" stroke="${ink}" stroke-width="1.5"/><circle cx="27" cy="0" r="7.5" fill="#fff" stroke="${ink}" stroke-width="1.5"/><text x="28" y="9" font-size="26" text-anchor="middle">${tool}</text>`;
+  const skin = "#ffe45c", ink = "#5b3d22"; // yellow rubber gloves
+  const arm = (tool) => `<rect x="0" y="-5" width="24" height="10" rx="5" fill="${skin}" stroke="${ink}" stroke-width="1.5"/><rect x="0" y="-5.5" width="9" height="11" rx="3" fill="#2fb7c9" stroke="${ink}" stroke-width="1.5"/><circle cx="27" cy="0" r="7.5" fill="#fff" stroke="${ink}" stroke-width="1.5"/><text x="28" y="9" font-size="26" text-anchor="middle">${tool}</text>`;
   const boot = `<rect x="0" y="-6" width="16" height="12" rx="3" fill="#3a5ea8" stroke="#223c75" stroke-width="1.5"/><path d="M14 -8 H31 Q38 -8 38 0 Q38 8 31 8 H14 Z" fill="#7a4a24" stroke="#3b2412" stroke-width="2"/>`;
-  const hat = `<path d="M0 -13 Q20 -13 20 0 Q20 13 0 13 Z" fill="#ffd23f" stroke="#8a6a00" stroke-width="2"/><rect x="-3" y="-15" width="6" height="30" rx="2" fill="#e0b000" stroke="#8a6a00" stroke-width="1.5"/>`;
+  const hat = `<path d="M0 -13 Q20 -13 20 0 Q20 13 0 13 Z" fill="#8fdcff" stroke="#2a7fa8" stroke-width="2"/><rect x="-3" y="-15" width="6" height="30" rx="2" fill="#4fb6e6" stroke="#2a7fa8" stroke-width="1.5"/>`;
   const limbs = [
-    [-140, arm("🔧"), 0.0, 0.26], [-48, arm("🔨"), 0.1, 0.3], [18, boot, 0.05, 0.34], [150, arm("🪛"), 0.15, 0.28],
-    [102, boot, 0.2, 0.32], [-92, hat, 0.12, 0.36], [196, arm("🪚"), 0.18, 0.27], [60, arm("🔩"), 0.08, 0.31],
+    [-140, arm("🧽"), 0.0, 0.26], [-48, arm("🧴"), 0.1, 0.3], [18, boot, 0.05, 0.34], [150, arm("🧹"), 0.15, 0.28],
+    [102, boot, 0.2, 0.32], [-92, hat, 0.12, 0.36], [196, arm("🪣"), 0.18, 0.27], [60, arm("🧼"), 0.08, 0.31],
   ].map(([a, shape, delay, dur]) => `<g transform="translate(100 70) rotate(${a})"><g class="poke" style="animation-delay:${delay}s;animation-duration:${dur}s"><g transform="translate(52 0)">${shape}</g></g></g>`).join("");
-  const stars = `<text class="twinkle" x="14" y="26" font-size="22">⭐</text><text class="twinkle" x="168" y="30" font-size="18" style="animation-delay:.2s">⭐</text><text class="twinkle" x="176" y="124" font-size="20" style="animation-delay:.35s">⭐</text><text class="twinkle" x="6" y="118" font-size="16" style="animation-delay:.1s">✨</text>`;
+  const stars = `<text class="twinkle" x="14" y="26" font-size="22">🫧</text><text class="twinkle" x="168" y="30" font-size="18" style="animation-delay:.2s">🫧</text><text class="twinkle" x="176" y="124" font-size="20" style="animation-delay:.35s">🫧</text><text class="twinkle" x="6" y="118" font-size="16" style="animation-delay:.1s">✨</text>`;
   return `<svg viewBox="0 0 200 140" aria-hidden="true">${limbs}<g class="cloud">${out}${fill}${swirl}</g>${stars}</svg>`;
 }
 function comicWord(host, text) {
@@ -655,7 +657,7 @@ async function playFinale(fresh, dmg) {
   const net = win - bill.paid;
   const car = carById(state.wallet.car);
   const showCar = (damage) => { $("finale-car-svg").innerHTML = carSideSVG(car, { damage }); };
-  const costText = `🔧 Repairs: −${money(bill.paid)}${bill.each && bill.hits > 1 ? ` (${bill.hits} × ${money(bill.each)})` : ""}`;
+  const costText = `🧽 Repairs: −${money(bill.paid)}${bill.each && bill.hits > 1 ? ` (${bill.hits} × ${money(bill.each)})` : ""}`;
   const debtEl = $("finale-debt");
   const showDebt = () => { // repairs can push your cash below zero: say so plainly
     const debt = balance() < 0;
@@ -714,7 +716,7 @@ async function playFinale(fresh, dmg) {
   await sleep(dmg ? 1700 : 1100);
   // 4. automatic repair, then the bill comes out of the total
   if (dmg) {
-    status.textContent = "🔧 Repairing…";
+    status.textContent = "🧽 Cleaning up…";
     await repairScuffle(carBox, Math.min(4, dmg), $("finale-car-svg"), () => { showCar(0); scene.setDamage(0); });
     status.textContent = "✨ Good as new";
     sfx.ding();
@@ -1090,7 +1092,7 @@ function carRow(car) {
   const price = document.createElement("div"); price.className = "shop-price"; price.textContent = car.price ? money(car.price) : "Free";
   const rep = document.createElement("div");
   rep.className = "shop-repair";
-  rep.textContent = `🔧 Repair: ${money(car.repair)} per crash`;
+  rep.textContent = `🧽 Repair: ${money(car.repair)} per crash`;
   const mult = document.createElement("div");
   mult.className = "shop-mult";
   mult.textContent = car.mult ? `💰 +${car.mult.toLocaleString("en-US")}% on your winnings` : "No winnings bonus";

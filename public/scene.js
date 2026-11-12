@@ -4,6 +4,7 @@
 // nothing) and you hit it. Drawn on a canvas, no image files. The scene only reacts to what the game tells
 // it; it has no game logic of its own.
 import { carDataURI, carById } from "./cars.js";
+import { ANIMALS, SIZE, draw as drawAnimal } from "./animals.js";
 
 const REDUCED = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MAX_SPACES = 35;
@@ -47,7 +48,8 @@ const SEG = 1.6;
 const Z_NEAR = 0.7;
 const Z_FAR = 70;
 
-const OBSTACLES = ["barrier", "cones", "barrels", "stalled", "sign"];
+// the obstacle is a farm animal, a bigger one with each question: chicken, turkey, goat, sheep, pig, horse, cow
+const OBSTACLES = ANIMALS;
 
 export function createScene(root, fuelEl) {
   const rand = rng(11);
@@ -260,34 +262,12 @@ export function createScene(root, fuelEl) {
       ctx.rotate(o.spin * t * 7);
       ctx.globalAlpha = 1 - t * t;
     }
-    if (o.kind === "barrier") {
-      ctx.fillStyle = "#b9bcc4"; ctx.beginPath(); ctx.moveTo(-u * 1.3, 0); ctx.lineTo(-u * 1.0, -u * 1.0); ctx.lineTo(u * 1.0, -u * 1.0); ctx.lineTo(u * 1.3, 0); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = "#ff8a1f"; for (let i = -2; i <= 1; i++) { ctx.beginPath(); ctx.moveTo(u * (i * 0.55), -u * 0.05); ctx.lineTo(u * (i * 0.55 + 0.28), -u * 0.05); ctx.lineTo(u * (i * 0.55 + 0.34), -u * 0.62); ctx.lineTo(u * (i * 0.55 + 0.06), -u * 0.62); ctx.closePath(); ctx.fill(); }
-      ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.fillRect(-u * 1.3, -u * 0.12, u * 2.6, u * 0.12);
-    } else if (o.kind === "cones") {
-      for (const [dx, s] of [[-0.9, 0.8], [0, 1], [0.9, 0.8]]) {
-        ctx.fillStyle = "#ff6a1a"; ctx.beginPath(); ctx.moveTo(u * (dx - 0.42 * s), 0); ctx.lineTo(u * dx, -u * 1.15 * s); ctx.lineTo(u * (dx + 0.42 * s), 0); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(u * (dx - 0.24 * s), -u * 0.45 * s); ctx.lineTo(u * (dx + 0.24 * s), -u * 0.45 * s); ctx.lineTo(u * (dx + 0.17 * s), -u * 0.7 * s); ctx.lineTo(u * (dx - 0.17 * s), -u * 0.7 * s); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#222"; ctx.fillRect(u * (dx - 0.5 * s), -u * 0.06, u * s, u * 0.08);
-      }
-    } else if (o.kind === "barrels") {
-      for (const dx of [-0.55, 0.55]) {
-        ctx.fillStyle = "#d9473c"; ctx.fillRect(u * (dx - 0.4), -u * 1.05, u * 0.8, u * 1.05);
-        ctx.fillStyle = "#f1f1f1"; ctx.fillRect(u * (dx - 0.4), -u * 0.75, u * 0.8, u * 0.18); ctx.fillRect(u * (dx - 0.4), -u * 0.4, u * 0.8, u * 0.18);
-        ctx.fillStyle = "rgba(0,0,0,.2)"; ctx.fillRect(u * (dx + 0.18), -u * 1.05, u * 0.22, u * 1.05);
-      }
-    } else if (o.kind === "stalled") {
-      ctx.restore(); ctx.save();
-      const sp = drawSprite(trafficImg("#8a8f99"), 0, z, 0.9);
-      if (sp && Math.floor(S.t * 3) % 2 === 0) { ctx.fillStyle = "rgba(255,170,0,.95)"; const r = sp.w * 0.05; ctx.beginPath(); ctx.arc(sp.x - sp.w * 0.38, sp.y - sp.h * 0.55, r, 0, 7); ctx.arc(sp.x + sp.w * 0.38, sp.y - sp.h * 0.55, r, 0, 7); ctx.fill(); }
-      ctx.restore();
-      return;
-    } else {
-      ctx.fillStyle = "#3b4150"; ctx.fillRect(-u * 0.06, -u * 1.0, u * 0.12, u * 1.0);
-      ctx.fillStyle = "#3b4150"; ctx.fillRect(-u * 0.6, -u * 0.06, u * 1.2, u * 0.08);
-      ctx.fillStyle = "#ffc21a"; ctx.save(); ctx.translate(0, -u * 1.75); ctx.rotate(Math.PI / 4); ctx.fillRect(-u * 0.75, -u * 0.75, u * 1.5, u * 1.5); ctx.restore();
-      ctx.fillStyle = "#222"; ctx.fillRect(-u * 0.35, -u * 1.82, u * 0.7, u * 0.1); ctx.fillRect(-u * 0.12, -u * 2.2, u * 0.24, u * 0.8);
-    }
+    if (o.mode === "knock") { ctx.restore(); return; } // it is gone: the splat is on the car now
+    // the last second: it sees what is coming
+    const left = (o.held ? o.heldFrac : o.frac ?? 1) * (o.durationMs || 25000) / 1000;
+    const fear = o.mode === "hit" || (o.mode === "timer" && left <= 1);
+    if (fear && !REDUCED) ctx.translate(Math.sin(S.t * 70) * u * 0.05, 0); // trembling
+    drawAnimal(ctx, o.kind, 0, 0, u * (0.6 + 2.6 * (SIZE[o.kind] ?? 0.6)), { fear });
     ctx.restore();
   }
 
@@ -315,6 +295,7 @@ export function createScene(root, fuelEl) {
     for (let i = 0; i < n; i++) {
       S.particles.push(type === "smoke"
         ? { x: x + (Math.random() - 0.5) * 30, y, vx: (Math.random() - 0.5) * 22, vy: -30 - Math.random() * 40, life: 0, max: 1.2 + Math.random() * 0.9, r: 7 + Math.random() * 9, type }
+        : type === "blood" ? { x, y, vx: (Math.random() - 0.5) * 380, vy: -60 - Math.random() * 260, life: 0, max: 0.6 + Math.random() * 0.5, r: 2 + Math.random() * 3.5, type }
         : { x, y, vx: (Math.random() - 0.5) * 320, vy: -80 - Math.random() * 220, life: 0, max: 0.5 + Math.random() * 0.4, r: 1.6, type });
     }
   }
@@ -383,17 +364,18 @@ export function createScene(root, fuelEl) {
 
     // damage smoke
     if (S.damage >= 2 && motion && Math.random() < 0.18 * S.damage) { const sp = carPos(); if (sp) emit(sp.x, sp.y - sp.h * 0.7, "smoke", 1); }
-    for (const p of S.particles) { p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.type === "spark") p.vy += 700 * dt; }
+    for (const p of S.particles) { p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.type === "spark" || p.type === "blood") p.vy += 700 * dt; }
     S.particles = S.particles.filter((p) => p.life < p.max);
   }
 
   const carPos = () => { const lane = (2 * rw) / Z_CAR / 3, w = lane * 0.92; return { x: X(S.px, Z_CAR), y: Y(Z_CAR), w, h: (w * 128) / 200 }; };
 
   function impact(o) {
+    if (o.pendingDamage != null) { S.damage = o.pendingDamage; img(S.car, { damage: S.damage }); }
     o.mode = "knock"; o.t0 = S.t; o.vx = Math.random() < 0.5 ? -1 : 1; o.spin = (Math.random() - 0.5) * 2;
     if (!REDUCED) {
       S.shake = 1; S.flash = 0.7; S.brake = 1; S.wobble = (Math.random() < 0.5 ? -1 : 1) * 0.16;
-      const sp = carPos(); emit(sp.x, sp.y - sp.h * 0.6, "smoke", 12); emit(sp.x, sp.y - sp.h * 0.6, "spark", 22);
+      const sp = carPos(); emit(sp.x, sp.y - sp.h * 0.6, "smoke", 8); emit(sp.x, sp.y - sp.h * 0.6, "blood", 34);
     }
   }
 
@@ -435,6 +417,7 @@ export function createScene(root, fuelEl) {
     for (const q of S.particles) {
       const t = q.life / q.max;
       if (q.type === "smoke") { ctx.fillStyle = `rgba(60,60,66,${0.5 * (1 - t)})`; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1 + t * 1.4), 0, 7); ctx.fill(); }
+      else if (q.type === "blood") { ctx.fillStyle = `rgba(${170 - t * 40},14,24,${1 - t * 0.6})`; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1 - t * 0.4), 0, 7); ctx.fill(); }
       else { ctx.fillStyle = `rgba(255,${200 - t * 120},60,${1 - t})`; ctx.fillRect(q.x, q.y, q.r * 2, q.r * 2); }
     }
     ctx.restore();
@@ -481,7 +464,7 @@ export function createScene(root, fuelEl) {
         if (REDUCED) S.px = S.targetX; // calm: swerve instantly, no speed boost or flames
         else { S.boost = Math.max(S.boost, 0.12 + spaces * 0.085); S.flame = spaces >= 4 ? 1 : 0; }
       } else {
-        S.damage = clamp(damage, 0, 4); img(S.car, { damage: S.damage });
+        o.pendingDamage = clamp(damage, 0, 4); // the splat shows up on the car when it actually hits
         if (REDUCED) { impact(o); }
       }
     },

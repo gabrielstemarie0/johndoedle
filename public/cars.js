@@ -107,21 +107,30 @@ function spoiler(kind, s, c) {
   return "";
 }
 
-// Cracks, scorch marks and a dead tail light, getting worse with each crash (damage 1 to 4).
+// A cartoon blood splat: a blob with a ring of droplets and one drip, centred on (x, y).
+function splat(x, y, r) {
+  const drops = [[0.9, -0.5, 0.28], [-0.95, -0.2, 0.24], [0.5, 0.95, 0.22], [-0.6, 0.85, 0.26], [0.1, -1.05, 0.2]]
+    .map(([a, b, k]) => `<circle cx="${(x + a * r).toFixed(1)}" cy="${(y + b * r).toFixed(1)}" r="${(k * r).toFixed(1)}"/>`).join("");
+  return `<g fill="#b3121c" stroke="#7a0b13" stroke-width=".8"><ellipse cx="${x}" cy="${y}" rx="${r}" ry="${(r * 0.8).toFixed(1)}"/>${drops}<rect x="${(x - r * 0.12).toFixed(1)}" y="${y}" width="${(r * 0.24).toFixed(1)}" height="${(r * 1.5).toFixed(1)}" rx="${(r * 0.12).toFixed(1)}"/></g><ellipse cx="${(x - r * 0.3).toFixed(1)}" cy="${(y - r * 0.3).toFixed(1)}" rx="${(r * 0.28).toFixed(1)}" ry="${(r * 0.16).toFixed(1)}" fill="#e0323c" opacity=".85"/>`;
+}
+
+// Cracks, scorch marks, blood splats and a dead tail light, getting worse with each crash (damage 1 to 4).
 function damageMarks(s, damage) {
   if (damage < 1) return "";
   const cx = 100, wy = s.ct + 6;
-  let out = `<g stroke="#ffffff" stroke-opacity=".85" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M${cx - 6} ${wy} L${cx + 2} ${wy + 12} L${cx - 3} ${wy + 20} M${cx + 2} ${wy + 12} L${cx + 16} ${wy + 8}"/></g>`;
+  let out = `<g stroke="#ffffff" stroke-opacity=".85" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M${cx - 6} ${wy} L${cx + 2} ${wy + 12} L${cx - 3} ${wy + 20} M${cx + 2} ${wy + 12} L${cx + 16} ${wy + 8}"/></g>` + splat(cx - 14, wy + 8, 12);
   if (damage >= 2) {
+    out += splat(cx + 24, s.bt + 22, 10);
     out += `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none" stroke-linecap="round"><path d="M${cx - 26} ${wy + 2} L${cx - 14} ${wy + 14} L${cx - 20} ${wy + 22} M${cx + 22} ${wy + 4} L${cx + 12} ${wy + 16}"/></g>`;
     out += `<polygon points="${100 + s.bx - 26},${s.bt + 16} ${100 + s.bx - 4},${s.bt + 12} ${100 + s.bx - 8},${s.bb - 4} ${100 + s.bx - 30},${s.bb - 6}" fill="#000" fill-opacity=".35"/>`;
     out += `<path d="M${100 - s.bx + 14} ${s.bt + 22} l14 6 M${100 - s.bx + 18} ${s.bt + 30} l16 4" stroke="#000" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>`;
   }
   if (damage >= 3) {
+    out += splat(cx - 4, s.bb - 18, 11);
     out += `<rect x="${100 - s.bx + 8}" y="${s.bb - 11}" width="${2 * s.bx - 16}" height="9" rx="2" fill="#2b2d33" transform="rotate(3 100 ${s.bb})"/>`;
     out += `<ellipse cx="100" cy="${s.bt + 10}" rx="${s.bx - 18}" ry="9" fill="#000" fill-opacity=".38"/>`;
   }
-  if (damage >= 4) out += `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none"><path d="M${cx - 34} ${wy + 8} L${cx - 20} ${wy + 24} M${cx + 30} ${wy + 6} L${cx + 18} ${wy + 24}"/></g><polygon points="${100 - s.bx},${s.bb - 20} ${100 - s.bx + 18},${s.bb - 26} ${100 - s.bx + 14},${s.bb - 2} ${100 - s.bx},${s.bb}" fill="#000" fill-opacity=".4"/>`;
+  if (damage >= 4) out += splat(cx + 4, wy + 14, 16) + `<g stroke="#ffffff" stroke-opacity=".8" stroke-width="1.4" fill="none"><path d="M${cx - 34} ${wy + 8} L${cx - 20} ${wy + 24} M${cx + 30} ${wy + 6} L${cx + 18} ${wy + 24}"/></g><polygon points="${100 - s.bx},${s.bb - 20} ${100 - s.bx + 18},${s.bb - 26} ${100 - s.bx + 14},${s.bb - 2} ${100 - s.bx},${s.bb}" fill="#000" fill-opacity=".4"/>`;
   return out;
 }
 
@@ -248,8 +257,8 @@ const pts = (a) => a.map((p) => p.join(",")).join(" ");
 function sideDamage(front, d) {
   // front = x of the nose
   const hood = front - 40;
-  const layers = [`<g class="dmg d1"><path d="M${front - 62} 32 L${front - 52} 40 L${front - 58} 46 M${front - 52} 40 L${front - 40} 38" stroke="#fff" stroke-opacity=".9" stroke-width="2" fill="none" stroke-linecap="round"/></g>`, `<g class="dmg d2"><ellipse cx="${hood}" cy="52" rx="26" ry="6" fill="#000" fill-opacity=".45"/><circle cx="${front - 6}" cy="58" r="5" fill="#2a1313"/></g>`, `<g class="dmg d3"><rect x="${front - 6}" y="66" width="26" height="7" rx="2" fill="#2b2d33" transform="rotate(14 ${front - 6} 66)"/>
-    <circle cx="${hood}" cy="40" r="9" fill="#555" fill-opacity=".6"/><circle cx="${hood - 10}" cy="28" r="12" fill="#666" fill-opacity=".5"/><circle cx="${hood - 18}" cy="12" r="14" fill="#777" fill-opacity=".4"/></g>`, `<g class="dmg d4"><polygon points="${front - 18},54 ${front + 4},60 ${front + 2},74 ${front - 22},72" fill="#000" fill-opacity=".5"/><path d="M${front - 30} 56 l12 8 M${front - 26} 66 l14 -4" stroke="#000" stroke-opacity=".5" stroke-width="2"/></g>`];
+  const layers = [`<g class="dmg d1"><path d="M${front - 62} 32 L${front - 52} 40 L${front - 58} 46 M${front - 52} 40 L${front - 40} 38" stroke="#fff" stroke-opacity=".9" stroke-width="2" fill="none" stroke-linecap="round"/>${splat(front - 30, 44, 8)}</g>`, `<g class="dmg d2"><ellipse cx="${hood}" cy="52" rx="26" ry="6" fill="#000" fill-opacity=".45"/><circle cx="${front - 6}" cy="58" r="5" fill="#2a1313"/>${splat(front - 14, 56, 7)}</g>`, `<g class="dmg d3"><rect x="${front - 6}" y="66" width="26" height="7" rx="2" fill="#2b2d33" transform="rotate(14 ${front - 6} 66)"/>
+    <circle cx="${hood}" cy="40" r="9" fill="#555" fill-opacity=".6"/><circle cx="${hood - 10}" cy="28" r="12" fill="#666" fill-opacity=".5"/><circle cx="${hood - 18}" cy="12" r="14" fill="#777" fill-opacity=".4"/>${splat(hood - 6, 36, 9)}</g>`, `<g class="dmg d4"><polygon points="${front - 18},54 ${front + 4},60 ${front + 2},74 ${front - 22},72" fill="#000" fill-opacity=".5"/><path d="M${front - 30} 56 l12 8 M${front - 26} 66 l14 -4" stroke="#000" stroke-opacity=".5" stroke-width="2"/>${splat(front - 38, 50, 10)}</g>`];
   return layers.slice(0, d).join("");
 }
 
