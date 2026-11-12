@@ -419,7 +419,7 @@ export function createScene(root, fuelEl) {
     for (const q of S.particles) {
       const t = q.life / q.max;
       if (q.type === "smoke") { ctx.fillStyle = `rgba(60,60,66,${0.5 * (1 - t)})`; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1 + t * 1.4), 0, 7); ctx.fill(); }
-      else if (q.type === "blood") { ctx.fillStyle = `rgba(${170 - t * 40},14,24,${1 - t * 0.6})`; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1 - t * 0.4), 0, 7); ctx.fill(); }
+      else if (q.type === "blood") { ctx.strokeStyle = `rgba(${170 - t * 40},14,24,${1 - t * 0.6})`; ctx.lineWidth = q.r * (1 - t * 0.4); ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(q.x - q.vx * 0.035, q.y - q.vy * 0.035); ctx.stroke(); } // a short streak, not a ball
       else { ctx.fillStyle = `rgba(255,${200 - t * 120},60,${1 - t})`; ctx.fillRect(q.x, q.y, q.r * 2, q.r * 2); }
     }
     ctx.restore();

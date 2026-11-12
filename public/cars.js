@@ -108,11 +108,27 @@ function spoiler(kind, s, c) {
   return "";
 }
 
-// A cartoon blood splat: a blob with a ring of droplets and one drip, centred on (x, y).
+// A blood splat centred on (x, y): an irregular blob, thin spray streaks and a few drips running down. The shape is drawn from
+// the position, so every splat is a little different but always the same for the same spot (the car image is cached).
 function splat(x, y, r) {
-  const drops = [[0.9, -0.5, 0.28], [-0.95, -0.2, 0.24], [0.5, 0.95, 0.22], [-0.6, 0.85, 0.26], [0.1, -1.05, 0.2]]
-    .map(([a, b, k]) => `<circle cx="${(x + a * r).toFixed(1)}" cy="${(y + b * r).toFixed(1)}" r="${(k * r).toFixed(1)}"/>`).join("");
-  return `<g fill="#b3121c" stroke="#7a0b13" stroke-width=".8"><ellipse cx="${x}" cy="${y}" rx="${r}" ry="${(r * 0.8).toFixed(1)}"/>${drops}<rect x="${(x - r * 0.12).toFixed(1)}" y="${y}" width="${(r * 0.24).toFixed(1)}" height="${(r * 1.5).toFixed(1)}" rx="${(r * 0.12).toFixed(1)}"/></g><ellipse cx="${(x - r * 0.3).toFixed(1)}" cy="${(y - r * 0.3).toFixed(1)}" rx="${(r * 0.28).toFixed(1)}" ry="${(r * 0.16).toFixed(1)}" fill="#e0323c" opacity=".85"/>`;
+  r *= 1.2;
+  let seed = (Math.round(x * 73 + y * 131 + r * 17) >>> 0) || 7;
+  const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+  const f = (n) => n.toFixed(1);
+  const n = 11, pts = [];
+  for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2, k = r * (0.62 + rnd() * 0.78); pts.push([x + Math.cos(a) * k, y + Math.sin(a) * k * 0.82]); }
+  const mid = (p, q) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+  let d = `M${f(mid(pts[n - 1], pts[0])[0])} ${f(mid(pts[n - 1], pts[0])[1])}`;
+  for (let i = 0; i < n; i++) { const m = mid(pts[i], pts[(i + 1) % n]); d += ` Q${f(pts[i][0])} ${f(pts[i][1])} ${f(m[0])} ${f(m[1])}`; }
+  let sprays = "", drips = "";
+  for (let i = 0; i < 6; i++) { const a = rnd() * Math.PI * 2, r0 = r * (1.2 + rnd() * 0.25), r1 = r0 + r * (0.14 + rnd() * 0.18); // short flecks, detached from the blob
+    sprays += `M${f(x + Math.cos(a) * r0)} ${f(y + Math.sin(a) * r0 * 0.82)} L${f(x + Math.cos(a) * r1)} ${f(y + Math.sin(a) * r1 * 0.82)}`; }
+  for (let i = 0; i < 3; i++) { const dx = (i - 1) * r * 0.5 + (rnd() - 0.5) * r * 0.3, w = r * (0.1 + rnd() * 0.07), len = r * (0.9 + rnd() * 1.4), y0 = y + r * 0.3;
+    drips += `M${f(x + dx - w)} ${f(y0)} L${f(x + dx + w)} ${f(y0)} L${f(x + dx + w * 0.45)} ${f(y0 + len)} L${f(x + dx - w * 0.45)} ${f(y0 + len)}Z`; }
+  return `<g fill="#a80f1a" stroke="#6e0a11" stroke-width=".7" stroke-linejoin="round"><path d="${drips}"/><path d="${d}Z"/></g>`
+    + `<path d="${sprays}" stroke="#a80f1a" stroke-width="${f(r * 0.2)}" stroke-linecap="round" fill="none"/>`
+    + `<ellipse cx="${f(x + r * 0.05)}" cy="${f(y + r * 0.08)}" rx="${f(r * 0.5)}" ry="${f(r * 0.36)}" fill="#7d0b14" opacity=".75"/>`
+    + `<ellipse cx="${f(x - r * 0.28)}" cy="${f(y - r * 0.3)}" rx="${f(r * 0.3)}" ry="${f(r * 0.13)}" fill="#e0323c" opacity=".8" transform="rotate(-25 ${f(x - r * 0.28)} ${f(y - r * 0.3)})"/>`;
 }
 
 // Cracks, scorch marks, blood splats and a dead tail light, getting worse with each crash (damage 1 to 4).
