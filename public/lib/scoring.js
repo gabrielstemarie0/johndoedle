@@ -1,6 +1,6 @@
 // Scoring for John Doedle: the more people give the same answer, the more points it earns.
 // Used by the Cloudflare Worker (real scoring) and by the browser as an offline fallback.
-import { normalize, distance, allowedTypos } from "./text.js";
+import { normalize, distance, allowedTypos, categoryHeads, promptWords } from "./text.js";
 
 // ---------- levels ----------
 // Krillion's points, flipped: the most common answer earns the most. `spaces` is how far the car drives
@@ -74,22 +74,40 @@ export function buildIndex(question, rows = []) {
     for (const a of aliases) alias.set(normalize(a), k);
   }
   for (const r of rows) if (!alias.has(r.key)) alias.set(r.key, r.key);
+  alias.heads = categoryHeads(question.prompt); // "soup" for "Name a type of soup": "chicken noodle soup" counts as "chicken noodle"
+  alias.strip = [...new Set([...alias.heads, ...promptWords(question.prompt)])]; // words that may be trimmed off the ends of an answer
   return alias;
 }
 
 // Exact spelling first, then the closest known spelling within a few typos. Returns a key or null.
-export function resolveKey(index, raw) {
-  const k = normalize(raw);
-  if (!k) return null;
-  if (index.has(k)) return index.get(k);
+// Takes the words of the question ("soup", "state", "Taylor Swift", "Greek god") off either end of an answer, but never leaves it empty
+// ("soup" alone stays "soup").
+function withoutHeads(k, heads) {
+  if (!heads || !heads.length) return k;
+  const w = k.split(" ");
+  while (w.length > 1 && heads.includes(w[w.length - 1])) w.pop();
+  while (w.length > 1 && heads.includes(w[0])) w.shift();
+  return w.join(" ");
+}
+function nearest(index, k) {
   const limit = allowedTypos(k.length);
-  if (!limit) return null;
+  if (!limit) return [null, Infinity];
   let best = null, bestD = limit + 1;
   for (const [spelling, key] of index) {
     const d = distance(k, spelling);
     if (d < bestD) { best = key; bestD = d; }
   }
-  return best;
+  return [best, best === null ? Infinity : bestD];
+}
+export function resolveKey(index, raw) {
+  const k = normalize(raw);
+  if (!k) return null;
+  if (index.has(k)) return index.get(k); // an exact answer from the list always wins
+  const bare = withoutHeads(k, index.strip);
+  if (bare !== k && index.has(bare)) return index.get(bare);
+  const [a, da] = nearest(index, k);
+  const [b, db] = bare !== k ? nearest(index, bare) : [null, Infinity];
+  return da <= db ? a : b;
 }
 
 // ---------- offline fallback (browser, when the API is unreachable) ----------

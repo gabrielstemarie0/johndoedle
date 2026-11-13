@@ -29,7 +29,9 @@ an average adult gets it within about 5-10 seconds, with no niche knowledge.
    (a ball -> "a sphere", a sport -> "a contest", a singer -> "a vocalist", a movie -> "a motion picture").
 4. **Keep it solvable, and don't lean toward the #1 answer.** A clever disguise, not a riddle that needs trivia. The plain question is shown after answering.
 5. **Mechanical rules (the checker enforces these):** starts with Name / Cite / Identify / Specify, max 120 characters, and no
-   word in the wording may appear in any listed answer (the game rejects answers using a word from the question).
+   word in the wording may appear in any listed answer (the game rejects answers using a clue word from the question). The category word of
+   the plain prompt ("soup" in *Name a type of soup*) is exempt at play time: players may type "chicken noodle soup", and the game trims
+   "soup" off before matching, so never add "... soup" aliases.
 
 ## Every day needs a music question (owner rule, Nov 12, 2026)
 

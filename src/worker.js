@@ -82,7 +82,7 @@ async function handleAnswer(request, env) {
   }
 
   try {
-    const bad = rejectReason(answer, fancy[question.id] || question.prompt); // not a word, or uses a word from the question
+    const bad = rejectReason(answer, fancy[question.id] || question.prompt, question.prompt); // not a word, or uses a word from the question
     if (bad) return reply({ rejected: bad });
     return reply(await scoreAnswer({ db: env.DB, question, answer: answer.trim(), player, day }));
   } catch (e) {

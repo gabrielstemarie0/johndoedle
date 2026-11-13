@@ -248,7 +248,7 @@ function shakeOff(reason) {
 function trySubmit() {
   if (locked) return;
   const value = $("answer").value;
-  const reason = rejectReason(value, shownText(todaysQs[cur]));
+  const reason = rejectReason(value, shownText(todaysQs[cur]), todaysQs[cur].prompt);
   if (reason) return shakeOff(reason);
   // Only answers on the question's list count. Anything else shakes off and the clock keeps running, so running out of time
   // is the only way to score nothing.

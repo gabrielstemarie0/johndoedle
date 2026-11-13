@@ -18,6 +18,30 @@ export function normalize(input, max = 40) {
   return s.slice(0, max);
 }
 
+// The "what is it" word of a question, taken from the plain prompt: "Name a type of soup" -> ["soup"], "Name a Taylor Swift song" ->
+// ["song"], "Name a Greek god or goddess" -> ["god", "goddess"]. Answers may include it ("chicken noodle soup", "Washington state"):
+// it is the category, not a clue. The modifiers (Taylor Swift, Greek, NBA) are NOT included, so they stay blocked if shown.
+export function categoryHeads(prompt) {
+  let s = String(prompt || "").toLowerCase().replace(/\([^)]*\)/g, " ").replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim();
+  s = s.replace(/^(name|cite|identify|specify|enumerate)\s+(an?|the|some)?\s*/, "").replace(/^(type|kind|sort|variety|style|piece|pair)\s+of\s+/, "");
+  s = s.split(/\s(?:in|from|by|that|who|whose|with|for|on|at|where|when|which|people|played|found|you\S*)\s/)[0];
+  const heads = new Set();
+  for (const part of s.split(/\s(?:or|and)\s/)) {
+    const w = part.trim().split(" ").pop() || "";
+    const n = normalize(w);
+    if (n.length >= 3 && !["something", "anything", "thing", "one"].includes(n)) heads.add(n);
+  }
+  return [...heads];
+}
+
+// Every content word of the plain prompt ("greek", "god", "goddess" for "Name a Greek god or goddess"). Used only for trimming them off the
+// ends of an answer ("Greek god Zeus" counts as "Zeus"); the clue rule never exempts these, only the category word above.
+const PROMPT_STOP = new Set("name cite identify specify enumerate an the that this these those you your with from for and or are was were has have not its their there what which who whose where when type kind sort variety style piece pair something anything famous popular common one thing things some any".split(" "));
+export function promptWords(prompt) {
+  const s = String(prompt || "").toLowerCase().replace(/\([^)]*\)/g, " ").replace(/[^a-z0-9' ]+/g, " ");
+  return [...new Set(s.split(/\s+/).map((w) => normalize(w)).filter((w) => w.length >= 3 && !PROMPT_STOP.has(w)))];
+}
+
 // Edit distance, used to forgive typos.
 export function distance(a, b) {
   if (a === b) return 0;

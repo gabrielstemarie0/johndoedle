@@ -77,7 +77,7 @@ submitted (the field shakes and the timer keeps running).
 
 ## How an answer is scored (`/api/answer`)
 Only answers on a question's list are accepted, so the only way to score nothing is to run out of time.
-1. The browser first rejects things that can't be an answer (symbols, gibberish with no vowels, a word from the question) and
+1. The browser first rejects things that can't be an answer (symbols, gibberish with no vowels, a clue word from the question) and
    anything that isn't on the question's list: the box clears, the bar shakes, a small label says why, and the clock keeps running.
 2. The answer is normalised (case, punctuation, plurals) and matched against the question's answers and aliases. Typos are
    forgiven: 1 edit for answers of 4-7 letters, 2 for 8+, none for 3 or fewer.
@@ -189,3 +189,11 @@ Game #1 is `LAUNCH_DAY` in `public/game.js`.
 - Rate limits slow scripted abuse but don't stop a determined attacker with many IP addresses; add Cloudflare
   Turnstile then.
 - Streaks and progress live in the player's browser (`localStorage`).
+
+**The category word is always allowed (Nov 13, 2026).** The "what is it" word of the plain prompt is not a clue, so an answer may
+include it: for *Name a type of soup* you can type "chicken noodle soup" and it counts as "chicken noodle"; for *Name a US state*,
+"Washington state" counts as "Washington". The words of the question (soup, state, Taylor Swift, Greek god) are trimmed off either
+end of what you type before it is matched against the list, but never down to nothing ("soup" alone is still not an answer). Clue
+words in the wording that are not the category (the "tomato" in "name something red like a tomato") stay blocked. The code is
+`categoryHeads` and `promptWords` in `public/lib/text.js`, used by `buildIndex`/`resolveKey` in `public/lib/scoring.js` (browser and
+Worker share it) and by `rejectReason` in `public/lib/rules.js`. List authors do not need to add "... soup" aliases.

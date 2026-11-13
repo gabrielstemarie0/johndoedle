@@ -1,5 +1,5 @@
 // Rules about what can be typed, shared by the browser and the Worker.
-import { normalize, isValidAnswer } from "./text.js";
+import { normalize, isValidAnswer, categoryHeads } from "./text.js";
 
 // Little words that don't count when comparing an answer to the question.
 const STOP = new Set(("a an the of and or in on at to for with by from as is are be that this these those it its one name cite identify enumerate specify " +
@@ -17,8 +17,11 @@ const words = (s) =>
 export const questionWords = (text) => new Set(words(text));
 
 // true if the answer uses any real word that appears in the question text the player was shown
-export function usesQuestionWord(answer, questionText) {
+// The category word of the plain prompt ("soup" in "Name a type of soup") is allowed even if the wording shows it: it is the kind of
+// thing being asked for, not a clue. Pass the plain prompt as the third argument to get that exemption.
+export function usesQuestionWord(answer, questionText, plainPrompt) {
   const q = questionWords(questionText);
+  if (plainPrompt) for (const h of categoryHeads(plainPrompt)) q.delete(normalize(h));
   return words(answer).some((w) => q.has(w));
 }
 
@@ -39,8 +42,8 @@ export const REJECT_TEXT = {
   notlisted: "🚫 Not one of the answers",
 };
 // Returns "notword", "inquestion" or null.
-export function rejectReason(input, questionText) {
+export function rejectReason(input, questionText, plainPrompt) {
   if (!looksLikeWord(input)) return "notword";
-  if (usesQuestionWord(input, questionText)) return "inquestion";
+  if (usesQuestionWord(input, questionText, plainPrompt)) return "inquestion";
   return null;
 }
