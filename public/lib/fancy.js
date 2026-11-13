@@ -115,4 +115,11 @@ export default {
   q112: "Name a floating craft that rides the waves.",
   q113: "Name a celebrated virtuoso of the plucked, six-stringed axe, known for blistering solos.",
   q114: "Name a theatrical production in which the cast sings and dances, staged nightly beneath marquee lights in Manhattan.",
+  q115: "Name a performer of twangy ballads about trucks, heartbreak and small-town life.",
+  q116: "Name a course traditionally served at an autumn feast of gratitude in America.",
+  q117: "Name a cartilaginous predator of the deep known for rows of replaceable teeth.",
+  q118: "Name a precious or semi-precious stone prized for its sparkle and set into jewelry.",
+  q119: "Name a towering pinnacle of rock and snow that climbers dream of conquering.",
+  q120: "Name a celebrated footwork wizard of the world's most beloved sport, adored by stadium crowds.",
+  q121: "Name a fixture or supply found in the small tiled room set aside for daily hygiene.",
 };
