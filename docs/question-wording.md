@@ -33,6 +33,21 @@ an average adult gets it within about 5-10 seconds, with no niche knowledge.
    the plain prompt ("soup" in *Name a type of soup*) is exempt at play time: players may type "chicken noodle soup", and the game trims
    "soup" off before matching, so never add "... soup" aliases.
 
+## Carry the qualifier: place, nationality, franchise (owner rule, Nov 14, 2026)
+
+If the plain prompt limits the answers to a place or a people, the fancy wording must carry a **coded hint of that limit**, otherwise a
+player cannot tell which set of answers is meant. Examples of qualifiers: **US / United States / American**, Europe, Asia, Africa,
+a country, a state, a city. "Name a US state capital" became "a town housing a governor's mansion and the lawmakers' dome", which fits
+any country, so players could not know it meant America.
+
+- Say it with an indirect clue, not the word itself: "in the land of fifty stars", "under the stars and stripes", "across the American
+  heartland" (the "American" word is fine in a wording when it is not an answer word), "west of the Urals", "the continent home to the
+  Sahara and the Nile".
+- The checker enforces this for the US: a plain prompt that contains "US", "U.S.", "USA", "United States", "America" or "American" fails
+  unless the wording contains a US hint (America/American, United States, U.S., USA, fifty, stars and stripes, Uncle Sam, stateside,
+  Yankee, star-spangled, bald eagle, Capitol Hill). For every other place, judge it yourself against this rule.
+- Self-test: read ONLY the wording and ask "which country or region would I assume?" If the answer is "any", add a hint.
+
 ## Every day needs a music question (owner rule, Nov 12, 2026)
 
 Each set of 7 must include **at least one music question**: a song (ranked by Spotify streams, see below), a singer, band, rapper,
@@ -72,6 +87,10 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 | Name a type of cheese | a variety of dairy curd product that is aged, melted or crumbled | a pungent or creamy product of pressed, ripened milk curds (fine as it is: no key word is named) |
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
+
+- **2026-11-14, Name a US state capital (q108):** the wording "a town housing a governor's mansion and the lawmakers' dome" never
+  signalled the United States, so players could not tell which capitals were meant. Whenever the plain prompt names a place or a
+  people (US, Europe, Africa, a city...), the wording must carry a coded hint of it. See "Carry the qualifier" above.
 
 - **2026-11-12, Name a Beatles song (q94):** the #1 answer ("Hey Jude") was chosen by impact, not by Spotify streams, and nothing told
   the player which ranking applied. From now on every song question orders its answers by Spotify streams and says **(Spotify

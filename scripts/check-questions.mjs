@@ -92,6 +92,14 @@ for (const [day, ids] of Object.entries(schedule)) {
   if (day < "2026-11-13") continue;
   if (!ids.some((id) => byId.get(id) && isMusic(byId.get(id)))) bad(day, "no music question in this day's 7: add one (a song, singer, band, instrument, genre, musician or musical)");
 }
+// A question limited to the US must say so in its wording (owner rule, Nov 14, 2026; from q109 on). See "Carry the qualifier" in
+// docs/question-wording.md. Other places and peoples are judged against the guide, not by a word list.
+const US_PLAIN = /\b(US|U\.S\.|USA|United States|America|American)\b/;
+const US_HINT = /\b(america|american|americans|united states|u\.s\.?|usa|fifty|stars and stripes|uncle sam|stateside|yankee|star-spangled|bald eagle|capitol hill)\b/i;
+for (const q of bank) {
+  if (Number(q.id.slice(1)) <= 108) continue;
+  if (US_PLAIN.test(q.prompt) && !US_HINT.test(fancy[q.id] || "")) bad(q.id, `the plain prompt is limited to the US ("${q.prompt}") but the wording gives no hint of it: add a coded US clue`);
+}
 // The end-screen roast lines: unique, short, one per day.
 const lines = [...POOL, ...Object.values(ROASTS)];
 if (new Set(lines.map((l) => l.toLowerCase())).size !== lines.length) bad("roasts", "a roast line appears twice");
