@@ -949,6 +949,7 @@ $("stats-btn").addEventListener("click", () => { renderStats(); openDialog($("st
 // ---------- puzzle pieces and mystery boxes ----------
 const levelName = (id) => levelById(id).name;
 const levelTag = (id) => `${levelById(id).emoji} ${levelName(id)}`;
+const aOrAn = (word) => (/^[aeiou]/i.test(word) ? "an" : "a"); // "a John Doe piece", "an Average Joe piece", "an Alien piece"
 // A box holds one piece of a random level. The pricier a level's cars, the rarer its pieces (PIECE_ODDS, in percent).
 function rollPieceLevel() {
   const total = LEVEL_ORDER.reduce((n, l) => n + PIECE_ODDS[l], 0);
@@ -1008,7 +1009,7 @@ function renderReward(result = "") {
 }
 $("reward-open").addEventListener("click", () => {
   const lvl = openBox();
-  if (lvl) renderReward(`You found a ${levelTag(lvl)} puzzle piece! Put it toward any ${levelName(lvl)} car in the shop.`);
+  if (lvl) renderReward(`You found ${aOrAn(levelName(lvl))} ${levelTag(lvl)} puzzle piece! Put it toward any ${levelName(lvl)} car in the shop.`);
 });
 
 // ---------- the shop ----------
@@ -1050,7 +1051,7 @@ function renderShop(message = "") {
   if (w.boxes) {
     const ob = document.createElement("button");
     ob.type = "button"; ob.className = "btn primary shop-btn"; ob.textContent = "Open a box";
-    ob.addEventListener("click", () => { const l = openBox(); if (l) refreshShopUi(`Mystery box: a ${levelTag(l)} puzzle piece! Put it toward any ${levelName(l)} car below.`); });
+    ob.addEventListener("click", () => { const l = openBox(); if (l) refreshShopUi(`Mystery box: ${aOrAn(levelName(l))} ${levelTag(l)} puzzle piece! Put it toward any ${levelName(l)} car below.`); });
     box.append(ob);
   }
   bar.append(box);
@@ -1135,7 +1136,7 @@ function carRow(car) {
     if (balance() >= car.price) mk(`Buy ${money(car.price)}`, "primary", () => buy(car));
     else mk(`Need ${money(car.price - balance())}`, "", null, true);
     const have = w.pieces[car.level];
-    mk(have ? `Use a ${levelName(car.level)} piece` : `No ${levelName(car.level)} pieces`, have ? `piece pc-${car.level}` : "", have ? () => usePiece(car) : null, !have);
+    mk(have ? `Use ${aOrAn(levelName(car.level))} ${levelName(car.level)} piece` : `No ${levelName(car.level)} pieces`, have ? `piece pc-${car.level}` : "", have ? () => usePiece(car) : null, !have);
   }
   li.append(pic, info, acts);
   return li;
