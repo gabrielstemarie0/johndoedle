@@ -4,6 +4,7 @@
 export const ROASTS = {
   "2026-11-07": "You're the human version of a handshake: firm, polite, and exactly like the last one.",
   "2026-11-08": "Your hot takes arrive already cooled to room temperature.",
+  "2026-11-14": "You're the kind of average that gets 'meets expectations' in every review and a mug at the holiday party.",
   "2026-11-13": "You're the human 'like' button: supportive, familiar, and never the first to comment.",
   "2026-11-12": "You're a walking 'meets expectations' review: no complaints, no fireworks.",
   "2026-11-11": "Your comfort zone has a loyalty card, and you're one stamp from a free refill.",

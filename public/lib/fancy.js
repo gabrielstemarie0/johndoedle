@@ -122,4 +122,11 @@ export default {
   q119: "Name a towering pinnacle of rock and snow that climbers dream of conquering.",
   q120: "Name a celebrated footwork wizard of the world's most beloved sport, adored by stadium crowds.",
   q121: "Name a fixture or supply found in the small tiled room set aside for daily hygiene.",
+  q122: "Name a celebrated maker of symphonies, sonatas and concertos from bygone centuries.",
+  q123: "Name a cultivar of the fruit that supposedly keeps the doctor away.",
+  q124: "Name a sovereign nation on the continent home to the Sahara and the Nile.",
+  q125: "Name a celebrated swinger of clubs on manicured fairways and greens.",
+  q126: "Name a sprawling merchant where shoppers push carts down wide aisles.",
+  q127: "Name a fundamental substance within a famed chart of nature's building blocks.",
+  q128: "Name a motion picture built to make the audience cower under the blankets.",
 };
