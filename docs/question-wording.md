@@ -65,6 +65,14 @@ Luke Combs and Zach Bryan have to be near the top of a "current" list, Johnny Ca
 Do not change the whole style of a list, just let this decide the first 19. Whatever you choose, the bracket tells the player which
 list it is.
 
+## Gotcha: reordering an answer list after it has been tested (Nov 15, 2026)
+
+The Worker stores each question's ranking in D1 (`answer_counts.seedw`) the first time the question is used, and only re-seeds when the
+number of answers or their total weight changes. **Reordering answers keeps both the same, so the old order stays in the database**
+(the nightly live test seeds it). If you ever reorder a question that was already tested or played, run
+`DELETE FROM answer_counts WHERE qid IN (...)` for it, but only while its day has not started (a day in progress holds real players'
+counts), then re-run the live test. Never edit the order of a question whose day is under way.
+
 ## Every day needs a music question (owner rule, Nov 12, 2026)
 
 Each set of 7 must include **at least one music question**: a song (ranked by Spotify streams, see below), a singer, band, rapper,
