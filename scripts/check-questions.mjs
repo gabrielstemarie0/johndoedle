@@ -70,27 +70,16 @@ for (const q of bank) {
     if (w && !PLAIN_STOP.has(w) && new RegExp(`\\b${w}s?\\b`).test(f)) bad(q.id, `fancy wording names the category word "${w}" from the plain prompt; disguise it`);
   }
 }
-// Song questions (since Nov 12, 2026, from q95): the owner wants the basis of the ranking stated in brackets at the end of BOTH the
-// plain prompt and the fancy wording: "(Spotify streams)" when the answers are ordered by Spotify streams, or another stated basis
-// such as "(most iconic)". See "Song questions" in docs/question-wording.md.
+// Song questions (from q95): either ranked by Spotify streams, in which case BOTH the plain prompt and the wording end with
+// "(Spotify streams)", or ranked on another basis, in which case there is no bracket and the wording itself says so (most famous, iconic,
+// legendary, today's...). See "Song questions" in docs/question-wording.md.
 for (const q of bank) {
   if (Number(q.id.slice(1)) <= 94) continue;
   const plain = q.prompt.replace(/\s*\([^)]*\)\s*$/, "");
-  if (!/\b(songs?|tracks?|singles?|tunes?|hits?|carols?|anthems?)\b/i.test(plain.replace(/looney tunes|merrie melodies/gi, ""))) continue; // "Looney Tunes" is a cartoon, not a song question
-  const tag = (t) => (t.match(/\(([^)]+)\)\s*[.?!]?\s*$/) || [])[1];
-  const a = tag(q.prompt), b = tag(fancy[q.id] || "");
-  if (!a || !b) { bad(q.id, "a song question must end with a bracket saying what the order is based on, in BOTH the plain prompt and the fancy wording, e.g. (Spotify streams)"); continue; }
-  if (a.toLowerCase() !== b.toLowerCase()) bad(q.id, `the bracket differs: plain "(${a})" vs fancy "(${b})"`);
-  if (!/spotify streams|most (iconic|influential|impactful|famous)|best known/i.test(a)) bad(q.id, `bracket "(${a})" must say "Spotify streams" or name another basis (most iconic, most influential, most impactful, most famous, best known)`);
-}
-// Every game day from Nov 13, 2026 must include at least one music question (owner rule, Nov 12): a song, singer, band, rapper,
-// instrument, genre, musician, album, composer or Broadway musical. Judged from the plain prompt.
-const MUSIC = /\b(songs?|singers?|vocalists?|bands?|musicians?|guitarists?|drummers?|pianists?|albums?|instruments?|rappers?|music|musicals?|artists?|composers?|carols?|anthems?|tunes?)\b/i;
-const isMusic = (q) => MUSIC.test(q.prompt.replace(/looney tunes|merrie melodies/gi, ""));
-const byId = new Map(bank.map((q) => [q.id, q]));
-for (const [day, ids] of Object.entries(schedule)) {
-  if (day < "2026-11-13") continue;
-  if (!ids.some((id) => byId.get(id) && isMusic(byId.get(id)))) bad(day, "no music question in this day's 7: add one (a song, singer, band, instrument, genre, musician or musical)");
+  if (!/\b(songs?|tracks?|singles?|tunes?|hits?|carols?|anthems?)\b/i.test(plain.replace(/looney tunes|merrie melodies/gi, ""))) continue;
+  const f = fancy[q.id] || "", tag = (t) => /\(Spotify streams\)\s*[.?!]?\s*$/i.test(t);
+  if (tag(q.prompt) !== tag(f)) { bad(q.id, "a song question ranked by Spotify streams needs \"(Spotify streams)\" at the end of BOTH the plain prompt and the wording"); continue; }
+  if (!tag(q.prompt) && !/\b(famous|famed|iconic|legend\w*|greatest|all-time|classic\w*|timeless|modern|current\w*|today|chart-topping|recent|latest|beloved|best-known|influential|biggest)\b/i.test(f)) bad(q.id, "a song question not ranked by Spotify streams must say in its wording what it is ranked by (famous, iconic, legendary, today's...); or end both texts with (Spotify streams)");
 }
 // A question limited to the US must say so in its wording (owner rule, Nov 14, 2026; from q109 on). See "Carry the qualifier" in
 // docs/question-wording.md. Other places and peoples are judged against the guide, not by a word list.
@@ -100,20 +89,23 @@ for (const q of bank) {
   if (Number(q.id.slice(1)) <= 108) continue;
   if (US_PLAIN.test(q.prompt) && !US_HINT.test(fancy[q.id] || "")) bad(q.id, `the plain prompt is limited to the US ("${q.prompt}") but the wording gives no hint of it: add a coded US clue`);
 }
-// Questions about people or artists (since Nov 15, 2026, from q122): the plain prompt AND the wording must end with the same bracket
-// that states the type of answer wanted without giving it away, e.g. "(most famed)", "(modern era)", "(old school)", "(Spotify monthly
-// listeners)". See "People and artists" in docs/question-wording.md. Song questions keep their own stricter rule above.
+// Brackets (owner rule, Nov 15, 2026): the ONLY bracket allowed in a plain prompt or a wording (from q95 on) is "(Spotify streams)", which
+// clarifies that a song question is ranked by Spotify streams. Everything else is said inside the wording itself.
+for (const q of bank) {
+  if (Number(q.id.slice(1)) <= 94) continue;
+  for (const [what, text] of [["plain prompt", q.prompt], ["wording", fancy[q.id] || ""]]) {
+    for (const m of text.matchAll(/\(([^)]*)\)/g)) if (m[1].toLowerCase() !== "spotify streams") bad(q.id, `${what} has a bracket "(${m[1]})": only "(Spotify streams)" may go in brackets; say anything else in the wording itself`);
+  }
+}
+// Questions about people or artists (from q122): the WORDING must itself say which kind of answer is wanted (an era or standing: legendary,
+// all-time, old school, modern, today's, current, chart-topping...) without giving the #1 away. See "People and artists" in the guide.
 const PEOPLE = /\b(singers?|vocalists?|bands?|musicians?|guitarists?|drummers?|pianists?|composers?|rappers?|artists?|actors?|actresses|players?|athletes?|golfers?|quarterbacks?|painters?|scientists?|inventors?|comedians?|directors?|authors?|writers?|chefs?|presidents?)\b/i;
-const BASIS = /\b(spotify|streams|listeners|famed|famous|iconic|influential|impactful|best known|og|legends?|classic|current|modern|today|recent|new school|old school|all-time|greats?)\b/i;
+const ERA = /\b(legend\w*|all-time|greatest|historic\w*|vintage|classic\w*|golden|bygone|timeless|modern|contemporary|current\w*|today|present-day|chart-topping|recent|latest|rising|up-and-coming|old-school|old days|trending|centuries|decades|old masters)\b/i;
 for (const q of bank) {
   if (Number(q.id.slice(1)) < 122) continue;
   const plain = q.prompt.replace(/\s*\([^)]*\)\s*$/, "");
-  if (!PEOPLE.test(plain)) continue;
-  const tag = (t) => (t.match(/\(([^)]+)\)\s*[.?!]?\s*$/) || [])[1];
-  const a = tag(q.prompt), b = tag(fancy[q.id] || "");
-  if (!a || !b) { bad(q.id, "a question about people or artists must end with a bracket stating the type of answer wanted, in BOTH the plain prompt and the fancy wording, e.g. (most famed) or (modern era)"); continue; }
-  if (a.toLowerCase() !== b.toLowerCase()) bad(q.id, `the bracket differs: plain "(${a})" vs fancy "(${b})"`);
-  if (!BASIS.test(a)) bad(q.id, `bracket "(${a})" does not state a basis (try most famed, modern era, old school, Spotify monthly listeners, current, classic...)`);
+  if (!PEOPLE.test(plain) || /\b(songs?|tracks?|singles?|tunes?|hits?)\b/i.test(plain)) continue; // songs follow the Spotify rule above
+  if (!ERA.test(fancy[q.id] || "")) bad(q.id, "a question about people or artists must say in its wording which kind of answer is wanted (legendary, all-time, old school, modern, today's, current, chart-topping...), subtly, without a bracket");
 }
 // The end-screen roast lines: unique, short, one per day.
 const lines = [...POOL, ...Object.values(ROASTS)];

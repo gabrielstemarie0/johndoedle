@@ -48,22 +48,23 @@ any country, so players could not know it meant America.
   Yankee, star-spangled, bald eagle, Capitol Hill). For every other place, judge it yourself against this rule.
 - Self-test: read ONLY the wording and ask "which country or region would I assume?" If the answer is "any", add a hint.
 
-## People and artists: state the type of answer, and think about who players actually are (owner rule, Nov 15, 2026)
+## People and artists: say which kind of answer you want, inside the wording (owner rule, Nov 15, 2026)
 
-**1. State the basis in brackets.** Any question about people or artists (a singer, vocalist, band, rapper, musician, guitarist,
-composer, actor, athlete, player, golfer, quarterback, painter, scientist, inventor, comedian, director, author, chef, president...)
-must end BOTH the plain prompt and the fancy wording with the same bracket that says which kind of answer is wanted, without giving
-the #1 away. Examples: `(most famed)` or `(og)` for legends, `(modern era)` or `(current)` for today's stars, `(old school)`,
-`(classic)`, `(Spotify monthly listeners)`. Songs keep their own rule below (usually `(Spotify streams)`). The checker enforces this
-from q122 on. Example from the owner: the Nov 15 country singer question (Johnny Cash, Dolly Parton... on top) should have said
-`(most famed)` or `(og)`, or been ranked by current popularity.
+**1. No brackets. Say it in the wording itself.** Any question about people or artists (a singer, vocalist, band, rapper, musician,
+guitarist, composer, actor, athlete, player, golfer, quarterback, painter, scientist, inventor, comedian, director, author, chef,
+president...) must make clear **which kind of answer is wanted**, using a word or phrase inside the fancy wording, subtly, without
+giving the #1 away: "legendary", "all-time greats", "from the old masters to today's stars", "in the modern era", "chart-topping",
+"old-school", "current", "bygone". Brackets are NOT used for this: the only thing allowed in brackets anywhere is **(Spotify streams)**
+on a song question (see below). The checker enforces both from q122 on. Example from the owner: the Nov 15 country singer question
+(Johnny Cash, Dolly Parton... on top) should have said something like "a legendary twang-master" or "a chart-topping star of today" in
+the wording, or been ranked by current popularity.
 
 **2. Think about who plays.** The typical player is **younger** and listens to / watches / follows **recent** names. When you pick
 the top answers, imagine what a young player would type first, not what a historian would. Blend legends everyone knows with
 current stars: put the names young people know at the top and the older legends right behind them (for country: Morgan Wallen,
-Luke Combs and Zach Bryan have to be near the top of a "current" list, Johnny Cash and Dolly Parton near the top of an "og" list).
-Do not change the whole style of a list, just let this decide the first 19. Whatever you choose, the bracket tells the player which
-list it is.
+Luke Combs and Zach Bryan have to be near the top of a "today's stars" list, Johnny Cash and Dolly Parton near the top of a
+"legendary" list). Do not change the whole style of a list, just let this decide the first 19. The phrase in the wording tells the
+player which list it is.
 
 ## Gotcha: reordering an answer list after it has been tested (Nov 15, 2026)
 
@@ -80,20 +81,20 @@ guitarist or other musician, an instrument, a genre, an album, a composer or a B
 Nov 13, 2026 on that has none. Nov 13 got q113 (guitarist) and Nov 14 got q114 (Broadway musical) in place of the car-model and
 boat questions (q103, q112); those two are unused leftovers that a later night may schedule.
 
-## Song questions: always say what the order is based on (owner rule, Nov 12, 2026)
+## Song questions: always say what the order is based on (owner rules, Nov 12 and Nov 15, 2026)
 
-Any question that asks for a song, track, single, tune, hit, carol or anthem **must state its ranking basis in brackets at the end of
-BOTH the plain prompt and the fancy wording**, with the same text in both:
+Any question that asks for a song, track, single, tune, hit, carol or anthem must make its ranking basis clear:
 
 - **Default: order the answers by Spotify streams.** Rank the songs by their all-time Spotify stream counts (look them up each night,
   for example kworb.net's Spotify "streams" pages, Spotify's own "popular" lists or a web search; do not rank from memory) and end
-  both texts with **(Spotify streams)**. Example plain prompt: `Name a Beatles song (Spotify streams)`; the fancy wording ends with the
-  same `(Spotify streams)` and must still fit in 120 characters.
-- **Or choose another basis on purpose** (for example "most iconic" or "most impactful" for a band whose biggest songs on Spotify are
-  not the ones everyone thinks of), and then say so in the brackets instead: `(most iconic)`, `(most influential)`,
-  `(most impactful)`, `(most famous)` or `(best known)`. Never leave the basis unstated.
-- The checker (`scripts/check-questions.mjs`) fails any song question after q94 that is missing the bracket, has different brackets, or
-  names no accepted basis. The bracket words are ignored by the "do not repeat the plain prompt's words" check.
+  BOTH the plain prompt and the fancy wording with **(Spotify streams)**. Example plain prompt: `Name a Beatles song (Spotify
+  streams)`; the wording ends with the same `(Spotify streams)` and must still fit in 120 characters. **This is the only bracket the
+  game uses.**
+- **Or rank on another basis on purpose** (for example the most iconic songs of a band whose biggest Spotify songs are not the ones
+  everyone thinks of). Then there is no bracket: the wording itself says what the ranking is ("the most iconic...", "a timeless
+  hit...", "a chart-topping smash of today...").
+- The checker (`scripts/check-questions.mjs`) fails any song question after q94 that is half-bracketed (bracket in only one of the two
+  texts) or, without the Spotify bracket, has no basis word in the wording; and it fails any other bracket anywhere from q95 on.
 - Why: q94 (Name a Beatles song, Nov 12) put "Hey Jude" first on gut feel about impact, but it is not the Beatles' most-streamed song on
   Spotify ("Here Comes the Sun" is). The ranking must be defensible, and the player must know which ranking is meant.
 
@@ -113,9 +114,13 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-15, brackets:** the owner does not want brackets for anything except "(Spotify streams)". Put the clarification inside the
+  wording itself, subtly, rather than in brackets.
+
 - **2026-11-15, Name a country music singer (q115):** the top answers were all old legends, chosen from my own sense of fame, with no
   data and no hint in the question. Players skew young and know newer names; the question also gave no clue it wanted "og" artists.
-  Fix: state the basis in brackets for every people/artist question and rank for the real audience. See "People and artists" above.
+  Fix: say the kind of answer wanted inside the wording (no brackets) for every people/artist question, and rank for the real audience.
+  See "People and artists" above.
 
 - **2026-11-14, Name a US state capital (q108):** the wording "a town housing a governor's mansion and the lawmakers' dome" never
   signalled the United States, so players could not tell which capitals were meant. Whenever the plain prompt names a place or a
@@ -123,7 +128,7 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 - **2026-11-12, Name a Beatles song (q94):** the #1 answer ("Hey Jude") was chosen by impact, not by Spotify streams, and nothing told
   the player which ranking applied. From now on every song question orders its answers by Spotify streams and says **(Spotify
-  streams)** in brackets beside the question, or it names another basis in the brackets. See "Song questions" above.
+  streams)** in brackets beside the question, or it says its basis inside the wording. See "Song questions" above.
 
 - **2026-11-09, Name a type of vehicle, second try:** "a conveyance that travels" was too simple. Neutral does not mean trivial:
   keep the wording free of hints toward the #1 answer (no "passengers", "cargo", "wheels"), but still disguise the category with
