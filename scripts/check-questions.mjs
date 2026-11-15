@@ -100,6 +100,21 @@ for (const q of bank) {
   if (Number(q.id.slice(1)) <= 108) continue;
   if (US_PLAIN.test(q.prompt) && !US_HINT.test(fancy[q.id] || "")) bad(q.id, `the plain prompt is limited to the US ("${q.prompt}") but the wording gives no hint of it: add a coded US clue`);
 }
+// Questions about people or artists (since Nov 15, 2026, from q122): the plain prompt AND the wording must end with the same bracket
+// that states the type of answer wanted without giving it away, e.g. "(most famed)", "(modern era)", "(old school)", "(Spotify monthly
+// listeners)". See "People and artists" in docs/question-wording.md. Song questions keep their own stricter rule above.
+const PEOPLE = /\b(singers?|vocalists?|bands?|musicians?|guitarists?|drummers?|pianists?|composers?|rappers?|artists?|actors?|actresses|players?|athletes?|golfers?|quarterbacks?|painters?|scientists?|inventors?|comedians?|directors?|authors?|writers?|chefs?|presidents?)\b/i;
+const BASIS = /\b(spotify|streams|listeners|famed|famous|iconic|influential|impactful|best known|og|legends?|classic|current|modern|today|recent|new school|old school|all-time|greats?)\b/i;
+for (const q of bank) {
+  if (Number(q.id.slice(1)) < 122) continue;
+  const plain = q.prompt.replace(/\s*\([^)]*\)\s*$/, "");
+  if (!PEOPLE.test(plain)) continue;
+  const tag = (t) => (t.match(/\(([^)]+)\)\s*[.?!]?\s*$/) || [])[1];
+  const a = tag(q.prompt), b = tag(fancy[q.id] || "");
+  if (!a || !b) { bad(q.id, "a question about people or artists must end with a bracket stating the type of answer wanted, in BOTH the plain prompt and the fancy wording, e.g. (most famed) or (modern era)"); continue; }
+  if (a.toLowerCase() !== b.toLowerCase()) bad(q.id, `the bracket differs: plain "(${a})" vs fancy "(${b})"`);
+  if (!BASIS.test(a)) bad(q.id, `bracket "(${a})" does not state a basis (try most famed, modern era, old school, Spotify monthly listeners, current, classic...)`);
+}
 // The end-screen roast lines: unique, short, one per day.
 const lines = [...POOL, ...Object.values(ROASTS)];
 if (new Set(lines.map((l) => l.toLowerCase())).size !== lines.length) bad("roasts", "a roast line appears twice");

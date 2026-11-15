@@ -48,6 +48,23 @@ any country, so players could not know it meant America.
   Yankee, star-spangled, bald eagle, Capitol Hill). For every other place, judge it yourself against this rule.
 - Self-test: read ONLY the wording and ask "which country or region would I assume?" If the answer is "any", add a hint.
 
+## People and artists: state the type of answer, and think about who players actually are (owner rule, Nov 15, 2026)
+
+**1. State the basis in brackets.** Any question about people or artists (a singer, vocalist, band, rapper, musician, guitarist,
+composer, actor, athlete, player, golfer, quarterback, painter, scientist, inventor, comedian, director, author, chef, president...)
+must end BOTH the plain prompt and the fancy wording with the same bracket that says which kind of answer is wanted, without giving
+the #1 away. Examples: `(most famed)` or `(og)` for legends, `(modern era)` or `(current)` for today's stars, `(old school)`,
+`(classic)`, `(Spotify monthly listeners)`. Songs keep their own rule below (usually `(Spotify streams)`). The checker enforces this
+from q122 on. Example from the owner: the Nov 15 country singer question (Johnny Cash, Dolly Parton... on top) should have said
+`(most famed)` or `(og)`, or been ranked by current popularity.
+
+**2. Think about who plays.** The typical player is **younger** and listens to / watches / follows **recent** names. When you pick
+the top answers, imagine what a young player would type first, not what a historian would. Blend legends everyone knows with
+current stars: put the names young people know at the top and the older legends right behind them (for country: Morgan Wallen,
+Luke Combs and Zach Bryan have to be near the top of a "current" list, Johnny Cash and Dolly Parton near the top of an "og" list).
+Do not change the whole style of a list, just let this decide the first 19. Whatever you choose, the bracket tells the player which
+list it is.
+
 ## Every day needs a music question (owner rule, Nov 12, 2026)
 
 Each set of 7 must include **at least one music question**: a song (ranked by Spotify streams, see below), a singer, band, rapper,
@@ -87,6 +104,10 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 | Name a type of cheese | a variety of dairy curd product that is aged, melted or crumbled | a pungent or creamy product of pressed, ripened milk curds (fine as it is: no key word is named) |
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
+
+- **2026-11-15, Name a country music singer (q115):** the top answers were all old legends, chosen from my own sense of fame, with no
+  data and no hint in the question. Players skew young and know newer names; the question also gave no clue it wanted "og" artists.
+  Fix: state the basis in brackets for every people/artist question and rank for the real audience. See "People and artists" above.
 
 - **2026-11-14, Name a US state capital (q108):** the wording "a town housing a governor's mansion and the lawmakers' dome" never
   signalled the United States, so players could not tell which capitals were meant. Whenever the plain prompt names a place or a
