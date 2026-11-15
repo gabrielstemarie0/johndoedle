@@ -129,4 +129,11 @@ export default {
   q126: "Name a sprawling merchant where shoppers push carts down wide aisles.",
   q127: "Name a fundamental substance within a famed chart of nature's building blocks.",
   q128: "Name a motion picture built to make the audience cower under the blankets.",
+  q129: "Name a celebrated frontman or frontwoman who commands stadiums with a roaring voice.",
+  q130: "Name a stacked handheld lunch famously invented by an earl who didn't want to leave the card table.",
+  q131: "Name a youngster of the wild or the farm, often with its own special name.",
+  q132: "Name a tinkerer from the realm of fifty stars whose gadget changed everyday life.",
+  q133: "Name a celebrated thrower of spirals who calls the signals before the snap.",
+  q134: "Name a film traditionally watched while wrapped in blankets near a decorated evergreen.",
+  q135: "Name a mighty ribbon of freshwater flowing toward the sea.",
 };

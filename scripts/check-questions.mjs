@@ -85,7 +85,7 @@ for (const q of bank) {
 }
 // Every game day from Nov 13, 2026 must include at least one music question (owner rule, Nov 12): a song, singer, band, rapper,
 // instrument, genre, musician, album, composer or Broadway musical. Judged from the plain prompt.
-const MUSIC = /\b(songs?|singers?|bands?|musicians?|guitarists?|drummers?|pianists?|albums?|instruments?|rappers?|music|musicals?|artists?|composers?|carols?|anthems?|tunes?)\b/i;
+const MUSIC = /\b(songs?|singers?|vocalists?|bands?|musicians?|guitarists?|drummers?|pianists?|albums?|instruments?|rappers?|music|musicals?|artists?|composers?|carols?|anthems?|tunes?)\b/i;
 const isMusic = (q) => MUSIC.test(q.prompt.replace(/looney tunes|merrie melodies/gi, ""));
 const byId = new Map(bank.map((q) => [q.id, q]));
 for (const [day, ids] of Object.entries(schedule)) {
