@@ -6,7 +6,7 @@ import { planetInfo, planetPct, PLANET_BONUS } from "./lib/planets.js";
 import { standing, BUCKETS } from "./lib/standing.js";
 import { ROASTS, POOL } from "./lib/roasts.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
-import { LEVELS, NOTHING, levelById, levelForRank, judgeLocal, isListed } from "./lib/scoring.js";
+import { LEVELS, NOTHING, levelById, levelForRank, judgeLocal, isListed, suggestFor } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, PRESTIGE_GAMES, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 import { ANIMALS } from "./animals.js";
@@ -235,10 +235,17 @@ function frame() {
 // Manual submit: a non-answer is rejected (shake) and the timer keeps running.
 const shownText = (q) => fancy[q.id] || q.prompt; // the wording the player actually sees
 // Something that can't be an answer (not a word, or a word from the question): clear the box, shake the bar, keep the clock running.
-function shakeOff(reason) {
+function shakeOff(reason, suggestion) {
   const input = $("answer"), form = $("answer-form");
   input.value = "";
   $("answer-hint").textContent = REJECT_TEXT[reason] || REJECT_TEXT.notword;
+  if (suggestion) { // a clear near miss: offer the one answer it looks like (the player taps to accept it)
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "dym";
+    b.append("Did you mean ", Object.assign(document.createElement("b"), { textContent: suggestion }), "?");
+    b.addEventListener("click", () => { $("answer").value = suggestion; trySubmit(); });
+    $("answer-hint").append(" ", b);
+  }
   $("answer-hint").hidden = false;
   form.classList.remove("shake");
   void form.offsetWidth; // restart the animation
@@ -252,7 +259,7 @@ function trySubmit() {
   if (reason) return shakeOff(reason);
   // Only answers on the question's list count. Anything else shakes off and the clock keeps running, so running out of time
   // is the only way to score nothing.
-  if (!isListed(todaysQs[cur], value)) return shakeOff("notlisted");
+  if (!isListed(todaysQs[cur], value)) return shakeOff("notlisted", suggestFor(todaysQs[cur], value));
   return lockIn();
 }
 

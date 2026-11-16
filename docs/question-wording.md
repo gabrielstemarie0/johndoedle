@@ -66,6 +66,18 @@ Luke Combs and Zach Bryan have to be near the top of a "today's stars" list, Joh
 "legendary" list). Do not change the whole style of a list, just let this decide the first 19. The phrase in the wording tells the
 player which list it is.
 
+## Typos are handled by the game; the nightly misses report (Nov 16, 2026)
+
+- **Do not add misspellings as aliases.** The game accepts swapped letters, one mistake (4+ letters) and two mistakes (7+ letters), as long
+  as one listed answer is clearly the closest ("morroco" counts as Morocco). Add aliases only for genuinely different names, nicknames,
+  abbreviations or spellings ("bb king", "mcintosh|macintosh").
+- **Misses report.** Every answer a player types that is not on the list is counted in the D1 table `misses (day, qid, answer, count)`.
+  Each night, after the sample players, run (Cloudflare D1 tool, database e5eedb67-193f-401f-82e4-f17ad0602d90):
+  `SELECT qid, answer, SUM(count) AS n FROM misses WHERE day = '<today ET, the day still in progress>' GROUP BY qid, answer HAVING n >= 2
+  ORDER BY n DESC LIMIT 60`. For each row decide: a real answer the list was missing, a spelling the game should have accepted, or noise.
+  Questions never repeat, so do not edit played questions. Instead list the notable misses in the nightly report, add a short lesson
+  here when a pattern shows (for example "country singers: lists lacked X"), and write more thorough lists. Never delete misses rows.
+
 ## Gotcha: reordering an answer list after it has been tested (Nov 15, 2026)
 
 The Worker stores each question's ranking in D1 (`answer_counts.seedw`) the first time the question is used, and only re-seeds when the

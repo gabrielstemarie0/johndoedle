@@ -35,3 +35,12 @@ CREATE TABLE IF NOT EXISTS daily_scores (
   PRIMARY KEY (day, player)
 );
 CREATE INDEX IF NOT EXISTS daily_scores_day ON daily_scores (day);
+
+-- What players typed that was not on a question's list (normalised, no player id): the nightly job reports the most common ones.
+CREATE TABLE IF NOT EXISTS misses (
+  day    TEXT NOT NULL,
+  qid    TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  count  INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, qid, answer)
+);

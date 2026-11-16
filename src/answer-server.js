@@ -31,7 +31,16 @@ export async function scoreAnswer({ db, question, answer, player, day }) {
   const rows = results;
   const index = buildIndex(question, rows);
   const key = resolveKey(index, answer);
-  if (key === null) return { rejected: "notlisted" }; // not one of the answers: the player just tries again
+  if (key === null) {
+    // not one of the answers: the player just tries again. Remember what was tried (no player id) so the nightly job can report the most
+    // common misses: missing answers or spellings worth adding. Test players ("zz-...") are not logged.
+    if (!String(player).startsWith("zz-")) {
+      try {
+        await db.prepare("INSERT INTO misses (day, qid, answer, count) VALUES (?, ?, ?, 1) ON CONFLICT(day, qid, answer) DO UPDATE SET count = count + 1").bind(day, question.id, normalize(answer)).run();
+      } catch {} // the log must never break answering
+    }
+    return { rejected: "notlisted" };
+  }
 
   const known = rows.find((r) => r.key === key);
   const lvl = levelFor(rows, key);

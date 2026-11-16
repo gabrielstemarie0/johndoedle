@@ -1,6 +1,6 @@
 // Scoring for John Doedle: the more people give the same answer, the more points it earns.
 // Used by the Cloudflare Worker (real scoring) and by the browser as an offline fallback.
-import { normalize, distance, allowedTypos, categoryHeads, promptWords } from "./text.js";
+import { normalize, typoDistance, allowedTypos, suggestTypos, categoryHeads, promptWords } from "./text.js";
 
 // ---------- levels ----------
 // Krillion's points, flipped: the most common answer earns the most. `spaces` is how far the car drives
@@ -89,15 +89,29 @@ function withoutHeads(k, heads) {
   while (w.length > 1 && heads.includes(w[0])) w.shift();
   return w.join(" ");
 }
-function nearest(index, k) {
-  const limit = allowedTypos(k.length);
-  if (!limit) return [null, Infinity];
-  let best = null, bestD = limit + 1;
+// The listed answer closest to `k`. How many mistakes are forgiven also depends on the LISTED spelling, so a short answer is never
+// matched loosely (two mistakes only when both words are 7+ letters, one when both are 4+). A tie between two DIFFERENT answers
+// (niger / nigeria) is refused: null. In `suggest` mode the limits are a little looser and the first words must be close.
+function nearest(index, k, limit, suggest = false) {
+  if (!limit) return null;
+  let bestD = limit + 1, keys = new Set();
   for (const [spelling, key] of index) {
-    const d = distance(k, spelling);
-    if (d < bestD) { best = key; bestD = d; }
+    const minLen = Math.min(k.length, spelling.length);
+    const cap = suggest ? (minLen >= 7 ? 3 : minLen >= 5 ? 2 : minLen >= 4 ? 1 : 0) : (minLen >= 7 ? 2 : minLen >= 4 ? 1 : 0);
+    const lim = Math.min(limit, cap);
+    const d = typoDistance(k, spelling);
+    if (d > lim) continue;
+    if (suggest) { // "chedar chese" must not become "cream cheese": the first words have to look alike
+      const a = k.split(" ")[0], b = spelling.split(" ")[0];
+      if (typoDistance(a, b) > Math.max(1, Math.floor(Math.max(a.length, b.length) / 3))) continue;
+    }
+    if (d < bestD) { bestD = d; keys = new Set([key]); } else if (d === bestD) keys.add(key);
   }
-  return [best, best === null ? Infinity : bestD];
+  return keys.size === 1 ? { key: [...keys][0], d: bestD } : null;
+}
+function bestOf(a, b) {
+  if (a && b) return a.d < b.d ? a : b.d < a.d ? b : a.key === b.key ? a : null;
+  return a || b;
 }
 export function resolveKey(index, raw) {
   const k = normalize(raw);
@@ -105,9 +119,20 @@ export function resolveKey(index, raw) {
   if (index.has(k)) return index.get(k); // an exact answer from the list always wins
   const bare = withoutHeads(k, index.strip);
   if (bare !== k && index.has(bare)) return index.get(bare);
-  const [a, da] = nearest(index, k);
-  const [b, db] = bare !== k ? nearest(index, bare) : [null, Infinity];
-  return da <= db ? a : b;
+  const hit = bestOf(nearest(index, k, allowedTypos(k.length)), bare !== k ? nearest(index, bare, allowedTypos(bare.length)) : null);
+  return hit ? hit.key : null;
+}
+// A near miss that is not accepted automatically but is clearly close to ONE answer: the label to offer as "Did you mean...?".
+export function suggestFor(question, raw) {
+  const index = buildIndex(question, []);
+  if (resolveKey(index, raw) !== null) return null; // it is already accepted
+  const k = normalize(raw);
+  if (!k) return null;
+  const bare = withoutHeads(k, index.strip);
+  const hit = bestOf(nearest(index, k, suggestTypos(k.length), true), bare !== k ? nearest(index, bare, suggestTypos(bare.length), true) : null);
+  if (!hit) return null;
+  const ans = question.answers.find(([label]) => normalize(label) === hit.key);
+  return ans ? ans[0] : null;
 }
 
 // ---------- offline fallback (browser, when the API is unreachable) ----------

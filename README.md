@@ -197,3 +197,13 @@ end of what you type before it is matched against the list, but never down to no
 words in the wording that are not the category (the "tomato" in "name something red like a tomato") stay blocked. The code is
 `categoryHeads` and `promptWords` in `public/lib/text.js`, used by `buildIndex`/`resolveKey` in `public/lib/scoring.js` (browser and
 Worker share it) and by `rejectReason` in `public/lib/rules.js`. List authors do not need to add "... soup" aliases.
+
+**Typos, near misses and the misses log (Nov 16, 2026).** `resolveKey` in `public/lib/scoring.js` (shared by the browser and the Worker)
+accepts an answer that is exactly on the list, or close to ONE listed answer: two neighbouring letters swapped count as one mistake, one
+mistake is forgiven from 4 letters, two from 7 letters (so "morroco" is Morocco and "algiera" is Algeria), and doubled letters are
+compared collapsed ("tennesee"). Two mistakes are only forgiven when both the typed word and the listed answer are 7+ letters, and
+a tie between two different answers (Niger / Nigeria) is refused, so a typo never lands on the wrong neighbour. In measurements on
+~1,600 typos per kind: swapped letters 42% to 100% accepted, two mistakes 76% to 99%, wrong answers 0.0%. A clear near miss that is not
+accepted gets a tap-to-accept **"Did you mean ...?"** button under the answer box (`suggestFor`, up to 3 mistakes, first words must
+look alike). Every "not listed" answer is counted in the D1 table `misses (day, qid, answer, count)` (no player id, test players
+"zz-..." excluded); the nightly job reports the most common ones so missing answers and spellings are noticed.

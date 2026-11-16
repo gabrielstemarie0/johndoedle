@@ -42,32 +42,39 @@ export function promptWords(prompt) {
   return [...new Set(s.split(/\s+/).map((w) => normalize(w)).filter((w) => w.length >= 3 && !PROMPT_STOP.has(w)))];
 }
 
-// Edit distance, used to forgive typos.
+// Edit distance, used to forgive typos. Two neighbouring letters swapped ("algiera" for "algeria") count as ONE mistake.
 export function distance(a, b) {
   if (a === b) return 0;
-  if (Math.abs(a.length - b.length) > 2) return 3;
-  const prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  if (Math.abs(a.length - b.length) > 3) return 4;
+  const d = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) d[i][0] = i;
+  for (let j = 0; j <= b.length; j++) d[0][j] = j;
   for (let i = 1; i <= a.length; i++) {
-    let last = prev[0];
-    prev[0] = i;
     for (let j = 1; j <= b.length; j++) {
-      const tmp = prev[j];
-      prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, last + (a[i - 1] === b[j - 1] ? 0 : 1));
-      last = tmp;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
     }
   }
-  return prev[b.length];
+  return d[a.length][b.length];
 }
+// "mississipi" and "morroco" differ from the real thing mostly in doubled letters, so compare a form with repeats collapsed too.
+export const collapseRepeats = (w) => w.replace(/(.)\1+/g, "$1");
+export const typoDistance = (a, b) => Math.min(distance(a, b), distance(collapseRepeats(a), collapseRepeats(b)));
 
-// How many typos we forgive depends on word length.
+// How many mistakes are forgiven automatically (and the answer counts), by length of what was typed.
 export function allowedTypos(len) {
   if (len <= 3) return 0;
-  if (len <= 7) return 1;
-  return 2;
+  if (len <= 6) return 1;
+  return 2; // from 7 letters (it was 8): "morroco" for "morocco"
+}
+// How far a near miss can be and still get a "Did you mean...?" offer (the player has to tap it).
+export function suggestTypos(len) {
+  if (len <= 3) return 0;
+  if (len <= 4) return 1;
+  if (len <= 6) return 2;
+  return 3;
 }
 
-// A "non-answer" is blank, symbols only, a single character, or one repeated character ("aaaa").
-// Unusual-but-real answers are fine; they just score low.
 export function isValidAnswer(input) {
   const k = normalize(input).replace(/ /g, "");
   return k.length >= 2 && !/^(.)\1*$/.test(k);
