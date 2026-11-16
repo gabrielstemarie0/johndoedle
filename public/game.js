@@ -199,6 +199,7 @@ function showCard() {
   $("submit").disabled = false;
   $("answer").removeAttribute("aria-invalid");
   $("answer-hint").hidden = true;
+  setGhost(null);
   $("qnum").textContent = `Question ${cur + 1} of ${PER_DAY}`;
   $("running").textContent = `${money(running)} today`;
   $("prompt").textContent = fancy[todaysQs[cur].id] || todaysQs[cur].prompt; // the fancy wording; the plain one is revealed after you answer
@@ -235,17 +236,33 @@ function frame() {
 // Manual submit: a non-answer is rejected (shake) and the timer keeps running.
 const shownText = (q) => fancy[q.id] || q.prompt; // the wording the player actually sees
 // Something that can't be an answer (not a word, or a word from the question): clear the box, shake the bar, keep the clock running.
+// A near-miss suggestion ("Did you mean Oxygen?") lives in the answer bar as grey text: clicking the bar or pressing Enter fills it in
+// (the player can still edit it), and pressing Enter again submits it.
+const DEFAULT_PLACEHOLDER = "Type your answer...";
+let ghost = null;
+const SMALL = new Set(["van", "von", "de", "of", "the", "and", "la", "le", "du", "da", "in", "on", "a"]);
+const niceLabel = (s) => String(s).split(" ").map((w, i) => (i && SMALL.has(w) ? w : w.replace(/^[a-z]/, (c) => c.toUpperCase()))).join(" "); // "ludwig van beethoven" -> "Ludwig van Beethoven"
+function setGhost(label) {
+  const input = $("answer");
+  ghost = label ? niceLabel(label) : null;
+  input.placeholder = ghost || DEFAULT_PLACEHOLDER;
+  input.classList.toggle("ghosting", !!ghost);
+}
+function acceptGhost() { // true if it filled the suggestion in (so this click / Enter should not submit)
+  const input = $("answer");
+  if (!ghost || input.value.trim()) return false;
+  input.value = ghost;
+  setGhost(null);
+  $("answer-hint").hidden = true; // the answer is ready: the red note has done its job
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+  return true;
+}
 function shakeOff(reason, suggestion) {
   const input = $("answer"), form = $("answer-form");
   input.value = "";
+  setGhost(suggestion || null);
   $("answer-hint").textContent = REJECT_TEXT[reason] || REJECT_TEXT.notword;
-  if (suggestion) { // a clear near miss: offer the one answer it looks like (the player taps to accept it)
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "dym";
-    b.append("Did you mean ", Object.assign(document.createElement("b"), { textContent: suggestion }), "?");
-    b.addEventListener("click", () => { $("answer").value = suggestion; trySubmit(); });
-    $("answer-hint").append(" ", b);
-  }
   $("answer-hint").hidden = false;
   form.classList.remove("shake");
   void form.offsetWidth; // restart the animation
@@ -271,6 +288,8 @@ async function lockIn(timedOut = false) {
   if (locked) return;
   locked = true;
   clearInterval(tick);
+  $("answer-hint").hidden = true; // the "not one of the answers" note must not stay on the result card
+  setGhost(null);
   const typed = $("answer").value.trim();
   const raw = !timedOut && isValidAnswer(typed) ? typed : ""; // out of time = you hit the obstacle, whatever you'd typed
   const q = todaysQs[cur];
@@ -1215,8 +1234,10 @@ $("wallet-btn").addEventListener("click", openShop);
 document.querySelectorAll("[data-shop-cta]").forEach((b) => b.addEventListener("click", openShop));
 
 // ---------- wire up ----------
-$("answer-form").addEventListener("submit", (e) => { e.preventDefault(); trySubmit(); });
+$("answer-form").addEventListener("submit", (e) => { e.preventDefault(); if (acceptGhost()) return; trySubmit(); });
+$("answer").addEventListener("click", acceptGhost);
 $("answer").addEventListener("input", () => {
+  setGhost(null);
   $("answer-hint").hidden = true;
   $("answer").removeAttribute("aria-invalid");
 });
