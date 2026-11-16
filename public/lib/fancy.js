@@ -136,4 +136,11 @@ export default {
   q133: "Name a celebrated thrower of spirals who calls the signals before the snap, in the modern era.",
   q134: "Name a film traditionally watched while wrapped in blankets near a decorated evergreen.",
   q135: "Name a mighty ribbon of freshwater flowing toward the sea.",
+  q136: "Name a polished, dance-heavy idol act from a famed East Asian peninsula that conquered global charts.",
+  q137: "Name a series that hooks binge-watchers on the red-lettered streaming giant.",
+  q138: "Name a plate from the cuisine south of the Rio Grande, loved for its bold spice and market-stall roots.",
+  q139: "Name a pedigreed whiskered purr-machine recognized by fanciers' registries.",
+  q140: "Name a creator of today who built an empire of videos on the planet's biggest clip-sharing site.",
+  q141: "Name a creature that wanders blocky overworlds in a best-selling sandbox building game.",
+  q142: "Name a renowned ivory-towered campus in the realm of fifty stars where students chase degrees.",
 };
