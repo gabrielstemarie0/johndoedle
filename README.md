@@ -207,3 +207,8 @@ a tie between two different answers (Niger / Nigeria) is refused, so a typo neve
 accepted gets a tap-to-accept **"Did you mean ...?"** button under the answer box (`suggestFor`, up to 3 mistakes, first words must
 look alike). Every "not listed" answer is counted in the D1 table `misses (day, qid, answer, count)` (no player id, test players
 "zz-..." excluded); the nightly job reports the most common ones so missing answers and spellings are noticed.
+
+**Partial answers (Nov 16, 2026).** Typing only the first part of a listed answer ("Phil", "Jack", "grilled") is not accepted: the game
+says "🔎 Be more specific: that's only part of an answer", shakes it off and keeps the clock running (`isPartial` in
+`public/lib/scoring.js`; the Worker answers `{ rejected: "specific" }`). A name everyone uses on its own is an alias of the answer
+(`tiger woods|tiger`), so it counts.

@@ -6,7 +6,7 @@ import { planetInfo, planetPct, PLANET_BONUS } from "./lib/planets.js";
 import { standing, BUCKETS } from "./lib/standing.js";
 import { ROASTS, POOL } from "./lib/roasts.js";
 import { isValidAnswer, normalize } from "./lib/text.js";
-import { LEVELS, NOTHING, levelById, levelForRank, judgeLocal, isListed, suggestFor } from "./lib/scoring.js";
+import { LEVELS, NOTHING, levelById, levelForRank, judgeLocal, isListed, suggestFor, isPartial } from "./lib/scoring.js";
 import { CARS, LEVEL_ORDER, PIECE_ODDS, PRESTIGE_GAMES, carsOfLevel, carById, carSVG, carSideSVG, money } from "./cars.js";
 import { createScene } from "./scene.js";
 import { ANIMALS } from "./animals.js";
@@ -259,7 +259,11 @@ function trySubmit() {
   if (reason) return shakeOff(reason);
   // Only answers on the question's list count. Anything else shakes off and the clock keeps running, so running out of time
   // is the only way to score nothing.
-  if (!isListed(todaysQs[cur], value)) return shakeOff("notlisted", suggestFor(todaysQs[cur], value));
+  if (!isListed(todaysQs[cur], value)) {
+    const near = suggestFor(todaysQs[cur], value); // a clear misspelling: offer the answer it looks like
+    if (near) return shakeOff("notlisted", near);
+    return shakeOff(isPartial(todaysQs[cur], value) ? "specific" : "notlisted"); // only the first name / first word: be more specific
+  }
   return lockIn();
 }
 

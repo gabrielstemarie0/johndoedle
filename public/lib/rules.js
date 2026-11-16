@@ -40,6 +40,7 @@ export const REJECT_TEXT = {
   notword: "🚫 Not a word",
   inquestion: "🚫 Can't use a word from the question",
   notlisted: "🚫 Not one of the answers",
+  specific: "🔎 Be more specific: that's only part of an answer",
 };
 // Returns "notword", "inquestion" or null.
 export function rejectReason(input, questionText, plainPrompt) {

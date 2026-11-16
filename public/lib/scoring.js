@@ -151,3 +151,15 @@ export function judgeLocal(question, raw) {
   const row = rows.find((r) => r.key === key);
   return { valid: true, level: lvl.id, pts: lvl.pts, label: row ? row.label : String(raw).trim(), top: topLabels(rows) };
 }
+
+// Only the first part of a listed answer ("phil" for "phil mickelson", "grilled" for "grilled cheese"): close, but not specific enough
+// to count. The game says "be more specific" and shakes it off. (A name everyone really uses on its own, like "tiger", is added to the
+// answer as an alias instead, so it counts.)
+export function isPartial(question, raw) {
+  const index = buildIndex(question, []);
+  if (resolveKey(index, raw) !== null) return false; // it is accepted: nothing to say
+  const k = normalize(raw);
+  if (k.length < 2) return false;
+  for (const spelling of index.keys()) if (spelling.startsWith(k + " ")) return true;
+  return false;
+}

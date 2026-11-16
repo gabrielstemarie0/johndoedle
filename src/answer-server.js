@@ -1,6 +1,6 @@
 // Server-side scoring: D1 holds the answer counts. Only answers on a question's list are accepted (no AI judging).
 import { normalize } from "../public/lib/text.js";
-import { buildIndex, resolveKey, levelFor, topLabels } from "../public/lib/scoring.js";
+import { buildIndex, resolveKey, isPartial, levelFor, topLabels } from "../public/lib/scoring.js";
 
 // Tried in order. (llama-3.1-8b-instruct was retired 2026-05-30; the -fast variants stay active.)
 const CHAT_MODELS = ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/meta/llama-3.1-8b-instruct-fast"];
@@ -39,7 +39,7 @@ export async function scoreAnswer({ db, question, answer, player, day }) {
         await db.prepare("INSERT INTO misses (day, qid, answer, count) VALUES (?, ?, ?, 1) ON CONFLICT(day, qid, answer) DO UPDATE SET count = count + 1").bind(day, question.id, normalize(answer)).run();
       } catch {} // the log must never break answering
     }
-    return { rejected: "notlisted" };
+    return { rejected: isPartial(question, answer) ? "specific" : "notlisted" }; // "phil" for "phil mickelson": be more specific
   }
 
   const known = rows.find((r) => r.key === key);

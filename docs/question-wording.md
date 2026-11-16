@@ -78,6 +78,17 @@ player which list it is.
   Questions never repeat, so do not edit played questions. Instead list the notable misses in the nightly report, add a short lesson
   here when a pattern shows (for example "country singers: lists lacked X"), and write more thorough lists. Never delete misses rows.
 
+## Partial answers and one-word names (owner rule, Nov 16, 2026)
+
+- **"Be more specific".** If a player types only the first part of a listed answer ("Phil" for "Phil Mickelson", "grilled" for "grilled
+  cheese"), the game shows "🔎 Be more specific: that's only part of an answer", shakes it off and keeps the clock running. It does not
+  count. This is automatic for every question (`isPartial` in `public/lib/scoring.js`); nothing to write.
+- **Add the one-word form as an alias when everyone really uses it alone.** A nickname or mononym that is specific on its own must be an
+  alias so it counts: `tiger woods|tiger`, `shaquille o'neal|shaq`, `lebron james|lebron`, `beyonce`, `slash`. Ordinary first names
+  (Phil, Jack, John, Tom) are NOT aliases: they stay "be more specific".
+- **For people, also add the distinctive last name as an alias** (`phil mickelson|mickelson`, `rory mcilroy|mcilroy`) when no other
+  answer in the list shares it; a surname alone is specific enough for most people.
+
 ## Gotcha: reordering an answer list after it has been tested (Nov 15, 2026)
 
 The Worker stores each question's ranking in D1 (`answer_counts.seedw`) the first time the question is used, and only re-seeds when the
