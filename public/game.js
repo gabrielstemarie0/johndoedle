@@ -245,7 +245,7 @@ const niceLabel = (s) => String(s).split(" ").map((w, i) => (i && SMALL.has(w) ?
 function setGhost(label) {
   const input = $("answer");
   ghost = label ? niceLabel(label) : null;
-  input.placeholder = ghost || DEFAULT_PLACEHOLDER;
+  input.placeholder = ghost ? `Did you mean?: ${ghost}` : DEFAULT_PLACEHOLDER; // grey text in the bar; filling it in writes only the word
   input.classList.toggle("ghosting", !!ghost);
 }
 function acceptGhost() { // true if it filled the suggestion in (so this click / Enter should not submit)
