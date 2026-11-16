@@ -3,6 +3,9 @@
 // Prints one SQL statement (INSERT OR IGNORE, so running it twice adds nothing) for the daily_scores table.
 // Each simulated player answers 7 questions; every answer lands on a level with the odds below, tilted by that
 // player's own skill, so some players are strong and some are weak. Scores are plain day totals (0-700).
+// Since Nov 16, 2026 every simulated score has +$50 added (owner request), capped at the $700 maximum; the sample players that
+// already existed were raised by the same $50 in the database.
+const BOOST = 50;
 const PER_DAY = 7;
 const date = process.argv[2];
 const count = Number(process.argv[3]) || 20;
@@ -27,6 +30,7 @@ for (let i = 1; i <= count; i++) {
     for (; pick < weights.length - 1; pick++) { r -= weights[pick]; if (r < 0) break; }
     score += LEVELS[pick][0];
   }
+  score = Math.min(700, score + BOOST);
   rows.push(`('${date}','sim-${tag}-${String(i).padStart(2, "0")}',${score})`);
 }
 const scores = rows.map((r) => Number(r.match(/,(\d+)\)$/)[1])).sort((a, b) => a - b);
