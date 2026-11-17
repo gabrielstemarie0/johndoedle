@@ -789,15 +789,18 @@ function renderResults(fresh = false, dmg = 0) {
     top.className = "row-top";
     const q = document.createElement("span");
     q.className = "row-q";
-    q.textContent = question.prompt; // the plain-English question
+    q.textContent = shownText(question); // the high-vocabulary wording the player actually saw, not the plain English one
     const p = document.createElement("span");
     p.className = `row-pts lvl-${lvl.id}`;
     p.textContent = a.pts > 0 ? `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}` : `💥 Crash $0`;
     top.append(q, p);
+    const plain = document.createElement("div"); // the plain-English version, smaller, just beneath
+    plain.className = "row-plain";
+    plain.textContent = `In plain English: ${question.prompt}`;
     const you = document.createElement("div");
     you.className = "row-you";
     you.textContent = a.raw ? `You said: ${a.raw}` : "No answer";
-    li.append(top, you);
+    li.append(top, plain, you);
     // The fixed ranking for this question, one level at a time: pick John Doe, Average Joe, Neighbor, Stranger or Alien.
     const det = document.createElement("details");
     det.className = "row-best";

@@ -121,6 +121,7 @@ h2 { margin: 8px 0 20px; font: 700 26px/1.2 Georgia, "Times New Roman", serif; }
 .breakdown li { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .row-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
 .row-q { font-weight: 600; }
+.row-plain { color: var(--muted); font-size: 12.5px; font-style: italic; margin-top: 3px; line-height: 1.3; }
 .row-pts { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .row-you { color: var(--muted); font-size: 14px; margin-top: 2px; }
 .row-top3 { color: var(--muted); font-size: 13px; margin-top: 6px; }
