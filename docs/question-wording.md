@@ -137,6 +137,14 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-17, Name an NFL quarterback (q133), real data:** I put Patrick Mahomes #1 ("modern era", young players, recency), but 13 of 13
+  real players typed Tom Brady first, so all of them got Average Joe instead of John Doe. Recency must not push the all-time face of a
+  field out of #1: for a person list, the name an average player thinks of FIRST stays on top even when the wording says "modern" or
+  "today" (Brady, Messi, Federer, Tiger Woods, Beethoven); put the current stars right behind it. Same day, the checks on the golfer
+  (Tiger 14 of 16), composer (Beethoven 7 of 17), rock vocalist (Mercury 3 of 5) and inventor (Edison 4 of 7) all had the right #1.
+  When in doubt, look at `answer_counts` for earlier people questions (`SELECT label, count FROM answer_counts WHERE qid = '...'`) to
+  calibrate before choosing a #1.
+
 - **2026-11-15, brackets:** the owner does not want brackets for anything except "(Spotify streams)". Put the clarification inside the
   wording itself, subtly, rather than in brackets.
 
