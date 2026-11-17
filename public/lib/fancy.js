@@ -143,4 +143,11 @@ export default {
   q140: "Name a creator of today who built an empire of videos on the planet's biggest clip-sharing site.",
   q141: "Name a creature that wanders blocky overworlds in a best-selling sandbox building game.",
   q142: "Name a renowned ivory-towered campus in the realm of fifty stars where students chase degrees.",
+  q143: "Name a turntable-and-laptop headliner of today who makes festival crowds jump.",
+  q144: "Name a bite of vinegared rice, topped or wrapped with seafood, served on a wooden board at Japanese counters.",
+  q145: "Name a program from the orange-splat kids' television network.",
+  q146: "Name a celebrated racket-wielding champion on grass, clay and hard surfaces, from legends to today's stars.",
+  q147: "Name a prestigious house whose logo on handbags, watches and sunglasses signals wealth.",
+  q148: "Name a metropolis in the nation famed for maple syrup, hockey and the Mounties.",
+  q149: "Name a hand-drawn serial from Japan with wide-eyed protagonists and devoted fan communities.",
 };
