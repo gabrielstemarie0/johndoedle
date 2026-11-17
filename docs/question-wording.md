@@ -1,5 +1,28 @@
 # How to write the fancy wording (read this before writing any question)
 
+## ANSWER ORDER: THE MOST COMMON ANSWER IS #1 (owner rule, Nov 17, 2026: read this twice, never break it)
+
+The order of an answer list is **how often typical players would type each answer**, most common first. It is NOT: the best answer, the
+newest, the most impressive, the one that fits the era word in the wording, or my taste. Rank #1 gets $100, so a wrong #1 shortchanges
+every player. The q133 mistake (Mahomes #1, while 13 of 13 real players typed Brady) must never be repeated.
+
+Do this for EVERY question, every night, before writing the list:
+
+1. **First-guess test.** Imagine 100 random players, including teenagers, reading only the wording. Write down the ONE answer most of
+   them would type first. That is #1. Write down the next nine they would type; those are #2-#10. Do this before looking at anything else.
+2. **The famous name wins.** For people, brands, places and titles, the answer with the widest everyday fame stays #1 even if it is older
+   or retired (Tom Brady, Tiger Woods, Beethoven, Freddie Mercury, Edison, Messi). Current or trending names go right behind it, not in
+   front of it. An era word in the wording ("modern", "today's", "legendary") changes WHICH names are plausible, never who is the most
+   famous. When torn between an older universal name and a newer trending one, the universal name goes first.
+3. **Use real data, not memory.** Before ranking a people/brand list, run `SELECT qid, label, count FROM answer_counts WHERE count > 0
+   ORDER BY qid, count DESC` (D1 tool) for earlier questions of the same kind and see what real players actually typed first; also check
+   `misses` for what they typed that was not on a list. Real answers beat my assumptions. For songs use Spotify streams (below).
+4. **Check #1 against the question's wording one last time.** Ask: "would the most typed answer to THIS exact wording be my #1?" If a
+   different name is obviously what most people would say, swap them.
+5. **Say it in the report.** For every question, the nightly report must list the #1 and a one-line reason ("most famous overall",
+   "most streamed", "what 13 of 13 players typed on a similar question"). If the reason is "it is current/trending", that is the red flag:
+   re-check rule 2.
+
 ## STANDING RULE: never disturb player progress (set by the owner, Nov 9, 2026)
 
 Any update, by anyone or any scheduled task, must leave player engagement untouched:
@@ -59,12 +82,12 @@ on a song question (see below). The checker enforces both from q122 on. Example 
 (Johnny Cash, Dolly Parton... on top) should have said something like "a legendary twang-master" or "a chart-topping star of today" in
 the wording, or been ranked by current popularity.
 
-**2. Think about who plays.** The typical player is **younger** and listens to / watches / follows **recent** names. When you pick
-the top answers, imagine what a young player would type first, not what a historian would. Blend legends everyone knows with
-current stars: put the names young people know at the top and the older legends right behind them (for country: Morgan Wallen,
-Luke Combs and Zach Bryan have to be near the top of a "today's stars" list, Johnny Cash and Dolly Parton near the top of a
-"legendary" list). Do not change the whole style of a list, just let this decide the first 19. The phrase in the wording tells the
-player which list it is.
+**2. Think about who plays, but the most common answer still goes first.** The typical player is **younger** and follows **recent**
+names, so after the universally famous #1 (see the answer-order rule at the top: the name most players type first stays #1, even if older
+or retired), put the current stars that young players know right behind it, and let them fill the rest of the first 19 ahead of obscure
+legends. For country: Johnny Cash or Dolly Parton may be the most typed #1 on a "legendary" list, while Morgan Wallen and Luke Combs
+belong near the top of a "today's stars" list. Do not change the whole style of a list. The phrase in the wording tells the player which
+list it is, but it never turns a newer name into the #1 just because it is newer.
 
 ## Typos are handled by the game; the nightly misses report (Nov 16, 2026)
 
