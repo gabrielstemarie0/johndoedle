@@ -38,7 +38,7 @@ and a red strip along your lane makes that easy to read. In the last second the 
   stays for the rest of the day (cracked rear window, a dead tail light, smoke, a hanging bumper) and you earn $0. An
   unsubmitted answer doesn't count when time runs out.
 - Crashes cost a repair bill that depends on the tier of the car you drive: every car in a tier pays the price of the cheapest
-  car in it ($25 for the starter tier, then $199, $1,581, $7,488 and $35,460 for the top tier); the prices are in `public/cars.js` and shown on every shop card. When the last question is answered,
+  car in it ($25 for the Alien tier, then $50 Stranger, $100 Neighbor, $200 Average Joe and $500 John Doe); the prices are in `public/cars.js` and shown on every shop card. When the last question is answered,
   an end-of-game scene plays on its own: your winnings (plus any streak bonus) count up, a side view of your car shows its
   damage, a cartoon scuffle cloud of cleaning supplies and gloved arms (with squeegee, spray and scrub sounds, mute button on
   the card) cleans the red off and repairs the car, and crashes × the repair price comes off your total. If the bill is bigger than your cash, **your cash goes

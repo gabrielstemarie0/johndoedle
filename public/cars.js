@@ -30,10 +30,10 @@ export const PIECE_ODDS = { alien: 50, stranger: 28, neighbor: 14, joe: 6, johnd
 // The Rusty Hatchback and the prestige Midnight Monster Tractor give none.
 const MULT = { commuter: 1, zippy: 2, wagon: 4, pickup: 8, coupe: 17, muscle: 35, rally: 70, luxe: 143, sports: 289, super: 588, hyper: 1194, rocket: 2424, gold: 4924, hover: 10000, tractor: 20000 };
 CARS.forEach((c) => { c.mult = MULT[c.id] || 0; });
-// What one crash costs in repairs with this car: a steady climb (about +68% per car) from $25 to $100,000.
+// What one crash costs in repairs with this car. Every car in a tier pays the same price per crash (set Nov 18, 2026):
+// Alien $25, Stranger $50, Neighbor $100, Average Joe $200, John Doe $500.
 // If a repair costs more than your cash, your cash goes negative (you're in debt).
-// Every car in a tier pays the same repair bill: the price of the cheapest car in that tier (set Nov 12, 2026).
-const TIER_REPAIR = { alien: 25, stranger: 199, neighbor: 1581, joe: 7488, johndoe: 35460 };
+const TIER_REPAIR = { alien: 25, stranger: 50, neighbor: 100, joe: 200, johndoe: 500 };
 CARS.forEach((c) => { c.repair = TIER_REPAIR[c.level] || 25; });
 export const PRESTIGE_GAMES = 10; // perfect games (10/10 John Doe) with the monster tractor needed to reset to the next planet
 export const carById = (id) => CARS.find((c) => c.id === id) || CARS[0];
