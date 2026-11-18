@@ -508,17 +508,19 @@ main { padding-bottom: 24px; }
 #answer-form input.ghosting { cursor: pointer; }
 
 /* ===== end screen layout (Nov 18, 2026) =====
-   Laptop: two columns. Left: score card, then "Round by round". Right: copy-result + countdown, car shop, streak, stats.
-   Phone: one column in this order: score, copy-result + countdown, round by round, car shop, streak, stats. */
+   Laptop: top row = score card (left) + side cards (right), both the same height; below, "Round by round" across the full width
+   as a grid of answer tiles (3 across). Phone: one column: score, copy-result + countdown, round by round, car shop, streak, stats. */
 #results.results { background: none; border: 0; box-shadow: none; padding: 0; }
 .res-grid { display: grid; gap: 14px; }
-.res-main, .res-side { display: contents; }
+.res-side { display: contents; }
 .res-score { order: 1; }
 .res-actions { order: 2; }
 .res-rounds { order: 3; }
 .res-side > .shop-cta { order: 4; margin-top: 0; }
 .res-streak { order: 5; }
 .res-stats { order: 6; }
+.res-score { display: flex; flex-direction: column; }
+.res-score .finale { margin-bottom: 0; }
 .res-score .verdict { margin: 14px 0 0; font-size: 17px; }
 .res-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .res-head h2 { margin: 0; font-size: 22px; }
@@ -534,27 +536,42 @@ main { padding-bottom: 24px; }
 .res-stats .stat-tiles { margin-top: 8px; }
 .side-more { width: 100%; margin-top: 12px; }
 
-/* round-by-round rows: number | question, plain English, your answer | level and points */
-.breakdown li.lvl-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 2px 12px; align-items: start; }
-.row-num { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); font: 700 13px system-ui, sans-serif; color: var(--muted); margin-top: 1px; }
-.row-main { min-width: 0; }
+/* answer tiles: [number .... level and points] / question / plain English / your answer / see the answers */
+.breakdown { grid-template-columns: minmax(0, 1fr); }
+.breakdown li.lvl-row { display: grid; grid-template-columns: 30px minmax(0, 1fr); grid-template-areas: "num pts" "main main" "best best"; gap: 8px 10px; align-items: center; border-top-width: 3px; }
+.lvl-row-johndoe { border-top-color: var(--l-johndoe); } .lvl-row-joe { border-top-color: var(--l-joe); } .lvl-row-neighbor { border-top-color: var(--l-neighbor); }
+.lvl-row-stranger { border-top-color: var(--l-stranger); } .lvl-row-alien { border-top-color: var(--l-alien); } .lvl-row-imposter, .lvl-row-nothing { border-top-color: var(--l-nothing, #888); }
+.row-num { grid-area: num; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); font: 700 13px system-ui, sans-serif; color: var(--muted); }
+.row-main { grid-area: main; min-width: 0; }
 .row-main .row-q { font-weight: 600; line-height: 1.35; }
 .row-main .row-you { font-weight: 700; color: var(--ink); margin-top: 6px; }
-.lvl-row .row-pts { text-align: right; }
-.lvl-row .row-best { grid-column: 2 / -1; }
+.lvl-row .row-pts { grid-area: pts; justify-self: end; text-align: right; }
+.lvl-row .row-best { grid-area: best; margin-top: 2px; }
+.breakdown li.row-summary { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 2px; padding: 16px; border: 1px dashed var(--line); border-radius: 12px; background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.sum-title { font: 800 13px system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.sum-total { font: 700 44px/1.1 Georgia, serif; color: var(--good); }
+.sum-sub { color: var(--muted); font-size: 14px; }
+.sum-emoji { margin-top: 8px; font-size: 22px; letter-spacing: .1em; }
 
 @media (max-width: 640px) {
   /* on a phone the question gets the full width and the points sit underneath it */
-  .breakdown li.lvl-row { grid-template-columns: 28px minmax(0, 1fr); }
-  .lvl-row .row-pts { grid-column: 2; text-align: left; margin-top: 6px; }
-  .lvl-row .row-best { grid-column: 1 / -1; }
+  .breakdown li.lvl-row { grid-template-columns: 28px minmax(0, 1fr); grid-template-areas: "num main" ". pts" "best best"; align-items: start; }
+  .lvl-row .row-pts { justify-self: start; text-align: left; }
 }
+@media (min-width: 641px) { .breakdown { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1000px) {
   body.on-results .top, body.on-results main { max-width: 1160px; }
   body.on-results main { padding: 0 24px 40px; }
-  .res-grid { grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
-  .res-main, .res-side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-  .res-side { position: sticky; top: 12px; }
+  .res-grid { grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 20px; align-items: stretch; }
+  .res-side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .res-side > .res-stats { flex: 1; display: flex; flex-direction: column; }
+  .res-side > .res-stats .stat-tiles { flex: 1; align-items: stretch; }
   .res-score, .res-actions, .res-rounds, .res-side > .shop-cta, .res-streak, .res-stats { order: 0; }
-  .res-score { padding: 28px 32px; }
+  .res-rounds { grid-column: 1 / -1; padding: 24px 28px; }
+  .breakdown { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .breakdown li.row-summary { grid-column: span 2; }
+  .res-score { padding: 24px 28px; justify-content: space-between; }
+  /* the graph fills the card instead of floating in the middle of it */
+  .res-score .finale-car { max-width: 600px; }
+  .res-score .finale-car.graphing .finale-car-svg { height: auto; aspect-ratio: 320 / 166; }
 }

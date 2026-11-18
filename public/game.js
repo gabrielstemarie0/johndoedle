@@ -857,6 +857,15 @@ function renderResults(fresh = false, dmg = 0) {
     li.append(det);
     list.append(li);
   });
+  // a last tile that fills the gap after the seventh question: the day in one glance
+  const sum = document.createElement("li");
+  sum.className = "row-summary";
+  const st1 = document.createElement("div"); st1.className = "sum-title"; st1.textContent = "Answers total";
+  const st2 = document.createElement("div"); st2.className = "sum-total"; st2.textContent = money(t);
+  const st3 = document.createElement("div"); st3.className = "sum-sub"; st3.textContent = `of ${money(MAX_DAY)} possible`;
+  const st4 = document.createElement("div"); st4.className = "sum-emoji"; st4.textContent = today.answers.map(emojiOf).join(" ");
+  sum.append(st1, st2, st3, st4);
+  list.append(sum);
   renderResultsSide();
   playFinale(fresh, dmg);
 }
