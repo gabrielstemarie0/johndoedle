@@ -269,6 +269,10 @@ function shakeOff(reason, suggestion) {
   form.classList.add("shake");
   input.focus();
 }
+// The browser rejects answers that are not on the list by itself, so it also reports them (no player id) for the nightly misses report.
+function reportMiss(q, answer) {
+  try { fetch("api/miss", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ day, q, answer: String(answer).trim().slice(0, 60) }), keepalive: true }).catch(() => {}); } catch {}
+}
 function trySubmit() {
   if (locked) return;
   const value = $("answer").value;
@@ -277,6 +281,7 @@ function trySubmit() {
   // Only answers on the question's list count. Anything else shakes off and the clock keeps running, so running out of time
   // is the only way to score nothing.
   if (!isListed(todaysQs[cur], value)) {
+    reportMiss(todaysQs[cur].id, value); // tell the server (anonymously) so the nightly job can report missing answers
     const near = suggestFor(todaysQs[cur], value); // a clear misspelling: offer the answer it looks like
     if (near) return shakeOff("notlisted", near);
     return shakeOff(isPartial(todaysQs[cur], value) ? "specific" : "notlisted"); // only the first name / first word: be more specific

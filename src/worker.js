@@ -3,8 +3,10 @@
 //   POST /api/answer  { player, day, q, answer }
 //     -> { valid, level, pts, label, top: [most popular answers] }
 //     or { rejected: "notword" | "inquestion" | "notlisted" | "specific" } when the answer can't be used (the player just tries again)
+//   POST /api/miss    { day, q, answer } -> { ok } : the browser reports an answer that was not on the question's list (no player id),
+//     counted in the `misses` table for the nightly report
 import questions from "../public/lib/bank.js";
-import { isValidAnswer } from "../public/lib/text.js";
+import { isValidAnswer, normalize } from "../public/lib/text.js";
 import { scoreAnswer } from "./answer-server.js";
 import fancy from "../public/lib/fancy.js";
 import { rejectReason } from "../public/lib/rules.js";
@@ -29,6 +31,10 @@ export default {
     if (url.pathname === "/api/answer") {
       if (request.method !== "POST") return reply({ error: "POST only" }, 405, { allow: "POST" });
       return handleAnswer(request, env);
+    }
+    if (url.pathname === "/api/miss") {
+      if (request.method !== "POST") return reply({ error: "POST only" }, 405, { allow: "POST" });
+      return handleMiss(request, env);
     }
     if (url.pathname === "/api/score") {
       if (request.method !== "POST") return reply({ error: "POST only" }, 405, { allow: "POST" });
@@ -88,6 +94,31 @@ async function handleAnswer(request, env) {
   } catch (e) {
     console.error("score failed", e && e.message);
     return reply({ error: "score failed" }, 502);
+  }
+}
+
+// POST /api/miss { day, q, answer }: the browser checks answers against the list itself, so the server never sees a typed answer that
+// is not on it. This lets the browser report it, anonymously, so the nightly job can say which real answers or spellings were missing.
+async function handleMiss(request, env) {
+  if (!env.DB) return reply({ error: "no database" }, 503);
+  let body;
+  try { body = await request.json(); } catch { return reply({ error: "bad json" }, 400); }
+  const { day, q, answer } = body || {};
+  const question = questions.find((x) => x.id === q);
+  if (!question) return reply({ error: "unknown question" }, 400);
+  if (typeof day !== "string" || !DAY.test(day) || Math.abs(Date.parse(day + "T00:00:00Z") - Date.now()) / 86400000 >= 2) return reply({ error: "bad day" }, 400);
+  if (typeof answer !== "string" || answer.length > 60 || !isValidAnswer(answer)) return reply({ error: "not an answer" }, 400);
+  try {
+    const ip = request.headers.get("x-station-client-ip") || request.headers.get("CF-Connecting-IP") || "unknown";
+    // at most 80 reports per address per day, kept apart from the answer limits so misses never block real answers
+    await env.DB.prepare("INSERT INTO rate_limits (key, bucket, day, count) VALUES (?, 'miss', ?, 1) ON CONFLICT(key, bucket) DO UPDATE SET count = CASE WHEN day = excluded.day THEN count + 1 ELSE 1 END, day = excluded.day").bind("miss:" + ip, day).run();
+    const row = await env.DB.prepare("SELECT count FROM rate_limits WHERE key = ? AND bucket = 'miss'").bind("miss:" + ip).first();
+    if (row && row.count > 80) return reply({ ok: false });
+    await env.DB.prepare("INSERT INTO misses (day, qid, answer, count) VALUES (?, ?, ?, 1) ON CONFLICT(day, qid, answer) DO UPDATE SET count = count + 1").bind(day, question.id, normalize(answer)).run();
+    return reply({ ok: true });
+  } catch (e) {
+    console.error("miss failed", e && e.message);
+    return reply({ ok: false });
   }
 }
 
