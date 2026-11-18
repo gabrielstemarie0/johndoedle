@@ -685,7 +685,7 @@ async function playFinale(fresh, dmg) {
   pills.replaceChildren();
   const addPill = (st, show) => { const el = document.createElement("div"); el.className = "finale-line" + (show ? " in" : ""); el.textContent = st.text; pills.append(el); return el; };
   const amt = $("total"), carBox = $("finale-car"), status = $("finale-status"), fx = $("finale-fx");
-  const costEl = $("finale-cost"), after = $("after");
+  const costEl = $("finale-cost"), after = $("results"); // while "pending", the parts after the score (round by round, actions...) stay hidden
   $("finale-sub").textContent = `of ${money(MAX_DAY)} possible`;
   const net = win - bill.paid;
   const car = carById(state.wallet.car);
@@ -790,22 +790,26 @@ function renderResults(fresh = false, dmg = 0) {
     const lvl = levelById(a.level);
     const question = todaysQs[i];
     const li = document.createElement("li");
-    const top = document.createElement("div");
-    top.className = "row-top";
-    const q = document.createElement("span");
+    li.className = `lvl-row lvl-row-${lvl.id}`;
+    const num = document.createElement("span");
+    num.className = "row-num";
+    num.textContent = String(i + 1);
+    const main = document.createElement("div");
+    main.className = "row-main";
+    const q = document.createElement("div");
     q.className = "row-q";
     q.textContent = shownText(question); // the high-vocabulary wording the player actually saw, not the plain English one
-    const p = document.createElement("span");
-    p.className = `row-pts lvl-${lvl.id}`;
-    p.textContent = a.pts > 0 ? `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}` : `💥 Crash $0`;
-    top.append(q, p);
     const plain = document.createElement("div"); // the plain-English version, smaller, just beneath
     plain.className = "row-plain";
     plain.textContent = `In plain English: ${question.prompt}`;
     const you = document.createElement("div");
     you.className = "row-you";
     you.textContent = a.raw ? `You said: ${a.raw}` : "No answer";
-    li.append(top, plain, you);
+    main.append(q, plain, you);
+    const p = document.createElement("span");
+    p.className = `row-pts lvl-${lvl.id}`;
+    p.textContent = a.pts > 0 ? `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}` : `💥 Crash $0`;
+    li.append(num, main, p);
     // The fixed ranking for this question, one level at a time: pick John Doe, Average Joe, Neighbor, Stranger or Alien.
     const det = document.createElement("details");
     det.className = "row-best";
@@ -853,7 +857,39 @@ function renderResults(fresh = false, dmg = 0) {
     li.append(det);
     list.append(li);
   });
+  renderResultsSide();
   playFinale(fresh, dmg);
+}
+
+
+// The cards on the right of the end screen (below on a phone): the streak and a few lifetime numbers.
+function renderResultsSide() {
+  const yesterday = prevDay(day);
+  const cur = state.streak.last === day || state.streak.last === yesterday ? state.streak.count : 0;
+  const box = $("res-streak");
+  box.replaceChildren();
+  const h = document.createElement("div"); h.className = "side-title";
+  h.textContent = cur ? `🔥 ${cur}-day streak` : "🔥 No streak yet";
+  const t = document.createElement("p"); t.className = "side-text";
+  const next = cur + 1;
+  t.textContent = next >= 2
+    ? `Come back tomorrow: your day starts with +${streakPct(next)}% on that day's earnings and a mystery box.`
+    : "Play two days in a row to start a streak: a cash bonus and a mystery box every day.";
+  box.append(h, t);
+  const st = computeStats();
+  const sbox = $("res-stats");
+  sbox.replaceChildren();
+  const sh = document.createElement("div"); sh.className = "side-title"; sh.textContent = "📊 Your stats";
+  const grid = document.createElement("div"); grid.className = "stat-tiles";
+  for (const [label, value] of [["Games", st.played], ["Average", money(st.average)], ["Best", money(st.best)], ["Streak", String(cur)]]) {
+    const tile = document.createElement("div"); tile.className = "stat-tile";
+    const v = document.createElement("b"); v.textContent = value;
+    const l = document.createElement("span"); l.textContent = label;
+    tile.append(v, l); grid.append(tile);
+  }
+  const more = document.createElement("button"); more.type = "button"; more.className = "btn side-more"; more.textContent = "See all stats";
+  more.addEventListener("click", () => { renderStats(); openDialog($("stats-dialog")); });
+  sbox.append(sh, grid, more);
 }
 
 // Messaging apps remember a link's preview picture for a long time. Bump this number whenever the preview image changes

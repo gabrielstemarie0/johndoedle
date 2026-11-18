@@ -397,8 +397,10 @@ main { padding-bottom: 24px; }
 .fx-bit { position: absolute; font-size: 20px; animation: fxFly 1.4s ease-out forwards; }
 @keyframes fxFly { 0% { opacity: 1; transform: translate(-50%, -50%) scale(.6); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy) + 60px)) rotate(var(--rot)) scale(1); } }
 .finale-won { position: relative; }
-.after { transition: opacity .6s; }
-.after.pending { opacity: 0; pointer-events: none; max-height: 0; overflow: hidden; }
+/* the parts after the score stay out of the way until the end-of-game animation has finished, then fade in */
+#results.pending .after-part { display: none; }
+#results:not(.pending) .after-part { animation: afterIn .6s ease both; }
+@keyframes afterIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .finale-amt.pop, .finale-car-svg.repairing svg, .wrench, .finale.flash::before { animation: none; } .fx-bit { display: none; } }
 
 /* results: pick a level to see its answers */
@@ -504,3 +506,55 @@ main { padding-bottom: 24px; }
 /* "Did you mean ...?" is shown as grey text in the answer bar; click the bar or press Enter to fill it in */
 #play #answer-form input.ghosting::placeholder, #answer-form input.ghosting::placeholder { color: #9ca3af; -webkit-text-fill-color: #9ca3af; font-style: normal; font-size: 13px; opacity: 1; white-space: nowrap; } /* solid grey; the id selector beats the cream placeholder rule above */
 #answer-form input.ghosting { cursor: pointer; }
+
+/* ===== end screen layout (Nov 18, 2026) =====
+   Laptop: two columns. Left: score card, then "Round by round". Right: copy-result + countdown, car shop, streak, stats.
+   Phone: one column in this order: score, copy-result + countdown, round by round, car shop, streak, stats. */
+#results.results { background: none; border: 0; box-shadow: none; padding: 0; }
+.res-grid { display: grid; gap: 14px; }
+.res-main, .res-side { display: contents; }
+.res-score { order: 1; }
+.res-actions { order: 2; }
+.res-rounds { order: 3; }
+.res-side > .shop-cta { order: 4; margin-top: 0; }
+.res-streak { order: 5; }
+.res-stats { order: 6; }
+.res-score .verdict { margin: 14px 0 0; font-size: 17px; }
+.res-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.res-head h2 { margin: 0; font-size: 22px; }
+.res-head-note { color: var(--muted); font-size: 13px; }
+.res-rounds .breakdown { margin: 0; }
+.btn.big { display: block; width: 100%; padding: 15px 18px; font-size: 18px; border-radius: 14px; }
+.res-actions { text-align: center; }
+.res-actions .copied { display: block; margin-top: 8px; }
+.res-actions .next-up { margin: 14px 0 0; font-size: 14px; }
+.res-actions .next-up b { display: block; margin-top: 2px; font: 700 28px Georgia, serif; letter-spacing: .02em; }
+.side-title { font: 800 17px system-ui, sans-serif; margin-bottom: 6px; }
+.side-text { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+.res-stats .stat-tiles { margin-top: 8px; }
+.side-more { width: 100%; margin-top: 12px; }
+
+/* round-by-round rows: number | question, plain English, your answer | level and points */
+.breakdown li.lvl-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 2px 12px; align-items: start; }
+.row-num { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); font: 700 13px system-ui, sans-serif; color: var(--muted); margin-top: 1px; }
+.row-main { min-width: 0; }
+.row-main .row-q { font-weight: 600; line-height: 1.35; }
+.row-main .row-you { font-weight: 700; color: var(--ink); margin-top: 6px; }
+.lvl-row .row-pts { text-align: right; }
+.lvl-row .row-best { grid-column: 2 / -1; }
+
+@media (max-width: 640px) {
+  /* on a phone the question gets the full width and the points sit underneath it */
+  .breakdown li.lvl-row { grid-template-columns: 28px minmax(0, 1fr); }
+  .lvl-row .row-pts { grid-column: 2; text-align: left; margin-top: 6px; }
+  .lvl-row .row-best { grid-column: 1 / -1; }
+}
+@media (min-width: 1000px) {
+  body.on-results .top, body.on-results main { max-width: 1160px; }
+  body.on-results main { padding: 0 24px 40px; }
+  .res-grid { grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
+  .res-main, .res-side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .res-side { position: sticky; top: 12px; }
+  .res-score, .res-actions, .res-rounds, .res-side > .shop-cta, .res-streak, .res-stats { order: 0; }
+  .res-score { padding: 28px 32px; }
+}

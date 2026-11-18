@@ -95,35 +95,46 @@
       </div>
     </section>
 
-    <!-- RESULTS -->
-    <section id="results" class="card" hidden>
-      <p class="eyebrow" id="res-day"></p>
-      <div class="finale" id="finale" aria-live="polite">
-        <button class="mute-btn" id="mute-btn" type="button" aria-label="Sound on or off" title="Sound on or off">&#128266;</button>
-        <div class="finale-won">
-          <small id="finale-label">You won</small>
-          <div class="finale-amt" id="finale-amt"><span id="total">$0</span></div>
-          <div class="finale-sub" id="finale-sub">of $700 possible</div>
-          <div class="finale-pills" id="finale-pills"></div>
+    <!-- RESULTS: two columns on a laptop (score + round by round on the left, actions on the right), one column on a phone -->
+    <section id="results" class="results" hidden>
+      <div class="res-grid">
+        <div class="res-main">
+          <div class="card res-score">
+            <p class="eyebrow" id="res-day"></p>
+            <div class="finale" id="finale" aria-live="polite">
+              <button class="mute-btn" id="mute-btn" type="button" aria-label="Sound on or off" title="Sound on or off">&#128266;</button>
+              <div class="finale-won">
+                <small id="finale-label">You won</small>
+                <div class="finale-amt" id="finale-amt"><span id="total">$0</span></div>
+                <div class="finale-sub" id="finale-sub">of $700 possible</div>
+                <div class="finale-pills" id="finale-pills"></div>
+              </div>
+              <div class="finale-car" id="finale-car" hidden>
+                <div class="finale-car-svg" id="finale-car-svg"></div>
+                <div class="finale-chart" id="finale-chart" aria-hidden="true"></div>
+                <div class="finale-fx" id="finale-fx" aria-hidden="true"></div>
+                <div class="finale-status" id="finale-status"></div>
+              </div>
+              <div class="finale-line finale-cost" id="finale-cost" hidden></div>
+              <div class="finale-line finale-cost" id="finale-debt" hidden></div>
+            </div>
+            <p class="verdict after-part" id="verdict"></p>
+          </div>
+          <div class="card res-rounds after-part">
+            <div class="res-head"><h2>Round by round</h2><span class="res-head-note">7 questions</span></div>
+            <ol class="breakdown" id="breakdown"></ol>
+          </div>
         </div>
-        <div class="finale-car" id="finale-car" hidden>
-          <div class="finale-car-svg" id="finale-car-svg"></div>
-          <div class="finale-chart" id="finale-chart" aria-hidden="true"></div>
-          <div class="finale-fx" id="finale-fx" aria-hidden="true"></div>
-          <div class="finale-status" id="finale-status"></div>
-        </div>
-        <div class="finale-line finale-cost" id="finale-cost" hidden></div>
-        <div class="finale-line finale-cost" id="finale-debt" hidden></div>
-      </div>
-      <div class="after" id="after">
-        <p class="verdict" id="verdict"></p>
-        <button class="shop-cta" style="margin:0 0 16px" type="button" data-shop-cta><span class="shop-cta-t">&#127978; Visit the car shop</span><small class="shop-cta-s"></small></button>
-        <ol class="breakdown" id="breakdown"></ol>
-        <div class="actions">
-          <button class="btn primary" id="share">Copy result</button>
-          <span class="copied" id="copied" hidden>Copied!</span>
-        </div>
-        <p class="next-up">Next game in <b id="countdown">--:--:--</b></p>
+        <aside class="res-side">
+          <div class="card res-actions after-part">
+            <button class="btn primary big" id="share">Copy result</button>
+            <span class="copied" id="copied" hidden>Copied!</span>
+            <p class="next-up">Next game in <b id="countdown">--:--:--</b></p>
+          </div>
+          <button class="shop-cta after-part" type="button" data-shop-cta><span class="shop-cta-t">&#127978; Visit the car shop</span><small class="shop-cta-s"></small></button>
+          <div class="card res-streak after-part" id="res-streak"></div>
+          <div class="card res-stats after-part" id="res-stats"></div>
+        </aside>
       </div>
     </section>
 
