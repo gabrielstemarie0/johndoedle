@@ -886,6 +886,39 @@ function renderResultsSide() {
     : "Play two days in a row to start a streak: a cash bonus and a mystery box every day.";
   box.append(h, t);
   const st = computeStats();
+  // personal leaderboard: today's score against every earlier finished day in this browser
+  const bbox = $("res-board");
+  bbox.replaceChildren();
+  const plays = st.games.map((x) => ({ day: x.day, total: x.total }));
+  if (!plays.some((x) => x.day === day)) plays.push({ day, total: total() }); // today, in case it is not counted yet
+  const ranked = [...plays].sort((x, y) => y.total - x.total || y.day.localeCompare(x.day));
+  const mineAt = ranked.findIndex((x) => x.day === day);
+  const rank = 1 + ranked.filter((x) => x.total > total()).length; // ties share a rank
+  const head = document.createElement("div"); head.className = "board-head";
+  const bt = document.createElement("div"); bt.className = "side-title"; bt.textContent = "🏆 Your leaderboard";
+  const big = document.createElement("div"); big.className = "board-big"; big.textContent = `#${rank}`;
+  const sub = document.createElement("p"); sub.className = "side-text";
+  sub.textContent = plays.length === 1
+    ? "This is your first play: today's score sets the bar to beat."
+    : rank === 1 ? `A new personal best! Today ranks #1 of ${plays.length} plays.` : `Today ranks #${rank} of ${plays.length} plays.`;
+  head.append(bt, big, sub);
+  const board = document.createElement("ol"); board.className = "board";
+  const best = Math.max(1, ranked[0].total);
+  const niceDay = (d) => d === day ? "Today" : new Date(d + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const addRow = (x) => {
+    const li = document.createElement("li");
+    li.className = "board-row" + (x.day === day ? " me" : "");
+    const n = document.createElement("span"); n.className = "board-rank"; n.textContent = `#${1 + ranked.filter((y) => y.total > x.total).length}`;
+    const d = document.createElement("span"); d.className = "board-day"; d.textContent = niceDay(x.day);
+    const bar = document.createElement("span"); bar.className = "board-bar"; const fill = document.createElement("i"); fill.style.width = `${Math.max(3, Math.round((100 * x.total) / best))}%`; bar.append(fill);
+    const s = document.createElement("b"); s.className = "board-score"; s.textContent = money(x.total);
+    li.append(n, d, bar, s); board.append(li);
+  };
+  const SHOW = 5;
+  if (mineAt < SHOW) ranked.slice(0, SHOW).forEach(addRow);
+  else { ranked.slice(0, SHOW - 1).forEach(addRow); const gap = document.createElement("li"); gap.className = "board-gap"; gap.textContent = "···"; board.append(gap); addRow(ranked[mineAt]); }
+  bbox.append(head, board);
+
   const sbox = $("res-stats");
   sbox.replaceChildren();
   const sh = document.createElement("div"); sh.className = "side-title"; sh.textContent = "📊 Your stats";

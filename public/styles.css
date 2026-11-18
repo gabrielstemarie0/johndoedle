@@ -515,10 +515,11 @@ main { padding-bottom: 24px; }
 .res-side { display: contents; }
 .res-score { order: 1; }
 .res-actions { order: 2; }
-.res-rounds { order: 3; }
-.res-side > .shop-cta { order: 4; margin-top: 0; }
-.res-streak { order: 5; }
-.res-stats { order: 6; }
+.res-board { order: 3; }
+.res-rounds { order: 4; }
+.res-side > .shop-cta { order: 5; margin-top: 0; }
+.res-streak { order: 6; }
+.res-stats { order: 7; }
 .res-score { display: flex; flex-direction: column; }
 .res-score .finale { margin-bottom: 0; }
 .res-score .verdict { margin: 14px 0 0; font-size: 17px; }
@@ -534,6 +535,8 @@ main { padding-bottom: 24px; }
 .side-title { font: 800 17px system-ui, sans-serif; margin-bottom: 6px; }
 .side-text { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
 .res-stats .stat-tiles { margin-top: 8px; }
+.board-big { font: 700 64px/1 Georgia, serif; margin: 2px 0 4px; }
+.res-board .side-text { font-size: 15px; }
 .side-more { width: 100%; margin-top: 12px; }
 
 /* answer tiles: [number .... level and points] / question / plain English / your answer / see the answers */
@@ -566,8 +569,10 @@ main { padding-bottom: 24px; }
   .res-side { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
   .res-side > .res-stats { flex: 1; display: flex; flex-direction: column; }
   .res-side > .res-stats .stat-tiles { flex: 1; align-items: stretch; }
-  .res-score, .res-actions, .res-rounds, .res-side > .shop-cta, .res-streak, .res-stats { order: 0; }
-  .res-rounds { grid-column: 1 / -1; padding: 24px 28px; }
+  .res-score, .res-actions, .res-board, .res-rounds, .res-side > .shop-cta, .res-streak, .res-stats { order: 0; }
+  .res-board, .res-rounds { grid-column: 1 / -1; padding: 24px 28px; }
+  .res-board { display: grid; grid-template-columns: minmax(200px, 280px) minmax(0, 1fr); gap: 8px 40px; align-items: center; }
+  .res-board .board { margin: 0; }
   .breakdown { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   .breakdown li.row-summary { grid-column: span 2; }
   .res-score { padding: 24px 28px; justify-content: space-between; }
@@ -575,3 +580,17 @@ main { padding-bottom: 24px; }
   .res-score .finale-car { max-width: 600px; }
   .res-score .finale-car.graphing .finale-car-svg { height: auto; aspect-ratio: 320 / 166; }
 }
+
+/* personal leaderboard (in the stats card): today's score against your earlier plays */
+.board { list-style: none; margin: 10px 0 12px; padding: 0; display: grid; gap: 6px; }
+.board-row { display: grid; grid-template-columns: 34px 52px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 10px; font-size: 14px; }
+.board-row.me { background: color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: inset 0 0 0 1.5px var(--accent); font-weight: 700; }
+.board-rank { font: 800 13px system-ui, sans-serif; color: var(--muted); }
+.board-row.me .board-rank { color: var(--ink); }
+.board-day { color: var(--muted); font-size: 13px; }
+.board-row.me .board-day { color: var(--ink); }
+.board-bar { height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+.board-bar i { display: block; height: 100%; border-radius: 999px; background: var(--good); }
+.board-row.me .board-bar i { background: var(--accent); }
+.board-score { font-variant-numeric: tabular-nums; }
+.board-gap { text-align: center; color: var(--muted); letter-spacing: .3em; line-height: 1; }
