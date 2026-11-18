@@ -160,6 +160,15 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-17 real data, Name a baby animal (q131) and Name a Christmas movie (q134):** my #1 was "puppy" but the most-typed answer was
+  "calf" (7 of 17; puppy 1), because the wording said "a youngster of the wild or the farm" and that phrase steered players to farm
+  animals. Run the first-guess test on the EXACT wording players read, not on the plain prompt: a hint word like "farm", "wild",
+  "autumn", "streaming" or "celebrations" changes what people type first, so the #1 must be what THIS wording produces. Also
+  q134: Elf (6) edged Home Alone (5), a near tie, so a close #1/#2 is worth a second look. Matching #1: rock vocalist (Mercury 5 of 7),
+  sandwich (BLT 5 of 16), inventor (Edison 7 of 11), river (Nile 13 of 17), quarterback (Brady 18 of 19, while my #1 was Mahomes).
+- **2026-11-18, misses logging:** the browser rejects not-listed answers itself, so the server never saw them and the `misses` table
+  stayed empty. Fixed: the browser now reports each one (`/api/miss`, no player id). The misses report works from Nov 18 on.
+
 - **2026-11-17, Name an NFL quarterback (q133), real data:** I put Patrick Mahomes #1 ("modern era", young players, recency), but 13 of 13
   real players typed Tom Brady first, so all of them got Average Joe instead of John Doe. Recency must not push the all-time face of a
   field out of #1: for a person list, the name an average player thinks of FIRST stays on top even when the wording says "modern" or

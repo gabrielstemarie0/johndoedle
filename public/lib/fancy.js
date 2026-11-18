@@ -150,4 +150,11 @@ export default {
   q147: "Name a prestigious house whose logo on handbags, watches and sunglasses signals wealth.",
   q148: "Name a metropolis in the nation famed for maple syrup, hockey and the Mounties.",
   q149: "Name a hand-drawn serial from Japan with wide-eyed protagonists and devoted fan communities.",
+  q150: "Name a sprawling multi-day outdoor gathering with dozens of bands on several stages.",
+  q151: "Name a world-renowned painted masterpiece displayed in a grand gallery.",
+  q152: "Name a vast, sun-scorched, arid wasteland where rain rarely falls.",
+  q153: "Name a celebrated cooking-show star, from the trailblazers of the stove to today's celebrity cooks.",
+  q154: "Name a feathered hunter that soars above and seizes its quarry in hooked talons.",
+  q155: "Name a metropolis or town on the boot-shaped peninsula famed for pasta, art and ruins.",
+  q156: "Name a grand hall that draws millions to view treasures behind glass.",
 };

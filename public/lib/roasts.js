@@ -4,6 +4,7 @@
 export const ROASTS = {
   "2026-11-07": "You're the human version of a handshake: firm, polite, and exactly like the last one.",
   "2026-11-08": "Your hot takes arrive already cooled to room temperature.",
+  "2026-11-18": "You're a seatbelt chime of a person: harmless, a little repetitive, and mostly ignored.",
   "2026-11-17": "You're a bookmarked tab you never reopen: technically saved, practically forgotten.",
   "2026-11-16": "You're the 'k' in the group chat: perfectly acceptable, and nobody has ever felt anything about it.",
   "2026-11-15": "You're a participation ribbon in human form: nobody remembers getting you, but it's technically an honor.",
