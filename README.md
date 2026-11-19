@@ -212,3 +212,8 @@ look alike). Every "not listed" answer is counted in the D1 table `misses (day, 
 says "🔎 Be more specific: that's only part of an answer", shakes it off and keeps the clock running (`isPartial` in
 `public/lib/scoring.js`; the Worker answers `{ rejected: "specific" }`). A name everyone uses on its own is an alias of the answer
 (`tiger woods|tiger`), so it counts.
+
+**End-screen numbers (Nov 19, 2026).** The big headline is today's score (your answers, out of $700), the same number the leaderboard and the
+"you beat X%" graph use. The bonuses (streak, car, planet) and the repair bill appear as lines under it during the finale, and the last
+tile of the round-by-round grid shows what the day added to your wallet (score + bonuses − repairs), "You had $X → You now have $Y", and a
+**Buy a new car now** button that opens the shop. `today.walletBefore` stores the cash from before today so "You had" stays right.

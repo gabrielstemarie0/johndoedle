@@ -594,3 +594,10 @@ main { padding-bottom: 24px; }
 .board-row.me .board-bar i { background: var(--accent); }
 .board-score { font-variant-numeric: tabular-nums; }
 .board-gap { text-align: center; color: var(--muted); letter-spacing: .3em; line-height: 1; }
+
+/* last tile of the round-by-round grid: what the day added to the wallet, and the buy-a-car button */
+.sum-math { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 6px 10px; margin-top: 8px; font-size: 15px; }
+.sum-math span { color: var(--muted); }
+.sum-math b { font-size: 17px; }
+.sum-total.neg, .sum-math b.neg { color: var(--bad); }
+.sum-buy { margin-top: 14px; padding: 12px 22px; font-size: 16px; border-radius: 12px; }

@@ -140,7 +140,7 @@ const lifetimeEarned = () => Object.values(state.days).reduce((n, d) => n + cash
 const balance = () => lifetimeEarned() - state.wallet.spent;
 let finaleOn = false; // true while the end-of-game scene plays
 let holdWallet = null; // while the end-of-game scene plays, the header keeps showing your cash from before it
-const renderWallet = () => { const shown = holdWallet !== null ? holdWallet : balance(); $("wallet").textContent = money(shown); $("wallet").classList.toggle("neg", shown < 0); if (typeof renderShopCta === "function") renderShopCta(); };
+const renderWallet = () => { const shown = holdWallet !== null ? holdWallet : balance(); $("wallet").textContent = money(shown); $("wallet").classList.toggle("neg", shown < 0); if (typeof renderShopCta === "function") renderShopCta(); if (typeof renderDayWallet === "function" && holdWallet === null) renderDayWallet(); };
 
 scene.setCar(state.wallet.car);
 scene.setDamage(state.wallet.hits || 0);
@@ -704,9 +704,9 @@ async function playFinale(fresh, dmg) {
 
   // Not a fresh finish (reload), or reduced motion: just show where things ended up.
   if (!fresh || reduceMotion()) {
-    amt.textContent = money(net);
-    amt.classList.toggle("neg", net < 0);
-    $("finale-label").textContent = bill.paid ? "Earned today, after repairs" : "You won";
+    amt.textContent = money(t); // the headline is today's score (your answers); the bonuses, repairs and wallet are in the card below
+    amt.classList.remove("neg");
+    $("finale-label").textContent = "Your score today";
     steps.forEach((st) => addPill(st, true));
     costEl.hidden = !bill.paid; costEl.textContent = costText;
     showDebt();
@@ -723,7 +723,7 @@ async function playFinale(fresh, dmg) {
   finaleOn = true; syncHeaderButtons();
   after.classList.add("pending");
   amt.textContent = "$0";
-  $("finale-label").textContent = "You won";
+  $("finale-label").textContent = "Your score today";
   costEl.hidden = true; debtEl.hidden = true; carBox.hidden = true;
   // 1. the winnings
   $("finale").classList.add("flash");
@@ -737,7 +737,7 @@ async function playFinale(fresh, dmg) {
     const el = addPill(st, false);
     void el.offsetWidth; el.classList.add("in");
     await sleep(500);
-    if (st.add) { sfx.cash(); await countTo(amt, running, running + st.add, 800); running += st.add; await sleep(350); }
+    if (st.add) { sfx.cash(); running += st.add; burst(fx, ["💰", "✨"], 8, 100); await sleep(900); } // the bonus is listed here; the headline stays your score
     else { sfx.ding(); burst(fx, ["🏆", "✨", "⭐"], 14, 120); await sleep(700); }
   }
   // 3. the car and its damage
@@ -757,11 +757,7 @@ async function playFinale(fresh, dmg) {
     await sleep(600);
     sfx.cash();
     costEl.hidden = false; costEl.textContent = costText; costEl.classList.add("in");
-    $("finale-label").textContent = "Earned today, after repairs";
-    amt.classList.add("down");
-    await countTo(amt, win, net, 1200);
-    amt.classList.toggle("neg", net < 0);
-    await sleep(500);
+    await sleep(1200);
     showDebt();
     if (!debtEl.hidden) await sleep(900);
   }
@@ -777,6 +773,28 @@ async function playFinale(fresh, dmg) {
 // ---------- results ----------
 const total = () => earnedIn(today);
 const emojiOf = (a) => (a.pts > 0 ? levelById(a.level).emoji : "💥");
+
+// What today added to your cash after the streak, car and planet bonuses and the repair bill.
+const dayNet = () => total() + (today.bonus || 0) + (today.carBonus || 0) + (today.planetBonus || 0) - ((today.bill && today.bill.paid) || 0);
+function renderDayWallet() {
+  const box = $("day-wallet");
+  if (!box) return;
+  const net = dayNet(), before = today.walletBefore ?? balance() - net, now = balance();
+  const signed = (n) => `${n < 0 ? "−" : "+"}${money(Math.abs(n))}`;
+  box.replaceChildren();
+  const t1 = document.createElement("div"); t1.className = "sum-title"; t1.textContent = "Added to your wallet today";
+  const t2 = document.createElement("div"); t2.className = "sum-total" + (net < 0 ? " neg" : ""); t2.textContent = signed(net);
+  const t3 = document.createElement("div"); t3.className = "sum-sub"; t3.textContent = "after bonuses and repairs";
+  const t4 = document.createElement("div"); t4.className = "sum-math";
+  const had = document.createElement("span"); had.textContent = `You had ${money(before)}`;
+  const arrow = document.createElement("span"); arrow.textContent = "→"; arrow.setAttribute("aria-hidden", "true");
+  const have = document.createElement("b"); have.textContent = `You now have ${money(now)}`;
+  if (now < 0) have.classList.add("neg");
+  t4.append(had, arrow, have);
+  const buy = document.createElement("button"); buy.type = "button"; buy.className = "btn primary sum-buy"; buy.textContent = "Buy a new car now";
+  buy.addEventListener("click", openShop);
+  box.append(t1, t2, t3, t4, buy);
+}
 
 function renderResults(fresh = false, dmg = 0) {
   show("results");
@@ -857,15 +875,13 @@ function renderResults(fresh = false, dmg = 0) {
     li.append(det);
     list.append(li);
   });
-  // a last tile that fills the gap after the seventh question: the day in one glance
+  // a last tile that fills the gap after the seventh question: what today added to your wallet, and a way to spend it
+  if (today.walletBefore === undefined) { today.walletBefore = balance() - dayNet(); save(); } // cash before today's winnings and repairs
   const sum = document.createElement("li");
   sum.className = "row-summary";
-  const st1 = document.createElement("div"); st1.className = "sum-title"; st1.textContent = "Answers total";
-  const st2 = document.createElement("div"); st2.className = "sum-total"; st2.textContent = money(t);
-  const st3 = document.createElement("div"); st3.className = "sum-sub"; st3.textContent = `of ${money(MAX_DAY)} possible`;
-  const st4 = document.createElement("div"); st4.className = "sum-emoji"; st4.textContent = today.answers.map(emojiOf).join(" ");
-  sum.append(st1, st2, st3, st4);
+  sum.id = "day-wallet";
   list.append(sum);
+  renderDayWallet();
   renderResultsSide();
   playFinale(fresh, dmg);
 }
