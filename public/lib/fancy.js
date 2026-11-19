@@ -157,4 +157,11 @@ export default {
   q154: "Name a feathered hunter that soars above and seizes its quarry in hooked talons.",
   q155: "Name a metropolis or town on the boot-shaped peninsula famed for pasta, art and ruins.",
   q156: "Name a grand hall that draws millions to view treasures behind glass.",
+  q157: "Name a track by the King of Pop, the star behind the glove and the moonwalk (Spotify streams)",
+  q158: "Name a round pastry-shelled bake sliced into wedges and cooled on a windowsill in cartoons",
+  q159: "Name a pastime where you shuffle, deal and hide your hand from the table",
+  q160: "Name a series from the after-school cable network with the castle logo and a generation of tween idols",
+  q161: "Name a fighting discipline from the East, learned through bows, belts and sparring partners",
+  q162: "Name a pooch from the world of animation that kids everywhere know by name",
+  q163: "Name a vast inland body of still water that draws boaters, anglers and postcard-takers",
 };
