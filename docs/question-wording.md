@@ -160,6 +160,10 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-18 real data (first full misses report):** the most-typed answer matched my #1 on all 7 questions (K-pop BTS 6 of 7, Netflix Stranger Things
+  8 of 14, Mexican dish tacos 4 of 10, YouTuber MrBeast 11 of 12, Minecraft mob creeper 3 of 8, university Harvard 9 of 11; cat breed Siamese 2 of 3 is a
+  tiny sample). Misses were mostly noise: "cat", "steve" and "dream" are not on-topic. "breaking bad" (6) was a real show but not a Netflix
+  original: for streaming-service questions, say in the wording which kind of title is wanted or accept the big non-original hits.
 - **2026-11-17 real data, Name a baby animal (q131) and Name a Christmas movie (q134):** my #1 was "puppy" but the most-typed answer was
   "calf" (7 of 17; puppy 1), because the wording said "a youngster of the wild or the farm" and that phrase steered players to farm
   animals. Run the first-guess test on the EXACT wording players read, not on the plain prompt: a hint word like "farm", "wild",
