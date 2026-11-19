@@ -186,7 +186,7 @@ function damageMarks(s, damage) {
   return out;
 }
 
-function normalCar(car, damage) {
+function normalCar(car, damage, f = "") {
   const s = SHAPES[car.shape] || SHAPES.sedan;
   const c = car.color, cx = 100;
   const body = `M${cx - s.bx} ${s.bb} V${s.bt + 8} Q${cx - s.bx} ${s.bt} ${cx - s.bx + 10} ${s.bt} H${cx + s.bx - 10} Q${cx + s.bx} ${s.bt} ${cx + s.bx} ${s.bt + 8} V${s.bb} Z`;
@@ -202,7 +202,7 @@ function normalCar(car, damage) {
   return `${defs}<ellipse cx="${cx}" cy="110" rx="${s.bx + 8}" ry="6" fill="#000" opacity=".35"/>
     ${wheels(s)}
     <path d="${cabin}" fill="${dark(c, car.gold ? 0.15 : 0.12)}"/>
-    <path d="${win}" fill="#9fc9ff" opacity=".85"/>
+    <path d="${win}" fill="#9fc9ff" opacity=".85"/>${f}
     ${spoiler(car.spoiler, s, c)}
     <path d="${body}" fill="${fill}"/>
     <path d="M${cx - s.bx + 3} ${s.bt + 4} H${cx + s.bx - 3}" stroke="${light(c, 0.5)}" stroke-opacity=".6" stroke-width="2" stroke-linecap="round"/>
@@ -213,10 +213,10 @@ function normalCar(car, damage) {
     ${exhaust(s)}${neon}${sparkle}${damageMarks(s, damage)}`;
 }
 
-function pickup(car, damage) {
+function pickup(car, damage, f = "") {
   const c = car.color, s = { bx: 76, bt: 56, bb: 98, ct: 24, lamp: "tall", ex: 1 };
   return `<ellipse cx="100" cy="110" rx="84" ry="6" fill="#000" opacity=".35"/>${wheels(s)}
-    <path d="M56 56 L64 28 Q66 24 72 24 H128 Q134 24 136 28 L144 56 Z" fill="${dark(c, 0.15)}"/><path d="M64 52 L70 30 H130 L136 52 Z" fill="#9fc9ff" opacity=".85"/>
+    <path d="M56 56 L64 28 Q66 24 72 24 H128 Q134 24 136 28 L144 56 Z" fill="${dark(c, 0.15)}"/><path d="M64 52 L70 30 H130 L136 52 Z" fill="#9fc9ff" opacity=".85"/>${f}
     <path d="M24 98 V64 Q24 56 32 56 H168 Q176 56 176 64 V98 Z" fill="${c}"/>
     <rect x="30" y="60" width="140" height="5" rx="2" fill="${dark(c, 0.3)}"/><rect x="90" y="72" width="20" height="6" rx="3" fill="${dark(c, 0.5)}"/>
     <rect x="26" y="64" width="12" height="30" rx="3" fill="#ff3b3b"/><rect x="162" y="64" width="12" height="30" rx="3" fill="#ff3b3b"/>
@@ -224,34 +224,34 @@ function pickup(car, damage) {
     ${exhaust(s)}${damageMarks({ bx: 76, bt: 56, bb: 98, ct: 28 }, damage)}`;
 }
 
-function rocket(car, damage) {
+function rocket(car, damage, f = "") {
   const c = car.color, a = car.accent;
   const flame = (x) => `<path d="M${x - 9} 100 Q${x} 128 ${x + 9} 100 Z" fill="#ff9d2e" opacity=".9"/><path d="M${x - 5} 100 Q${x} 118 ${x + 5} 100 Z" fill="#fff3a8"/>`;
   return `<ellipse cx="100" cy="112" rx="80" ry="6" fill="#000" opacity=".3"/>
     <path d="M26 70 L6 100 H34 Z M174 70 L194 100 H166 Z" fill="${a}"/>
     <path d="M62 98 V50 Q62 22 100 12 Q138 22 138 50 V98 Z" fill="${c}"/>
-    <path d="M78 52 Q100 26 122 52 Z" fill="#9fc9ff" opacity=".9"/>
+    <path d="M78 52 Q100 26 122 52 Z" fill="#9fc9ff" opacity=".9"/>${f}
     <rect x="62" y="62" width="76" height="8" fill="${a}"/><rect x="62" y="78" width="76" height="4" fill="${a}" opacity=".7"/>
     <path d="M58 100 H80 L74 112 H64 Z M120 100 H142 L136 112 H126 Z M89 100 H111 L106 114 H94 Z" fill="#2b2d33"/>
     ${flame(69)}${flame(131)}${flame(100)}
     ${damageMarks({ bx: 38, bt: 52, bb: 98, ct: 36 }, damage)}`;
 }
 
-function hover(car, damage) {
+function hover(car, damage, f = "") {
   const n = car.neon, c = car.color;
   return `<ellipse cx="100" cy="108" rx="84" ry="9" fill="${n}" opacity=".4"/><ellipse cx="100" cy="108" rx="60" ry="5" fill="${n}" opacity=".6"/>
     <path d="M18 92 V74 Q18 62 32 60 L52 56 L66 34 Q70 28 78 28 H122 Q130 28 134 34 L148 56 L168 60 Q182 62 182 74 V92 Q182 98 174 98 H26 Q18 98 18 92 Z" fill="${c}"/>
-    <path d="M70 54 L80 36 H120 L130 54 Z" fill="#7be7ff" opacity=".85"/>
+    <path d="M70 54 L80 36 H120 L130 54 Z" fill="#7be7ff" opacity=".85"/>${f}
     <circle cx="44" cy="86" r="13" fill="#10222a"/><circle cx="44" cy="86" r="8" fill="${n}"/><circle cx="156" cy="86" r="13" fill="#10222a"/><circle cx="156" cy="86" r="8" fill="${n}"/>
     <rect x="62" y="68" width="76" height="6" rx="3" fill="${n}"/><rect x="26" y="96" width="148" height="4" rx="2" fill="${n}" opacity=".9"/>
     ${damageMarks({ bx: 82, bt: 60, bb: 98, ct: 38 }, damage)}`;
 }
 
-function tractor(car, damage) {
+function tractor(car, damage, f = "") {
   const c = car.color, y = car.accent;
   return `<rect x="86" y="14" width="9" height="30" rx="3" fill="#2b2f3a"/><rect x="84" y="10" width="13" height="6" rx="2" fill="#14161c"/>
     <rect x="60" y="24" width="80" height="8" rx="3" fill="${dark(c, 0.3)}"/><rect x="64" y="30" width="72" height="44" rx="6" fill="${c}"/>
-    <rect x="72" y="36" width="56" height="30" rx="4" fill="#9fe3ff" opacity=".85"/><rect x="98" y="36" width="4" height="30" fill="${dark(c, 0.3)}"/>
+    <rect x="72" y="36" width="56" height="30" rx="4" fill="#9fe3ff" opacity=".85"/>${f}<rect x="98" y="36" width="4" height="30" fill="${dark(c, 0.3)}"/>
     <rect x="50" y="66" width="100" height="30" rx="6" fill="${c}"/><rect x="50" y="86" width="100" height="6" fill="${y}"/>
     <rect x="22" y="40" width="40" height="70" rx="12" fill="#14161c"/><rect x="138" y="40" width="40" height="70" rx="12" fill="#14161c"/>
     ${[48, 60, 72, 84, 96].map((yy) => `<rect x="24" y="${yy}" width="36" height="4" rx="2" fill="#2b2f3a"/><rect x="140" y="${yy}" width="36" height="4" rx="2" fill="#2b2f3a"/>`).join("")}
@@ -262,7 +262,7 @@ function tractor(car, damage) {
 }
 
 // Lifted monster tractor from behind: giant gold-rimmed tires, roll bar, twin stacks.
-function monster(car, damage) {
+function monster(car, damage, f = "") {
   const c = car.color, y = car.accent;
   const tire = (x) => `<rect x="${x}" y="30" width="46" height="92" rx="16" fill="#0d0f13"/>
     ${[40, 52, 64, 76, 88, 100, 112].map((yy) => `<rect x="${x + 3}" y="${yy}" width="40" height="5" rx="2" fill="#2b2f3a"/>`).join("")}
@@ -270,7 +270,7 @@ function monster(car, damage) {
   return `<rect x="70" y="4" width="8" height="30" rx="3" fill="${y}"/><rect x="122" y="4" width="8" height="30" rx="3" fill="${y}"/>
     <rect x="68" y="2" width="12" height="5" rx="2" fill="#14161c"/><rect x="120" y="2" width="12" height="5" rx="2" fill="#14161c"/>
     <path d="M66 24 V16 Q66 10 72 10 H128 Q134 10 134 16 V24" stroke="${dark(y, 0.2)}" stroke-width="5" fill="none"/>
-    <rect x="64" y="22" width="72" height="40" rx="6" fill="${c}"/><rect x="72" y="28" width="56" height="26" rx="4" fill="#9fe3ff" opacity=".8"/>
+    <rect x="64" y="22" width="72" height="40" rx="6" fill="${c}"/><rect x="72" y="28" width="56" height="26" rx="4" fill="#9fe3ff" opacity=".8"/>${f}
     <rect x="98" y="28" width="4" height="26" fill="${dark(c, 0.3)}"/>
     <rect x="46" y="56" width="108" height="30" rx="6" fill="${c}"/><rect x="46" y="76" width="108" height="5" fill="${y}"/>
     <rect x="86" y="86" width="28" height="22" fill="#2b2f3a"/><rect x="70" y="100" width="60" height="6" rx="3" fill="#3a3f4b"/>
@@ -279,11 +279,73 @@ function monster(car, damage) {
     ${damageMarks({ bx: 46, bt: 56, bb: 86, ct: 28 }, damage)}`;
 }
 
+
+// ---------- the farmer: straw hat, straw in his mouth, a different pose for each rarity tier ----------
+const TIER_POSE = { alien: 0, stranger: 1, neighbor: 2, joe: 3, johndoe: 4 };
+const poseOf = (car) => TIER_POSE[car.level] ?? 0;
+const SKIN = "#f1c27d", HATC = "#e8c66b", HATD = "#b8932f", STRAW = "#f0d25a";
+
+// seen from behind in the rear window: hat, ear, a bit of cheek, and the straw poking out to the left
+function farmerRear(hx, hy, pose) {
+  const hat = pose === 4 ? "#ffd84a" : HATC;
+  const arm = (x1, y1, x2, y2) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/><circle cx="${x2}" cy="${y2}" r="3" fill="${SKIN}"/>`;
+  let extra = "";
+  if (pose === 1) extra = arm(hx - 8, hy + 8, hx - 22, hy + 6); // elbow out the window
+  if (pose === 2) extra = arm(hx + 8, hy + 8, hx + 20, hy - 6) + `<path d="M${hx + 17} ${hy - 9} l2 -4 M${hx + 20} ${hy - 9} l3 -3" stroke="${SKIN}" stroke-width="1.6" stroke-linecap="round"/>`; // waving
+  if (pose === 3) extra = arm(hx + 8, hy + 8, hx + 22, hy - 2) + `<rect x="${hx + 20}" y="${hy - 9}" width="3.4" height="8" rx="1.5" fill="${SKIN}"/>`; // thumbs up
+  if (pose === 4) extra = arm(hx - 8, hy + 8, hx - 20, hy - 8) + arm(hx + 8, hy + 8, hx + 20, hy - 8) + `<path d="M${hx} ${hy - 22} l1.6 4 4 .4 -3 2.8 .9 4 -3.5 -2.1 -3.5 2.1 .9 -4 -3 -2.8 4 -.4z" fill="#fff2a8" stroke="#b8860b" stroke-width=".6"/>`; // cheering
+  const shades = pose >= 3 ? `<path d="M${hx - 7} ${hy + 1} h14" stroke="#14161c" stroke-width="2.4"/>` : "";
+  return `<g class="farmer-rear">${extra}
+    <rect x="${hx - 9}" y="${hy + 3}" width="18" height="14" rx="4" fill="#c0392b"/><path d="M${hx - 3} ${hy + 3} v14 M${hx + 3} ${hy + 3} v14" stroke="#7aa6d8" stroke-width="3"/>
+    <circle cx="${hx}" cy="${hy}" r="6.6" fill="${SKIN}"/><ellipse cx="${hx - 6.6}" cy="${hy + 1}" rx="1.6" ry="2.4" fill="#e0a95f"/><ellipse cx="${hx + 6.6}" cy="${hy + 1}" rx="1.6" ry="2.4" fill="#e0a95f"/>${shades}
+    <path d="M${hx - 6} ${hy - 1} Q${hx} ${hy - 5} ${hx + 6} ${hy - 1} V${hy + 1} Q${hx} ${hy - 2} ${hx - 6} ${hy + 1}Z" fill="#6b4423"/>
+    <path d="M${hx - 7} ${hy - 4} Q${hx - 7} ${hy - 13} ${hx} ${hy - 13} Q${hx + 7} ${hy - 13} ${hx + 7} ${hy - 4} Z" fill="${hat}" stroke="${HATD}" stroke-width=".8"/>
+    <rect x="${hx - 7}" y="${hy - 7}" width="14" height="3" fill="${pose === 4 ? "#b8860b" : "#c0392b"}"/>
+    <ellipse cx="${hx}" cy="${hy - 3.6}" rx="13" ry="3.4" fill="${hat}" stroke="${HATD}" stroke-width=".8"/>
+    <path d="M${hx - 5} ${hy + 4} L${hx - 27} ${hy - 3}" stroke="${STRAW}" stroke-width="1.8" stroke-linecap="round"/><path d="M${hx - 27} ${hy - 3} l-3 -1.4" stroke="#caa92e" stroke-width="1.2" stroke-linecap="round"/></g>`;
+}
+
+// standing in front of the car, leaning back on it, arms and boots by tier
+function farmerSide(cx, pose) {
+  const hat = pose === 4 ? "#ffd84a" : HATC, band = pose === 4 ? "#b8860b" : "#c0392b";
+  const hy = 30;
+  const armL = { 0: `<path d="M${cx - 9} 46 Q${cx} 56 ${cx + 8} 50" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round"/>`, 1: `<path d="M${cx - 9} 46 L${cx - 14} 58 L${cx - 7} 62" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`, 2: `<path d="M${cx - 9} 46 L${cx - 16} 56 L${cx - 10} 62" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`, 3: `<path d="M${cx - 9} 46 L${cx - 15} 58 L${cx - 9} 56" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="${cx - 14}" y="52" width="9" height="8" rx="1.5" fill="#fff" stroke="#8a8f99" stroke-width="1"/><path d="M${cx - 5} 54 q4 1 0 4" stroke="#8a8f99" fill="none"/>`, 4: `<path d="M${cx - 9} 46 L${cx - 18} 38 L${cx - 14} 28" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` }[pose];
+  const armR = { 0: `<path d="M${cx + 9} 46 Q${cx} 58 ${cx - 8} 52" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="${cx - 8}" cy="52" r="3" fill="${SKIN}"/>`, 1: `<path d="M${cx + 9} 46 L${cx + 15} 58 L${cx + 8} 62" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`, 2: `<path d="M${cx + 9} 46 L${cx + 20} 36 L${cx + 22} 24" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${cx + 22}" cy="22" r="3.4" fill="${SKIN}"/><path d="M${cx + 19} 20 l-1 -4 M${cx + 22} 19 l0 -4 M${cx + 25} 20 l1 -4" stroke="${SKIN}" stroke-width="1.5" stroke-linecap="round"/>`, 3: `<path d="M${cx + 9} 46 L${cx + 14} 58 L${cx + 22} 56" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="${cx + 20}" y="50" width="4" height="9" rx="2" fill="${SKIN}"/><rect x="${cx + 20}" y="46" width="3.2" height="6" rx="1.6" fill="${SKIN}"/>`, 4: `<path d="M${cx + 9} 46 L${cx + 20} 36 L${cx + 24} 22" stroke="#c0392b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="${cx + 22}" y="12" width="4" height="9" rx="2" fill="${SKIN}"/><rect x="${cx + 22}" y="9" width="3.2" height="6" rx="1.6" fill="${SKIN}"/><path d="M${cx + 30} 10 l1.6 4 4 .4 -3 2.8 .9 4 -3.5 -2.1 -3.5 2.1 .9 -4 -3 -2.8 4 -.4z" fill="#fff2a8" stroke="#b8860b" stroke-width=".6"/>` }[pose];
+  const handsL = pose === 0 ? "" : pose === 4 ? `<circle cx="${cx - 14}" cy="27" r="3.2" fill="${SKIN}"/>` : `<circle cx="${cx - (pose === 3 ? 7 : pose === 2 ? 10 : 7)}" cy="${pose === 3 ? 56 : 62}" r="3" fill="${SKIN}"/>`;
+  const boots = pose % 2 === 0 ? `<rect x="${cx - 12}" y="86" width="12" height="6" rx="2.5" fill="#5a3a1c"/><rect x="${cx - 1}" y="86" width="13" height="6" rx="2.5" fill="#5a3a1c"/>` : `<rect x="${cx - 9}" y="86" width="12" height="6" rx="2.5" fill="#5a3a1c"/><rect x="${cx - 3}" y="86" width="13" height="6" rx="2.5" fill="#4a2f16"/>`;
+  const legs = pose % 2 === 0 ? `<path d="M${cx - 5} 64 L${cx - 8} 88 M${cx + 5} 64 L${cx + 8} 88" stroke="#3f6fb0" stroke-width="8" stroke-linecap="round"/>` : `<path d="M${cx - 5} 64 L${cx + 3} 88 M${cx + 5} 64 L${cx - 1} 88" stroke="#3f6fb0" stroke-width="8" stroke-linecap="round"/>`;
+  const shades = pose >= 3 ? `<rect x="${cx - 7}" y="${hy - 2}" width="14" height="4.4" rx="2" fill="#14161c"/>` : `<circle cx="${cx - 3}" cy="${hy - 0.6}" r="1.2" fill="#2a1a10"/><circle cx="${cx + 3}" cy="${hy - 0.6}" r="1.2" fill="#2a1a10"/>`;
+  return `<g class="farmer-side" transform="rotate(-4 ${cx} 92)">
+    <ellipse cx="${cx}" cy="92" rx="17" ry="2.6" fill="#000" opacity=".25"/>${legs}${boots}
+    <rect x="${cx - 11}" y="40" width="22" height="26" rx="5" fill="#c0392b"/><path d="M${cx - 5} 40 V66 M${cx + 5} 40 V66 M${cx - 11} 52 H${cx + 11}" stroke="#a02a1e" stroke-width="1"/>
+    <rect x="${cx - 8}" y="50" width="16" height="16" rx="2" fill="#3f6fb0"/><path d="M${cx - 6} 50 L${cx - 8} 41 M${cx + 6} 50 L${cx + 8} 41" stroke="#3f6fb0" stroke-width="2.4"/><circle cx="${cx - 6}" cy="52" r="1.2" fill="#ffd84a"/><circle cx="${cx + 6}" cy="52" r="1.2" fill="#ffd84a"/>
+    ${armL}${handsL}${armR}
+    <circle cx="${cx}" cy="${hy}" r="9" fill="${SKIN}"/>${shades}
+    <path d="M${cx - 3} ${hy + 4.4} Q${cx} ${hy + 6.6} ${cx + 3} ${hy + 4.4}" stroke="#8a4b2a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <path d="M${cx + 2} ${hy + 5} L${cx + 17} ${hy - 1}" stroke="${STRAW}" stroke-width="1.8" stroke-linecap="round"/><path d="M${cx + 17} ${hy - 1} l3 -1.4" stroke="#caa92e" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M${cx - 8} ${hy - 4} Q${cx - 8} ${hy - 17} ${cx} ${hy - 17} Q${cx + 8} ${hy - 17} ${cx + 8} ${hy - 4} Z" fill="${hat}" stroke="${HATD}" stroke-width=".9"/>
+    <rect x="${cx - 8}" y="${hy - 9}" width="16" height="3.4" fill="${band}"/>
+    <ellipse cx="${cx}" cy="${hy - 5}" rx="16" ry="3.8" fill="${hat}" stroke="${HATD}" stroke-width=".9"/></g>`;
+}
+
+// where the head sits in each rear window
+function farmerRearFor(c) {
+  const p = poseOf(c);
+  const s = SHAPES[c.shape];
+  if (s) return farmerRear(86, s.bt - 6, p);
+  if (c.shape === "pickup") return farmerRear(88, 46, p);
+  if (c.shape === "rocket") return farmerRear(100, 46, p);
+  if (c.shape === "hover") return farmerRear(90, 52, p);
+  if (c.shape === "tractor") return farmerRear(86, 60, p);
+  return farmerRear(86, 52, p); // monster
+}
+
 // The car as an SVG string. damage 0..4 adds cracks, scorch and a dead tail light.
-export function carSVG(car, { damage = 0 } = {}) {
+export function carSVG(car, { damage = 0, farmer = false } = {}) {
   const c = typeof car === "string" ? carById(car) : car;
   const d = Math.max(0, Math.min(4, damage | 0)); // the car on the road keeps its cracks and splats, up to 4
-  const inner = c.shape === "pickup" ? pickup(c, d) : c.shape === "rocket" ? rocket(c, d) : c.shape === "hover" ? hover(c, d) : c.shape === "tractor" ? tractor(c, d) : c.shape === "monster" ? monster(c, d) : normalCar(c, d);
+  const f = farmer ? farmerRearFor(c) : "";
+  const inner = c.shape === "pickup" ? pickup(c, d, f) : c.shape === "rocket" ? rocket(c, d, f) : c.shape === "hover" ? hover(c, d, f) : c.shape === "tractor" ? tractor(c, d, f) : c.shape === "monster" ? monster(c, d, f) : normalCar(c, d, f);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 128" width="200" height="128">${inner}</svg>`;
 }
 export const carDataURI = (car, opts) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(carSVG(car, opts));
@@ -316,7 +378,7 @@ function sideDamage(front, d) {
   return layers.slice(0, d).join("");
 }
 
-export function carSideSVG(car, { damage = 0 } = {}) {
+export function carSideSVG(car, { damage = 0, farmer = false } = {}) {
   sideSmoke = "";
   const c = typeof car === "string" ? carById(car) : car;
   const d = Math.max(0, Math.min(4, damage | 0)), blood = Math.max(0, Math.min(7, damage | 0));
@@ -358,5 +420,5 @@ export function carSideSVG(car, { damage = 0 } = {}) {
       ${wheel(62)}${wheel(182)}${sideDamage(228, d)}`;
   }
   const id = "side" + (++bloodN), smoke = sideSmoke; sideSmoke = "";
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-4 0 240 100" class="side-car" role="img" aria-label="${c.name}, side view"><ellipse cx="120" cy="92" rx="104" ry="5" fill="#000" opacity=".25"/><g id="${id}">${inner}</g>${bloodCover(id, blood)}${smoke}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-4 0 240 100" class="side-car" role="img" aria-label="${c.name}, side view"><ellipse cx="120" cy="92" rx="104" ry="5" fill="#000" opacity=".25"/><g id="${id}">${inner}</g>${bloodCover(id, blood)}${smoke}${farmer ? farmerSide(c.shape === "tractor" || c.shape === "monster" ? 130 : 128, poseOf(c)) : ""}</svg>`;
 }

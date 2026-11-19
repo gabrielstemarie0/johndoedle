@@ -690,7 +690,7 @@ async function playFinale(fresh, dmg) {
   $("finale-sub").textContent = `of ${money(MAX_DAY)} possible`;
   const net = win - bill.paid;
   const car = carById(state.wallet.car);
-  const showCar = (damage) => { $("finale-car-svg").innerHTML = carSideSVG(car, { damage }); };
+  const showCar = (damage) => { $("finale-car-svg").innerHTML = carSideSVG(car, { damage, farmer: true }); };
   const costText = `🧽 Repairs: −${money(bill.paid)}${bill.each && bill.hits > 1 ? ` (${bill.hits} × ${money(bill.each)})` : ""}`;
   const debtEl = $("finale-debt");
   const showDebt = () => { // repairs can push your cash below zero: say so plainly

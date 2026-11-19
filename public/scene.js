@@ -274,7 +274,7 @@ export function createScene(root, fuelEl) {
   }
 
   function drawPlayer(p) {
-    const im = img(S.car, { damage: S.damage });
+    const im = img(S.car, { damage: S.damage, farmer: true });
     const bob = REDUCED ? 0 : Math.sin(S.t * 14) * (0.6 + S.boost) * (1 - S.brake);
     const lane = (2 * rw) / Z_CAR / 3;
     ctx.save();
@@ -373,7 +373,7 @@ export function createScene(root, fuelEl) {
   const carPos = () => { const lane = (2 * rw) / Z_CAR / 3, w = lane * 0.92; return { x: X(S.px, Z_CAR), y: Y(Z_CAR), w, h: (w * 128) / 200 }; };
 
   function impact(o) {
-    if (o.pendingDamage != null) { S.damage = o.pendingDamage; img(S.car, { damage: S.damage }); }
+    if (o.pendingDamage != null) { S.damage = o.pendingDamage; img(S.car, { damage: S.damage, farmer: true }); }
     o.mode = "knock"; o.t0 = S.t; o.vx = Math.random() < 0.5 ? -1 : 1; o.spin = (Math.random() - 0.5) * 2;
     if (!REDUCED) {
       S.shake = 1; S.flash = 0.7; S.brake = 1; S.wobble = (Math.random() < 0.5 ? -1 : 1) * 0.16;
@@ -443,9 +443,9 @@ export function createScene(root, fuelEl) {
   // ---------- what the game can tell the scene ----------
   const api = {
     setPhase(i) { S.phase = clamp(i, 0, PHASES.length - 1); S.sunI = S.phase; root.classList.toggle("night", S.phase >= 7); },
-    setCar(id) { S.car = carById(id); img(S.car, { damage: S.damage }); },
+    setCar(id) { S.car = carById(id); img(S.car, { damage: S.damage, farmer: true }); },
     // cumulative crashes today (0..4 shows more damage); resets overnight
-    setDamage(n) { S.damage = clamp(n | 0, 0, 7); img(S.car, { damage: S.damage }); },
+    setDamage(n) { S.damage = clamp(n | 0, 0, 7); img(S.car, { damage: S.damage, farmer: true }); },
     // A question has started: put an obstacle on the horizon. It reaches the car when the time is up.
     beginQuestion({ startedAt, durationMs, index = 0 }) {
       S.obs = { kind: OBSTACLES[index % OBSTACLES.length], mode: "timer", z: Z_START, startedAt, durationMs, held: false, frac: 1 };
