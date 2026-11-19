@@ -180,12 +180,13 @@ function updateStreak() {
 }
 
 // ---------- playing ----------
-let tick = null, cur = 0, running = 0, locked = false;
+let tick = null, cur = 0, running = 0, locked = false, shownAt = 0; // shownAt: when the current question appeared
 
 function showCard() {
   cur = today.answers.length;
   if (cur >= PER_DAY) return finish();
   locked = false;
+  shownAt = performance.now();
   show("play");
   scene.setPhase(Math.min(6, Math.round((cur * 6) / (PER_DAY - 1))));
   $("feedback").hidden = true;
@@ -1335,7 +1336,14 @@ $("wallet-btn").addEventListener("click", openShop);
 document.querySelectorAll("[data-shop-cta]").forEach((b) => b.addEventListener("click", openShop));
 
 // ---------- wire up ----------
-$("answer-form").addEventListener("submit", (e) => { e.preventDefault(); if (acceptGhost()) return; trySubmit(); });
+$("answer").addEventListener("keydown", (e) => { if (e.key === "Enter" && e.repeat && !$("answer").value.trim()) e.preventDefault(); }); // a held Enter never submits an empty bar
+$("answer-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  // The Enter that pressed "Next question" can reach the fresh, empty answer bar as a submit and shake it: ignore an empty submit right after a question appears.
+  if (!$("answer").value.trim() && performance.now() - shownAt < 700) return;
+  if (acceptGhost()) return;
+  trySubmit();
+});
 $("answer").addEventListener("click", acceptGhost);
 $("answer").addEventListener("input", () => {
   setGhost(null);
