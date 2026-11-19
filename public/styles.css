@@ -601,3 +601,11 @@ main { padding-bottom: 24px; }
 .sum-math b { font-size: 17px; }
 .sum-total.neg, .sum-math b.neg { color: var(--bad); }
 .sum-buy { margin-top: 14px; padding: 12px 22px; font-size: 16px; border-radius: 12px; }
+
+/* hand-off to the other Daily Station Original */
+.next-original{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px;text-decoration:none;color:inherit;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 16%,transparent),transparent),var(--card,#fff)}
+.next-original:hover{border-color:var(--accent)}
+.next-original .no-k{grid-column:1;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.next-original .no-n{grid-column:1;font-size:17px;font-weight:700}
+.next-original .no-d{grid-column:1;font-size:13px;opacity:.75}
+.next-original .no-go{grid-column:2;grid-row:1/4;font-size:22px;color:var(--accent)}
