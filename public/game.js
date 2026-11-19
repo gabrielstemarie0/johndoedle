@@ -204,6 +204,7 @@ function showCard() {
   $("running").textContent = `${money(running)} today`;
   $("prompt").textContent = fancy[todaysQs[cur].id] || todaysQs[cur].prompt; // the fancy wording; the plain one is revealed after you answer
   $("prompt").classList.toggle("long", $("prompt").textContent.length > 70);
+  if (today.answers.length === 0 && today.walletStart === undefined) { today.walletStart = balance(); save(); } // the cash you had before today's game
   if (!today.startedAt) { today.startedAt = Date.now(); save(); }
   // An obstacle appears on the horizon. It reaches your bumper when the time runs out.
   scene.beginQuestion({ startedAt: today.startedAt, durationMs: SECONDS * 1000, index: cur });
@@ -779,18 +780,20 @@ const dayNet = () => total() + (today.bonus || 0) + (today.carBonus || 0) + (tod
 function renderDayWallet() {
   const box = $("day-wallet");
   if (!box) return;
-  const net = dayNet(), before = today.walletBefore ?? balance() - net, now = balance();
+  const net = dayNet(), before = today.walletStart, now = balance(); // before: recorded when today's first question started (undefined for a game played before that was recorded)
   const signed = (n) => `${n < 0 ? "−" : "+"}${money(Math.abs(n))}`;
   box.replaceChildren();
   const t1 = document.createElement("div"); t1.className = "sum-title"; t1.textContent = "Added to your wallet today";
   const t2 = document.createElement("div"); t2.className = "sum-total" + (net < 0 ? " neg" : ""); t2.textContent = signed(net);
   const t3 = document.createElement("div"); t3.className = "sum-sub"; t3.textContent = "after bonuses and repairs";
   const t4 = document.createElement("div"); t4.className = "sum-math";
-  const had = document.createElement("span"); had.textContent = `You had ${money(before)}`;
-  const arrow = document.createElement("span"); arrow.textContent = "→"; arrow.setAttribute("aria-hidden", "true");
   const have = document.createElement("b"); have.textContent = `You now have ${money(now)}`;
   if (now < 0) have.classList.add("neg");
-  t4.append(had, arrow, have);
+  if (before !== undefined) {
+    const had = document.createElement("span"); had.textContent = `You had ${money(before)}`;
+    const arrow = document.createElement("span"); arrow.textContent = "→"; arrow.setAttribute("aria-hidden", "true");
+    t4.append(had, arrow, have);
+  } else t4.append(have); // a game played before the starting cash was recorded: don't guess it
   const buy = document.createElement("button"); buy.type = "button"; buy.className = "btn primary sum-buy"; buy.textContent = "Buy a new car now";
   buy.addEventListener("click", openShop);
   box.append(t1, t2, t3, t4, buy);
@@ -876,7 +879,6 @@ function renderResults(fresh = false, dmg = 0) {
     list.append(li);
   });
   // a last tile that fills the gap after the seventh question: what today added to your wallet, and a way to spend it
-  if (today.walletBefore === undefined) { today.walletBefore = balance() - dayNet(); save(); } // cash before today's winnings and repairs
   const sum = document.createElement("li");
   sum.className = "row-summary";
   sum.id = "day-wallet";
