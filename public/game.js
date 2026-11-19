@@ -817,14 +817,11 @@ function renderResults(fresh = false, dmg = 0) {
     main.className = "row-main";
     const q = document.createElement("div");
     q.className = "row-q";
-    q.textContent = shownText(question); // the high-vocabulary wording the player actually saw, not the plain English one
-    const plain = document.createElement("div"); // the plain-English version, smaller, just beneath
-    plain.className = "row-plain";
-    plain.textContent = `In plain English: ${question.prompt}`;
+    q.textContent = question.prompt; // the plain English question (the fancy wording is only shown while playing)
     const you = document.createElement("div");
     you.className = "row-you";
     you.textContent = a.raw ? `You said: ${a.raw}` : "No answer";
-    main.append(q, plain, you);
+    main.append(q, you);
     const p = document.createElement("span");
     p.className = `row-pts lvl-${lvl.id}`;
     p.textContent = a.pts > 0 ? `${lvl.emoji} ${lvl.name} ${fmt(a.pts)}` : `💥 Crash $0`;
