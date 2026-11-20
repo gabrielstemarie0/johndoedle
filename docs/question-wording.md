@@ -160,6 +160,12 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-19 real data (Name a famous DJ, q143):** the most typed answer was John Summit (6 of 12) and my #1 David Guetta got 0, while
+  Calvin Harris, Diplo and Marshmello got 2 each. The wording said "a headliner of today who makes festival crowds jump", and "of today" steered
+  players to current names: for a trending field (DJs, YouTubers, rappers) the typed first answer follows the wording's era word, so test the
+  first guess on the exact wording and put the current names first when the wording says "of today". The other 6 matched: sushi roll California
+  roll (7 of 15), SpongeBob (11 of 17), Serena Williams (9 of 18), Gucci (10 of 14), Toronto (17 of 19), Naruto (9 of 14). Misses were generic
+  words ("sushi", "canada", "anime", "tuna") or noise; "spicy tuna" is a real short form of "spicy tuna roll" worth an alias next time.
 - **2026-11-18 real data (first full misses report):** the most-typed answer matched my #1 on all 7 questions (K-pop BTS 6 of 7, Netflix Stranger Things
   8 of 14, Mexican dish tacos 4 of 10, YouTuber MrBeast 11 of 12, Minecraft mob creeper 3 of 8, university Harvard 9 of 11; cat breed Siamese 2 of 3 is a
   tiny sample). Misses were mostly noise: "cat", "steve" and "dream" are not on-topic. "breaking bad" (6) was a real show but not a Netflix
