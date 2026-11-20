@@ -164,4 +164,11 @@ export default {
   q161: "Name a fighting discipline from the East, learned through bows, belts and sparring partners",
   q162: "Name a pooch from the world of animation that kids everywhere know by name",
   q163: "Name a vast inland body of still water that draws boaters, anglers and postcard-takers",
+  q164: "Name a track by the band led by the mustachioed showman with the mic stand and operatic flair (Spotify streams)",
+  q165: "Name a small round baked treat, dunked in milk and left on a plate on Christmas Eve",
+  q166: "Name a made-up crime-solver from page or screen, famous for spotting what everyone else missed",
+  q167: "Name a thunderous plunge of rushing water over a cliff edge that tourists gather to admire",
+  q168: "Name a leaf-infused beverage steeped in hot water, cherished in cultures from Britain to Japan",
+  q169: "Name a record-chasing steel-and-glass giant that pierces the clouds above a major metropolis",
+  q170: "Name a fortified stronghold of turrets, moats and drawbridges, home to fairy tales and kings",
 };
