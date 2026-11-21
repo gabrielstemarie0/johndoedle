@@ -171,4 +171,11 @@ export default {
   q168: "Name a leaf-infused beverage steeped in hot water, cherished in cultures from Britain to Japan",
   q169: "Name a record-chasing steel-and-glass giant that pierces the clouds above a major metropolis",
   q170: "Name a fortified stronghold of turrets, moats and drawbridges, home to fairy tales and kings",
+  q171: "Name a tune by the ginger troubadour who loops his own guitar and drums (Spotify streams)",
+  q172: "Name a cold bowl of leaves, veggies and dressing served before the main event",
+  q173: "Name a famous landmass encircled by ocean, beloved by castaways, honeymooners and explorers",
+  q174: "Name a plug-in-and-play box with joypads that hooks up to your television",
+  q175: "Name a series from the public broadcaster that teaches the alphabet to little viewers",
+  q176: "Name a bedtime story of enchanted woods, wicked stepmothers and happy endings",
+  q177: "Name a squeezable or spreadable flavor-booster dabbed onto burgers, fries and bratwurst",
 };
