@@ -160,6 +160,11 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-20 real data (Name a famous museum, q156):** The Met was typed 5 times and my #1 Louvre 3 (the Louvre is the most visited, but the
+  players are mostly American and the wording carried no place). For a question with no stated country, the first guess of a mostly US audience
+  wins: ask "what do Americans type first?", not "what is globally biggest". Also a tie: bird of prey (q154) eagle 4, hawk 4 (my #1 eagle). The other
+  five matched: Coachella 6 of 8, Mona Lisa 7 of 9, Sahara 7 of 8, Gordon Ramsay 9 of 9, Rome 7 of 9. Misses: "desert" (4) and "italy" (2) were
+  generic words, not answers.
 - **2026-11-19 real data (Name a famous DJ, q143):** the most typed answer was John Summit (6 of 12) and my #1 David Guetta got 0, while
   Calvin Harris, Diplo and Marshmello got 2 each. The wording said "a headliner of today who makes festival crowds jump", and "of today" steered
   players to current names: for a trending field (DJs, YouTubers, rappers) the typed first answer follows the wording's era word, so test the
