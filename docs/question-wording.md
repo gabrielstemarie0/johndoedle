@@ -160,6 +160,11 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-21 real data (small samples, 4-9 players per question):** song question q157 (Michael Jackson, ranked by Spotify streams): "Thriller" was
+  typed 3 times, "Billie Jean" (my #1, most streamed) 2 times: players type the most ICONIC song first, not the most streamed, so the Spotify rule
+  deliberately costs a little here; the bracket in the wording is what tells them. q160 (Disney Channel): Jessie 2, my #1 Hannah Montana 0 of 4;
+  with a tiny sample keep the answer that is famous across ages. The other five matched: apple 4 of 5, poker 5 of 6, karate 4 of 6, Scooby-Doo 2 of 5
+  (tie-ish), Michigan 4 of 5. The only miss was "kickin it" (2), a Disney XD show, not Disney Channel.
 - **2026-11-20 real data (Name a famous museum, q156):** The Met was typed 5 times and my #1 Louvre 3 (the Louvre is the most visited, but the
   players are mostly American and the wording carried no place). For a question with no stated country, the first guess of a mostly US audience
   wins: ask "what do Americans type first?", not "what is globally biggest". Also a tie: bird of prey (q154) eagle 4, hawk 4 (my #1 eagle). The other
