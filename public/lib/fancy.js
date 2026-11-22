@@ -178,4 +178,11 @@ export default {
   q175: "Name a series from the public broadcaster that teaches the alphabet to little viewers",
   q176: "Name a bedtime story of enchanted woods, wicked stepmothers and happy endings",
   q177: "Name a squeezable or spreadable flavor-booster dabbed onto burgers, fries and bratwurst",
+  q178: "Name a track by the whispery teen prodigy in neon-green hair and oversized clothes (Spotify streams)",
+  q179: "Name a ring-shaped fried pastry sold by the dozen in a pink-and-brown box",
+  q180: "Name a legendary beast of folklore that never walked the earth",
+  q181: "Name a competition or pastime that thrives on frost, slopes and frozen ponds",
+  q182: "Name a celebrated verse-writer, from the classic masters to modern voices",
+  q183: "Name a crunchy bagged munchie maker whose logo fills the aisle of party supplies and vending machines",
+  q184: "Name a famed vessel that sailed into history or legend",
 };
