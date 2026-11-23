@@ -185,4 +185,11 @@ export default {
   q182: "Name a celebrated verse-writer, from the classic masters to modern voices",
   q183: "Name a crunchy bagged munchie maker whose logo fills the aisle of party supplies and vending machines",
   q184: "Name a famed vessel that sailed into history or legend",
+  q185: "Name a track by the Toronto rapper-crooner who adopted an owl as his emblem (Spotify streams)",
+  q186: "Name a powered helper that plugs in or hums in a home chef's workspace",
+  q187: "Name a larger-than-life ring entertainer, from the golden age of spandex to today's roster",
+  q188: "Name a layered sweet baked dessert crowned with frosting, sliced onto plates",
+  q189: "Name a legendary thoroughfare worldwide that visitors snap photos of, lined with shops, stages or skyscrapers",
+  q190: "Name a celebrated furry growler of cartoons, honey jars and picnic baskets",
+  q191: "Name a sun-soaked stretch of sand and surf that fills with towels and umbrellas each summer",
 };
