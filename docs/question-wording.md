@@ -160,6 +160,10 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-22 real data (best day so far, 5-9 players per question):** every most-typed answer matched my #1: Bohemian Rhapsody 4 of 5, chocolate
+  chip 8 of 8, Sherlock Holmes 6 of 8, Niagara Falls 8 of 8, green tea 4 of 8, Empire State Building 4 of 6, Cinderella 2 of 5 (castle, a close
+  call). The misses were the category word typed on its own ("castle" 4, "tea" 3, "cookie" 2) and noise ("plane"): nothing missing from the lists.
+  What worked: stating the kind of answer in the wording and ranking the universally famous name first.
 - **2026-11-21 real data (small samples, 4-9 players per question):** song question q157 (Michael Jackson, ranked by Spotify streams): "Thriller" was
   typed 3 times, "Billie Jean" (my #1, most streamed) 2 times: players type the most ICONIC song first, not the most streamed, so the Spotify rule
   deliberately costs a little here; the bracket in the wording is what tells them. q160 (Disney Channel): Jessie 2, my #1 Hannah Montana 0 of 4;
