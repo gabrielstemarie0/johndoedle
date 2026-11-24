@@ -192,4 +192,11 @@ export default {
   q189: "Name a legendary thoroughfare worldwide that visitors snap photos of, lined with shops, stages or skyscrapers",
   q190: "Name a celebrated furry growler of cartoons, honey jars and picnic baskets",
   q191: "Name a sun-soaked stretch of sand and surf that fills with towels and umbrellas each summer",
+  q192: "Name a tune by the stadium-filling British quartet famed for wristbands that glow in the crowd (Spotify streams)",
+  q193: "Name an order from the chain with golden arches and a red-haired clown mascot",
+  q194: "Name a famed laugh-maker, from the classic masters of the mic to today's headliners",
+  q195: "Name a famous fiery mountain that has shaken the earth with ash, lava and fury",
+  q196: "Name a celebrated pair of sweethearts from history, fiction or fame",
+  q197: "Name an invented four-legged mouser of cartoons, books or cinema",
+  q198: "Name a destination of roller coasters, costumed mascots and long queues, famed for family vacations",
 };
