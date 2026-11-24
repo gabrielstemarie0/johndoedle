@@ -160,6 +160,11 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-23 real data (Name a video game console, q174):** Xbox was typed 9 times and my #1 PlayStation 3 (12 players): the wording said "a plug-in-and-play
+  box with joypads", and "box" steered players straight to Xbox. This is the q131 lesson again: a hint word in the wording ("box", "farm", "of today")
+  moves the first guess, so test the first guess on the exact wording and, when the wording carries a word that echoes one answer, rank that answer first.
+  The other six matched: Shape of You 6 of 9, Caesar 9 of 12, Hawaii 7 of 12, Sesame Street 5 of 7, Cinderella 4 of 9, ketchup 11 of 11.
+  Misses were noise: "salad" (4, the category word) and "elmo" (2, a character, not a show).
 - **2026-11-22 real data (best day so far, 5-9 players per question):** every most-typed answer matched my #1: Bohemian Rhapsody 4 of 5, chocolate
   chip 8 of 8, Sherlock Holmes 6 of 8, Niagara Falls 8 of 8, green tea 4 of 8, Empire State Building 4 of 6, Cinderella 2 of 5 (castle, a close
   call). The misses were the category word typed on its own ("castle" 4, "tea" 3, "cookie" 2) and noise ("plane"): nothing missing from the lists.
