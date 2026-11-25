@@ -199,4 +199,11 @@ export default {
   q196: "Name a celebrated pair of sweethearts from history, fiction or fame",
   q197: "Name an invented four-legged mouser of cartoons, books or cinema",
   q198: "Name a destination of roller coasters, costumed mascots and long queues, famed for family vacations",
+  q199: "Name a tune by the British soul-powered belter who titled her albums after her own age (Spotify streams)",
+  q200: "Name a native critter of the sun-baked land of billabongs and the outback",
+  q201: "Name a legendary diamond hero, from the old-timers to today's stars",
+  q202: "Name an arch-foe of spandex-clad crusaders in the blockbusters from the House of Ideas",
+  q203: "Name a plant raised in rows by farmers and harvested each season",
+  q204: "Name a waist-to-ankle garment that comes in many cuts, fabrics and fits",
+  q205: "Name a pair of drawn rivals or buddies who star together in animated shorts and series",
 };
