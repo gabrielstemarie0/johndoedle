@@ -160,6 +160,14 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-24 real data (a rough day: 4 of 7 first guesses off):** (1) **Famous poet (q182):** most players typed musicians (Mozart 4, Michael Jackson 3,
+  Eminem, Jay-Z, Kanye, Taylor Swift 2 each) and only 1 typed a poet: the wording "a celebrated verse-writer, from the classic masters of the mic" is
+  gone wrong: "masters", "voices" and "verse" read as songwriters. For writers say what they WRITE ON ("lines inked on pages", "stanzas and sonnets") and never
+  borrow music words. (2) **Salty snack brand (q183):** Lay's 6, Doritos 1 (my #1): in a plain "brand of chips" question, Lay's is what players type first;
+  check real data from similar brand questions before ranking Doritos. (3) **Billie Eilish (q178):** "bad guy" 6 vs my Spotify-streams #1 "Birds of a Feather"
+  1: iconic beats most-streamed again, so for a song question prefer the bracket plus a wording hint when a newer track tops the streams. (4) **Famous ship
+  (q184):** Mayflower 5, Titanic 4 (my #1): a US audience types the Pilgrim ship almost as often as Titanic, so a close call. Matched: glazed donut 4 of 6,
+  dragon 4 of 9, skiing 7 of 10. Misses: "donut" (8, the category word) plus the musicians above.
 - **2026-11-23 real data (Name a video game console, q174):** Xbox was typed 9 times and my #1 PlayStation 3 (12 players): the wording said "a plug-in-and-play
   box with joypads", and "box" steered players straight to Xbox. This is the q131 lesson again: a hint word in the wording ("box", "farm", "of today")
   moves the first guess, so test the first guess on the exact wording and, when the wording carries a word that echoes one answer, rank that answer first.
