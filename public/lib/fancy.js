@@ -206,4 +206,11 @@ export default {
   q203: "Name a plant raised in rows by farmers and harvested each season",
   q204: "Name a waist-to-ankle garment that comes in many cuts, fabrics and fits",
   q205: "Name a pair of drawn rivals or buddies who star together in animated shorts and series",
+  q206: "Name a track by the bleached-blond Detroit star whose stage name echoes a chocolate candy (Spotify streams)",
+  q207: "Name a podium-topper of the Games held every four years, from the old legends to today's champions",
+  q208: "Name an urban center in the country of Big Ben, Stonehenge and the Premier League",
+  q209: "Name a woven, knitted or spun material that tailors cut and stitch into clothing and curtains",
+  q210: "Name a plaything that children covet, from classic favorites to modern crazes",
+  q211: "Name a powdered-wig statesman who helped give birth to the American republic",
+  q212: "Name a silver-screen leading lady, from Golden Age icons to today's stars",
 };
