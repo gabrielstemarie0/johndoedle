@@ -160,6 +160,14 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-25 real data (another rough day: 4 of 7 first guesses off):** (1) **Famous street (q189): ZERO listed answers were typed.** Players typed
+  "paris", "eiffel tower", "new york city", "nyc": the wording "a legendary thoroughfare worldwide that visitors snap photos of" read as a sightseeing
+  question. Never use "worldwide", "visitors" or "photos" for a street/place list; say what a street is made of ("lined with ..."). (2) **Kitchen appliance
+  (q186):** blender 3 and mixer 3, my #1 refrigerator 0: "plugs in or hums in a home chef's workspace" pointed to countertop gadgets. (3) **Wrestler
+  (q187):** John Cena 3, my #1 Hulk Hogan 0: with "to today's roster" in the wording the mostly young players type the CURRENT star first (same as the DJ
+  question q143). So when the wording says "today's", rank the current star #1; when it says "classic" or "legendary", rank the all-time name #1. This
+  refines the Nov 17 rule: the era phrase in the wording does change who players type first. (4) Ties: Drake q185 One Dance 3 = God's Plan 3; beach
+  q191 had 6 different beaches typed once each, so no #1 could be confirmed. Matched: cake chocolate 3 of 7, bear Winnie the Pooh 6 of 7.
 - **2026-11-24 real data (a rough day: 4 of 7 first guesses off):** (1) **Famous poet (q182):** most players typed musicians (Mozart 4, Michael Jackson 3,
   Eminem, Jay-Z, Kanye, Taylor Swift 2 each) and only 1 typed a poet: the wording "a celebrated verse-writer, from the classic masters of the mic" is
   gone wrong: "masters", "voices" and "verse" read as songwriters. For writers say what they WRITE ON ("lines inked on pages", "stanzas and sonnets") and never
