@@ -160,6 +160,11 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-26 real data (Thanksgiving, very few players, 1-6 per question):** matched: Big Mac 6 of 6, Romeo and Juliet 4 of 5, Disney World 2 of 4,
+  Vesuvius tied with Mount St. Helens (2 each, my #1 Vesuvius). Scattered (no first guess to compare): comedian (5 different names, one each),
+  fictional cat (Cheshire Cat, Tigger, Tom: my #1 Garfield 0). Coldplay q192: "Wonderwall" (3) and "Don't Look Back in Anger" (2) were typed, which are
+  OASIS songs: for a band question the wording must separate the band from other British bands (name a fact only that band has). Not enough data to
+  conclude anything else.
 - **2026-11-25 real data (another rough day: 4 of 7 first guesses off):** (1) **Famous street (q189): ZERO listed answers were typed.** Players typed
   "paris", "eiffel tower", "new york city", "nyc": the wording "a legendary thoroughfare worldwide that visitors snap photos of" read as a sightseeing
   question. Never use "worldwide", "visitors" or "photos" for a street/place list; say what a street is made of ("lined with ..."). (2) **Kitchen appliance
