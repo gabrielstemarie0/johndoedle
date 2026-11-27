@@ -213,4 +213,11 @@ export default {
   q210: "Name a plaything that children covet, from classic favorites to modern crazes",
   q211: "Name a powdered-wig statesman who helped give birth to the American republic",
   q212: "Name a silver-screen leading lady, from Golden Age icons to today's stars",
+  q213: "Name a track by the Canadian crooner famed for a red blazer, bandages and a Super Bowl halftime show (Spotify streams)",
+  q214: "Name a sculpted landmark of marble or metal rising over a harbor, hilltop or plaza",
+  q215: "Name a way to style or snip the strands upon your head",
+  q216: "Name a carrier whose planes bear a painted tail logo and whose attendants hand out peanuts or pretzels",
+  q217: "Name a picture-filled tale that parents read aloud to toddlers and grade-schoolers",
+  q218: "Name a leafy or spiky green companion kept in a pot on a sunny sill",
+  q219: "Name a beloved professional side of the beautiful game, with fans in colors singing from the stands",
 };
