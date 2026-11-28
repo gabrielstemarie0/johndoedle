@@ -160,6 +160,12 @@ media or the answer type, rewrite it. Then ask: would a smart player still get i
 
 ## Lessons from the owner (newest first). Add every new piece of feedback here.
 
+- **2026-11-27 real data (3-7 players per question):** matched: kangaroo 7 of 8, corn 6 of 7, jeans 4 of 5. Off: Adele q199 "Hello" 3, my streams-#1
+  "Someone Like You" 1 (a third question in a row where players type the most iconic recent hit, not the most streamed one); Marvel villain q202 had
+  Doctor Doom and Loki once each and my #1 Thanos 0; cartoon duo q205 "Batman and Robin" 3, my #1 Tom and Jerry 0 (players include live-action and
+  comic duos, so for a "duo/couple/pair" question accept and rank famous pairs of any medium); baseball q201 had one answer (Ken Griffey Jr.). Misses:
+  "pant" (5, the category word in the singular), "dress"/"skirt" (2 each, not pants), "joker" (2, a DC villain), "21" and "18" (Adele ALBUM
+  titles typed as songs), "lion" and "steve": all noise.
 - **2026-11-26 real data (Thanksgiving, very few players, 1-6 per question):** matched: Big Mac 6 of 6, Romeo and Juliet 4 of 5, Disney World 2 of 4,
   Vesuvius tied with Mount St. Helens (2 each, my #1 Vesuvius). Scattered (no first guess to compare): comedian (5 different names, one each),
   fictional cat (Cheshire Cat, Tigger, Tom: my #1 Garfield 0). Coldplay q192: "Wonderwall" (3) and "Don't Look Back in Anger" (2) were typed, which are
