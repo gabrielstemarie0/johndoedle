@@ -220,4 +220,11 @@ export default {
   q217: "Name a picture-filled tale that parents read aloud to toddlers and grade-schoolers",
   q218: "Name a leafy or spiky green companion kept in a pot on a sunny sill",
   q219: "Name a beloved professional side of the beautiful game, with fans in colors singing from the stands",
+  q220: "Name a track by the petite pop vocalist famed for a high ponytail and a soaring whistle register (Spotify streams)",
+  q221: "Name a way to prepare the humble spud for dinner",
+  q222: "Name a well-known lodging with a lobby, bellhops and room service",
+  q223: "Name a felt-and-fuzz puppet from the workshop of the late Jim Henson",
+  q224: "Name a maker of timepieces for the wrist, from pricey Swiss status symbols to cheap digital classics",
+  q225: "Name a leisure pursuit people enjoy in their spare time for fun rather than money",
+  q226: "Name a household of characters we welcome into our living rooms every week",
 };
